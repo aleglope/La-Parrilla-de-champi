@@ -5,6 +5,7 @@
 export interface Category {
   id: string;
   name: string;
+  name_gl?: string | null;
   order_index: number;
   created_at: string;
 }
@@ -13,7 +14,9 @@ export interface Dish {
   id: string;
   category_id: string;
   name: string;
+  name_gl?: string | null;
   description: string | null;
+  description_gl?: string | null;
   price: number;
   image_url: string | null;
   is_available: boolean;
@@ -24,7 +27,9 @@ export interface Dish {
 
 export interface DishFormData {
   name: string;
+  name_gl?: string;
   description: string;
+  description_gl?: string;
   price: number;
   category_id: string;
   image_url?: string;
@@ -34,6 +39,7 @@ export interface DishFormData {
 
 export interface CategoryFormData {
   name: string;
+  name_gl?: string;
   order_index: number;
 }
 

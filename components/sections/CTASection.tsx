@@ -2,11 +2,14 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 /**
  * Sección de Call-to-Action final
  */
 export function CTASection() {
+  const { t } = useLanguage();
+
   return (
     <div className="container-custom">
       <motion.div
@@ -39,21 +42,21 @@ export function CTASection() {
             transition={{ duration: 0.5 }}
             className="text-4xl md:text-6xl font-bold mb-6"
           >
-            <span className="text-fire-glow">¿Listo para</span>
+            <span className="text-fire-glow">{t.cta.title}</span>
             <br />
-            <span className="gradient-text">la experiencia?</span>
+            <span className="gradient-text">{t.cta.subtitle}</span>
           </motion.h2>
 
           <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto">
-            Escanea el QR en tu mesa o explora nuestra carta digital ahora mismo
+            {t.hero.description}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/menu" className="btn-fire w-full sm:w-auto">
-              Ver Carta Digital 📱
+              {t.nav.menu} 📱
             </Link>
             <Link href="/#story" className="btn-flame w-full sm:w-auto">
-              Conocer más
+              {t.story.cta}
             </Link>
           </div>
 

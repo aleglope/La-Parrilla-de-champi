@@ -16,7 +16,9 @@ interface DishModalProps {
 export function DishModal({ isOpen, dish, categories, onClose, onSave, isLoading }: DishModalProps) {
   const [formData, setFormData] = useState({
     name: '',
+    name_gl: '',
     description: '',
+    description_gl: '',
     price: 0,
     category_id: '',
     image_url: '',
@@ -28,7 +30,9 @@ export function DishModal({ isOpen, dish, categories, onClose, onSave, isLoading
     if (dish) {
       setFormData({
         name: dish.name,
+        name_gl: dish.name_gl || '',
         description: dish.description || '',
+        description_gl: dish.description_gl || '',
         price: dish.price,
         category_id: dish.category_id,
         image_url: dish.image_url || '',
@@ -38,7 +42,9 @@ export function DishModal({ isOpen, dish, categories, onClose, onSave, isLoading
     } else {
       setFormData({
         name: '',
+        name_gl: '',
         description: '',
+        description_gl: '',
         price: 0,
         category_id: categories[0]?.id || '',
         image_url: '',
@@ -78,33 +84,61 @@ export function DishModal({ isOpen, dish, categories, onClose, onSave, isLoading
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Nombre */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Nombre del plato *
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors"
-                  placeholder="Ej: Chuletón de buey"
-                />
+              {/* Nombres */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Nombre (Castellano) *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors"
+                    placeholder="Ej: Chuletón"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Nombre (Gallego)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name_gl}
+                    onChange={(e) => setFormData({ ...formData, name_gl: e.target.value })}
+                    className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors"
+                    placeholder="Ej: Chuletón (gallego)"
+                  />
+                </div>
               </div>
 
-              {/* Descripción */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Descripción
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors resize-none"
-                  placeholder="Descripción del plato..."
-                />
+              {/* Descripciones */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Descripción (Castellano)
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                    className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors resize-none"
+                    placeholder="Descripción..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Descripción (Gallego)
+                  </label>
+                  <textarea
+                    value={formData.description_gl}
+                    onChange={(e) => setFormData({ ...formData, description_gl: e.target.value })}
+                    rows={3}
+                    className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors resize-none"
+                    placeholder="Descripción en gallego..."
+                  />
+                </div>
               </div>
 
               {/* Precio y Categoría */}

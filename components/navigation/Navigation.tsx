@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t, language, setLanguage } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,10 +20,14 @@ export function Navigation() {
   }, []);
 
   const menuItems = [
-    { href: '/#hero', label: 'Inicio' },
-    { href: '/#story', label: 'Historia' },
-    { href: '/menu', label: 'Ver Carta' },
+    { href: '/#hero', label: t.nav.home },
+    { href: '/#story', label: t.nav.story },
+    { href: '/menu', label: t.nav.menu },
   ];
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'es' ? 'gl' : 'es');
+  };
 
   return (
     <motion.nav
@@ -48,7 +54,7 @@ export function Navigation() {
               <h1 className="text-xl font-bold text-white leading-tight">
                 La Parrilla de Champi
               </h1>
-              <p className="text-xs text-gray-400">Carne a la Brasa</p>
+              <p className="text-xs text-gray-400">{t.nav.subtitle}</p>
             </div>
           </Link>
 
@@ -63,33 +69,55 @@ export function Navigation() {
                 {item.label}
               </Link>
             ))}
+            
+            {/* Language Switcher */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center space-x-1 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+            >
+              <span className={`text-sm font-medium ${language === 'es' ? 'text-fire-red' : 'text-gray-400'}`}>ES</span>
+              <span className="text-gray-600">|</span>
+              <span className={`text-sm font-medium ${language === 'gl' ? 'text-fire-blue' : 'text-gray-400'}`}>GL</span>
+            </button>
+
             <Link href="/menu" className="btn-fire !py-2 !px-6 !text-base">
-              Ver Carta
+              {t.nav.menu}
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-white p-2"
-            aria-label="Toggle menu"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <div className="flex items-center md:hidden space-x-4">
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center space-x-1 px-2 py-1 rounded-full bg-white/5 border border-white/10"
             >
-              {isMobileMenuOpen ? (
-                <path d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+              <span className={`text-xs font-bold ${language === 'es' ? 'text-fire-red' : 'text-gray-400'}`}>ES</span>
+              <span className="text-gray-600">/</span>
+              <span className={`text-xs font-bold ${language === 'gl' ? 'text-fire-blue' : 'text-gray-400'}`}>GL</span>
+            </button>
+
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-white p-2"
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {isMobileMenuOpen ? (
+                  <path d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -117,7 +145,7 @@ export function Navigation() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="btn-fire w-full text-center"
                 >
-                  Ver Carta
+                  {t.nav.menu}
                 </Link>
               </div>
             </motion.div>

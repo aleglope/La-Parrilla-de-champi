@@ -43,13 +43,13 @@ export function CategoriesManager({ categories, onUpdate, onRevalidate }: Catego
     }
   };
 
-  const handleSave = async (name: string, orderIndex: number) => {
+  const handleSave = async (name: string, nameGl: string, orderIndex: number) => {
     setIsLoading(true);
     try {
       if (editingCategory) {
-        await updateCategory(editingCategory.id, name, orderIndex);
+        await updateCategory(editingCategory.id, name, nameGl, orderIndex);
       } else {
-        await createCategory(name, orderIndex);
+        await createCategory(name, nameGl, orderIndex);
       }
       await onRevalidate();
       onUpdate();

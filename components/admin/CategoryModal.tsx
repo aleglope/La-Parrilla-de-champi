@@ -8,27 +8,30 @@ interface CategoryModalProps {
   isOpen: boolean;
   category: Category | null;
   onClose: () => void;
-  onSave: (name: string, orderIndex: number) => void;
+  onSave: (name: string, nameGl: string, orderIndex: number) => void;
   isLoading: boolean;
 }
 
 export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: CategoryModalProps) {
   const [name, setName] = useState('');
+  const [nameGl, setNameGl] = useState('');
   const [orderIndex, setOrderIndex] = useState(0);
 
   useEffect(() => {
     if (category) {
       setName(category.name);
+      setNameGl(category.name_gl || '');
       setOrderIndex(category.order_index);
     } else {
       setName('');
+      setNameGl('');
       setOrderIndex(0);
     }
   }, [category, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(name, orderIndex);
+    onSave(name, nameGl, orderIndex);
   };
 
   return (
@@ -56,10 +59,10 @@ export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: 
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Nombre */}
+              {/* Nombre Castellano */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Nombre de la categoría *
+                  Nombre (Castellano) *
                 </label>
                 <input
                   type="text"
@@ -68,6 +71,20 @@ export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: 
                   required
                   className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors"
                   placeholder="Ej: Entrantes"
+                />
+              </div>
+
+              {/* Nombre Gallego */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Nombre (Gallego)
+                </label>
+                <input
+                  type="text"
+                  value={nameGl}
+                  onChange={(e) => setNameGl(e.target.value)}
+                  className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors"
+                  placeholder="Ej: Entrantes (en gallego)"
                 />
               </div>
 

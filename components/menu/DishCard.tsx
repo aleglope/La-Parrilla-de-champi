@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import type { Dish } from '@/lib/types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface DishCardProps {
   dish: Dish;
@@ -14,6 +15,11 @@ interface DishCardProps {
  * Diseño optimizado para lectura bajo luz de restaurante
  */
 export function DishCard({ dish, index }: DishCardProps) {
+  const { language, t } = useLanguage();
+
+  const name = (language === 'gl' && dish.name_gl) ? dish.name_gl : dish.name;
+  const description = (language === 'gl' && dish.description_gl) ? dish.description_gl : dish.description;
+
   return (
     <motion.div
       layout
@@ -28,7 +34,7 @@ export function DishCard({ dish, index }: DishCardProps) {
         <div className="relative h-48 bg-charcoal-dark overflow-hidden">
           <Image
             src={dish.image_url}
-            alt={dish.name}
+            alt={name}
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-500"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -42,16 +48,16 @@ export function DishCard({ dish, index }: DishCardProps) {
       <div className="p-5">
         <div className="flex justify-between items-start mb-3">
           <h4 className="text-lg font-bold text-white group-hover:text-fire-red transition-colors flex-1">
-            {dish.name}
+            {name}
           </h4>
           <span className="text-2xl font-bold text-fire-red ml-3 flex-shrink-0">
             {dish.price.toFixed(2)}€
           </span>
         </div>
 
-        {dish.description && (
+        {description && (
           <p className="text-sm text-gray-400 leading-relaxed line-clamp-3">
-            {dish.description}
+            {description}
           </p>
         )}
 

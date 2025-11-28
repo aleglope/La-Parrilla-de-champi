@@ -3,12 +3,14 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { StoryBlock } from './StoryBlock';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 /**
  * Sección de historia con Scrollytelling
  * Narrativa visual que se revela al hacer scroll
  */
 export function StorySection() {
+  const { t } = useLanguage();
   const [titleRef, titleInView] = useInView({
     triggerOnce: true,
     threshold: 0.3,
@@ -17,13 +19,13 @@ export function StorySection() {
   const storyBlocks = [
     {
       title: 'El Fuego que nos une',
-      content: 'Desde hace más de 20 años, La Parrilla de Champi ha sido sinónimo de pasión por la carne a la brasa. Cada plato cuenta una historia de dedicación, técnica y amor por lo auténtico.',
+      content: t.story.p1,
       icon: '🔥',
       gradient: 'from-fire-red/20 to-transparent',
     },
     {
       title: 'El Alma del Mar',
-      content: 'Inspirados por la fluidez del océano, nuestro concepto fusiona el poder del fuego con la serenidad del mar. Una experiencia culinaria que fluye como las olas, intensa como las brasas.',
+      content: t.story.p2,
       icon: '🌊',
       gradient: 'from-flame-blue/20 to-transparent',
     },
@@ -52,10 +54,10 @@ export function StorySection() {
         className="text-center mb-20"
       >
         <h2 className="text-5xl md:text-7xl font-bold mb-6">
-          <span className="gradient-text">Nuestra Historia</span>
+          <span className="gradient-text">{t.story.title}</span>
         </h2>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          Un viaje gastronómico que fusiona tradición, innovación y pasión por el fuego
+          {t.story.subtitle}
         </p>
       </motion.div>
 

@@ -111,10 +111,10 @@ export async function getDishById(id: string): Promise<Dish | null> {
 
 // ============ Operaciones CRUD (para Admin) ============
 
-export async function createCategory(name: string, orderIndex: number = 0) {
+export async function createCategory(name: string, nameGl: string = '', orderIndex: number = 0) {
   const { data, error } = await supabase
     .from('categories')
-    .insert([{ name, order_index: orderIndex }])
+    .insert([{ name, name_gl: nameGl, order_index: orderIndex }])
     .select()
     .single();
 
@@ -122,10 +122,10 @@ export async function createCategory(name: string, orderIndex: number = 0) {
   return data;
 }
 
-export async function updateCategory(id: string, name: string, orderIndex: number) {
+export async function updateCategory(id: string, name: string, nameGl: string, orderIndex: number) {
   const { data, error } = await supabase
     .from('categories')
-    .update({ name, order_index: orderIndex })
+    .update({ name, name_gl: nameGl, order_index: orderIndex })
     .eq('id', id)
     .select()
     .single();

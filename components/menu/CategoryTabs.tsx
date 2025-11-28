@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import type { Category } from '@/lib/types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface CategoryTabsProps {
   categories: Category[];
@@ -13,6 +14,8 @@ interface CategoryTabsProps {
  * Tabs para filtrar por categoría
  */
 export function CategoryTabs({ categories, selectedCategory, onSelectCategory }: CategoryTabsProps) {
+  const { language } = useLanguage();
+
   return (
     <div className="sticky top-[73px] z-40 bg-charcoal/95 backdrop-blur-lg py-4 -mx-4 px-4 md:mx-0 md:px-0">
       <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
@@ -26,7 +29,7 @@ export function CategoryTabs({ categories, selectedCategory, onSelectCategory }:
               : 'bg-charcoal-light text-gray-400 hover:text-white hover:bg-charcoal-dark'
           }`}
         >
-          Todos
+          {language === 'es' ? 'Todos' : 'Todos'}
         </motion.button>
 
         {/* Tabs de categorías */}
@@ -43,7 +46,7 @@ export function CategoryTabs({ categories, selectedCategory, onSelectCategory }:
                   : 'bg-charcoal-light text-gray-400 hover:text-white hover:bg-charcoal-dark'
               }`}
             >
-              {category.name}
+              {(language === 'gl' && category.name_gl) ? category.name_gl : category.name}
             </motion.button>
           ))}
       </div>

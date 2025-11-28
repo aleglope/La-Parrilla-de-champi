@@ -5,6 +5,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import { AnimatedLogo } from './AnimatedLogo';
 import { VideoBlock } from './VideoBlock';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 /**
  * Hero Section con layout Bento Box
@@ -13,6 +14,7 @@ import { VideoBlock } from './VideoBlock';
  */
 export function HeroBentoBox() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -53,9 +55,9 @@ export function HeroBentoBox() {
                 transition={{ delay: 0.5 }}
                 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
               >
-                <span className="text-ember">La Parrilla</span>
+                <span className="text-ember">{t.hero.title}</span>
                 <br />
-                <span className="text-white">de Champi</span>
+                <span className="text-white">{t.hero.subtitle}</span>
               </motion.h1>
               
               <motion.p
@@ -64,7 +66,7 @@ export function HeroBentoBox() {
                 transition={{ delay: 0.7 }}
                 className="text-xl md:text-2xl text-gray-300 mb-8 font-light"
               >
-                Carne a la Brasa con Alma
+                {t.hero.description}
               </motion.p>
 
               {/* Slogan */}
@@ -115,14 +117,14 @@ export function HeroBentoBox() {
             
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Nuestra Carta
+                {t.menu.title}
               </h2>
               <p className="text-gray-300 mb-6">
-                Descubre nuestros platos exclusivos cocinados con pasión
+                {t.menu.subtitle}
               </p>
               
               <Link href="/menu" className="btn-fire inline-block text-center w-full">
-                Ver Carta Completa 🍖
+                {t.hero.cta} 🍖
               </Link>
 
               {/* Decoración */}
