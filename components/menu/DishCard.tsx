@@ -1,0 +1,76 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import type { Dish } from '@/lib/types';
+
+interface DishCardProps {
+  dish: Dish;
+  index: number;
+}
+
+/**
+ * Card individual de plato
+ * Diseño optimizado para lectura bajo luz de restaurante
+ */
+export function DishCard({ dish, index }: DishCardProps) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      className="glass-card overflow-hidden hover:border-fire-red/50 transition-all group"
+    >
+      {/* Imagen del plato */}
+      {dish.image_url && (
+        <div className="relative h-48 bg-charcoal-dark overflow-hidden">
+          <Image
+            src={dish.image_url}
+            alt={dish.name}
+            fill
+            className="object-cover group-hover:scale-110 transition-transform duration-500"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-dark via-transparent to-transparent" />
+        </div>
+      )}
+
+      {/* Contenido */}
+      <div className="p-5">
+        <div className="flex justify-between items-start mb-3">
+          <h4 className="text-lg font-bold text-white group-hover:text-fire-red transition-colors flex-1">
+            {dish.name}
+          </h4>
+          <span className="text-2xl font-bold text-fire-red ml-3 flex-shrink-0">
+            {dish.price.toFixed(2)}€
+          </span>
+        </div>
+
+        {dish.description && (
+          <p className="text-sm text-gray-400 leading-relaxed line-clamp-3">
+            {dish.description}
+          </p>
+        )}
+
+        {/* Indicador de disponibilidad */}
+        <div className="mt-4 flex items-center justify-between">
+          <span className="inline-flex items-center text-xs text-green-400">
+            <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
+            Disponible
+          </span>
+          
+          <button className="text-flame-blue-bright hover:text-flame-blue-glow text-sm font-medium transition-colors">
+            Más info →
+          </button>
+        </div>
+      </div>
+
+      {/* Efecto de brillo al hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-fire-red/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+    </motion.div>
+  );
+}
+

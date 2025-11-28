@@ -1,0 +1,45 @@
+import type { Metadata } from "next";
+import "./globals.css";
+import { ClientProviders } from "@/components/providers/ClientProviders";
+import { DeviceDetector } from "@/components/utils/DeviceDetector";
+
+export const metadata: Metadata = {
+  title: "La Parrilla de Champi | Carne a la Brasa",
+  description: "¡Que pasa gentuza! Descubre la mejor carne a la brasa de la ciudad. Experiencia gastronómica única con sabor a fuego y mar.",
+  keywords: "parrilla, carne a la brasa, restaurante, champi, asador, barbacoa",
+  authors: [{ name: "La Parrilla de Champi" }],
+  openGraph: {
+    title: "La Parrilla de Champi",
+    description: "La mejor carne a la brasa. ¡Que pasa gentuza!",
+    type: "website",
+    locale: "es_ES",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+  },
+  themeColor: "#C01F19",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="es" className="dark">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className="overflow-x-hidden">
+        <DeviceDetector />
+        <ClientProviders>
+          {children}
+        </ClientProviders>
+      </body>
+    </html>
+  );
+}
+

@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-geist-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+  }
+  
+  body {
+    @apply bg-charcoal text-white font-sans antialiased;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(193, 31, 25, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(23, 137, 192, 0.05) 0%, transparent 50%);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Botón CTA Principal */
+  .btn-fire {
+    @apply bg-fire-red hover:bg-fire-red-glow text-white font-bold 
+           py-4 px-8 rounded-lg shadow-lg transition-all duration-300
+           hover:shadow-fire-red/50 hover:scale-105 active:scale-95
+           text-lg uppercase tracking-wider;
+  }
+
+  /* Botón Secundario */
+  .btn-flame {
+    @apply bg-flame-blue hover:bg-flame-blue-bright text-white font-semibold
+           py-3 px-6 rounded-lg border-2 border-flame-blue-bright
+           transition-all duration-300 hover:shadow-flame-blue-bright/30;
+  }
+
+  /* Texto con efecto de fuego */
+  .text-fire-glow {
+    @apply text-fire-red;
+    text-shadow: 0 0 20px rgba(193, 31, 25, 0.8),
+                 0 0 40px rgba(193, 31, 25, 0.5);
+  }
+
+  /* Texto con efecto de brasa */
+  .text-ember {
+    background: linear-gradient(135deg, #C01F19 0%, #ff6b35 50%, #C01F19 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: ember-shimmer 3s ease-in-out infinite;
+  }
+
+  /* Card con efecto de cristal */
+  .glass-card {
+    @apply bg-charcoal-dark/60 backdrop-blur-md 
+           border border-flame-blue/20 rounded-xl
+           shadow-xl;
+  }
+
+  /* Contenedor principal responsive */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  /* Animación de shimmer para textos */
+  @keyframes ember-shimmer {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Sombra de fuego */
+  .shadow-fire {
+    box-shadow: 0 10px 40px rgba(193, 31, 25, 0.4),
+                0 0 20px rgba(193, 31, 25, 0.2);
+  }
+
+  /* Gradiente de texto animado */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-fire-red via-flame-blue-bright to-fire-red;
+    background-size: 200% auto;
+    animation: gradient-shift 4s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% center;
+    }
+    50% {
+      background-position: 100% center;
+    }
+  }
+
+  /* Efecto de desenfoque para optimización móvil */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Ocultar scrollbar pero mantener funcionalidad */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Loader líquido */
+  .liquid-loader {
+    @apply relative overflow-hidden rounded-full;
+  }
+
+  .liquid-loader::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-fire-red via-flame-blue-bright to-fire-red;
+    animation: liquid-wave 2s ease-in-out infinite;
+  }
+
+  @keyframes liquid-wave {
+    0%, 100% {
+      transform: translateX(-100%) skewX(-15deg);
+    }
+    50% {
+      transform: translateX(100%) skewX(15deg);
+    }
+  }
+}
+
+/* Estilos para el sistema de partículas */
+#particles-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Optimización para dispositivos de bajo rendimiento */
+@media (max-width: 640px) and (max-height: 800px) {
+  body.low-power-mode #particles-canvas {
+    display: none;
+  }
+}
+
