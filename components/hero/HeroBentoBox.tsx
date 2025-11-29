@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import Link from 'next/link';
-import { AnimatedLogo } from './AnimatedLogo';
-import { VideoBlock } from './VideoBlock';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import Link from "next/link";
+import ChampiLogoReveal from "./ChampiLogoReveal";
+import { VideoBlock } from "./VideoBlock";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 /**
  * Hero Section con layout Bento Box
@@ -17,7 +17,7 @@ export function HeroBentoBox() {
   const { t } = useLanguage();
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"]
+    offset: ["start start", "end start"],
   });
 
   // Animaciones basadas en scroll
@@ -25,46 +25,45 @@ export function HeroBentoBox() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
 
   return (
-    <div ref={containerRef} className="relative min-h-screen pt-20 pb-10 overflow-hidden">
+    <div
+      ref={containerRef}
+      className="relative min-h-screen pt-20 pb-10 overflow-hidden"
+    >
       {/* Fondo con gradiente animado */}
       <div className="absolute inset-0 bg-gradient-ocean-fire opacity-20" />
-      
-      <motion.div 
+
+      <motion.div
         style={{ scale, opacity }}
         className="container-custom h-full"
       >
         {/* Layout Bento Box */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 h-full py-10">
-          
-          {/* Bloque 1: Logo Animado (Grande) */}
+          {/* Bloque 1: Texto e Intro (Izquierda) */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="md:col-span-7 md:row-span-2 glass-card p-8 md:p-12 flex flex-col justify-center items-center relative overflow-hidden min-h-[400px] md:min-h-[600px]"
+            className="md:col-span-4 md:row-span-2 glass-card p-8 md:p-10 flex flex-col justify-center relative overflow-hidden min-h-[300px] md:min-h-[600px]"
           >
             {/* Efecto de brillo de fondo */}
-            <div className="absolute inset-0 bg-gradient-to-br from-fire-red/10 via-transparent to-flame-blue/10 animate-pulse" />
-            
-            <div className="relative z-10 text-center">
-              <AnimatedLogo />
-              
-              <motion.h1 
+            <div className="absolute inset-0 bg-gradient-to-br from-fire-red/5 via-transparent to-flame-blue/5 animate-pulse" />
+
+            <div className="relative z-10">
+              <motion.h1
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
+                className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 drop-shadow-lg"
               >
-                <span className="text-ember">{t.hero.title}</span>
-                <br />
+                <span className="text-ember block mb-2">{t.hero.title}</span>
                 <span className="text-white">{t.hero.subtitle}</span>
               </motion.h1>
-              
+
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}
-                className="text-xl md:text-2xl text-gray-300 mb-8 font-light"
+                className="text-lg md:text-xl text-gray-200 mb-8 font-light drop-shadow-md"
               >
                 {t.hero.description}
               </motion.p>
@@ -74,7 +73,7 @@ export function HeroBentoBox() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.9, type: "spring" }}
-                className="inline-block bg-fire-red/20 border-2 border-fire-red rounded-full px-6 py-3 mb-8"
+                className="inline-block bg-black/40 backdrop-blur-sm border-2 border-fire-red rounded-full px-6 py-3"
               >
                 <p className="text-fire-red font-bold text-lg md:text-xl">
                   ¡Que pasa gentuza! 🔥
@@ -83,59 +82,76 @@ export function HeroBentoBox() {
             </div>
           </motion.div>
 
-          {/* Bloque 2: Video/Cinemagraph (Medio) */}
+          {/* Bloque 2: Logo Animado (Centro - Eje Central) */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="md:col-span-5 md:row-span-1 glass-card overflow-hidden relative group min-h-[250px] md:min-h-[290px]"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="md:col-span-4 md:row-span-2 glass-card p-0 flex flex-col justify-center items-center relative overflow-hidden min-h-[300px] md:min-h-[600px]"
           >
-            <VideoBlock />
-            
-            {/* Overlay con texto */}
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  Fuego Auténtico
-                </h3>
-                <p className="text-gray-300 text-sm">
-                  Cocinado a la perfección con carbón de calidad
-                </p>
-              </div>
+            {/* ChampiLogoReveal como contenido principal */}
+            <div className="absolute inset-0 w-full h-full">
+              <ChampiLogoReveal />
             </div>
           </motion.div>
 
-          {/* Bloque 3: CTA Principal (Medio) */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="md:col-span-5 md:row-span-1 glass-card p-6 md:p-8 flex flex-col justify-center relative overflow-hidden group min-h-[250px] md:min-h-[290px]"
-          >
-            {/* Efecto líquido de fondo */}
-            <div className="absolute inset-0 bg-gradient-to-br from-flame-blue/20 to-fire-red/20 animate-liquid-morph opacity-50 group-hover:opacity-70 transition-opacity" />
-            
-            <div className="relative z-10">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                {t.menu.title}
-              </h2>
-              <p className="text-gray-300 mb-6">
-                {t.menu.subtitle}
-              </p>
-              
-              <Link href="/menu" className="btn-fire inline-block text-center w-full">
-                {t.hero.cta} 🍖
-              </Link>
+          {/* Columna Derecha: Video y CTA */}
+          <div className="md:col-span-4 md:row-span-2 grid grid-rows-2 gap-4 md:gap-6">
+            {/* Bloque 3: Video/Cinemagraph (Arriba Derecha) */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="glass-card overflow-hidden relative group min-h-[250px]"
+            >
+              <VideoBlock />
 
-              {/* Decoración */}
-              <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-400">
-                <span>📱</span>
-                <span>Acceso rápido con QR</span>
+              {/* Overlay con texto */}
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    Fuego Auténtico
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    Cocinado a la perfección con carbón de calidad
+                  </p>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* Bloque 4: Info Destacada (Pequeños) */}
+            {/* Bloque 4: CTA Principal (Abajo Derecha) */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="glass-card p-6 md:p-8 flex flex-col justify-center relative overflow-hidden group min-h-[250px]"
+            >
+              {/* Efecto líquido de fondo */}
+              <div className="absolute inset-0 bg-gradient-to-br from-flame-blue/20 to-fire-red/20 animate-liquid-morph opacity-50 group-hover:opacity-70 transition-opacity" />
+
+              <div className="relative z-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  {t.menu.title}
+                </h2>
+                <p className="text-gray-300 mb-6 text-sm">{t.menu.subtitle}</p>
+
+                <Link
+                  href="/menu"
+                  className="btn-fire inline-block text-center w-full"
+                >
+                  {t.hero.cta} 🍖
+                </Link>
+
+                {/* Decoración */}
+                <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-400">
+                  <span>📱</span>
+                  <span>Acceso rápido con QR</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Fila Inferior: Info Destacada */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -181,7 +197,7 @@ export function HeroBentoBox() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center pointer-events-none"
         >
           <p className="text-sm text-gray-400 mb-2">Descubre más</p>
           <motion.div
@@ -189,8 +205,18 @@ export function HeroBentoBox() {
             transition={{ duration: 1.5, repeat: Infinity }}
             className="text-flame-blue-bright"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
             </svg>
           </motion.div>
         </motion.div>
@@ -198,4 +224,3 @@ export function HeroBentoBox() {
     </div>
   );
 }
-

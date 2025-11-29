@@ -13,3 +13,4 @@ ADD COLUMN description_gl TEXT;
 UPDATE categories SET name_gl = name WHERE name_gl IS NULL;
 UPDATE dishes SET name_gl = name, description_gl = description WHERE name_gl IS NULL;
 
+
