@@ -12,10 +12,12 @@ export function DeviceDetector() {
   useEffect(() => {
     const detectDevice = () => {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      // Corregimos el error de tipado tratando navigator como 'any'
+      const nav = navigator as any;
       const isLowPower = 
-        // @ts-ignore - Battery API experimental
-        navigator.getBattery && 
-        navigator.getBattery().then((battery: any) => battery.charging === false && battery.level < 0.2);
+        nav.getBattery && 
+        nav.getBattery().then((battery: any) => battery.charging === false && battery.level < 0.2);
       
       // Detectar dispositivos antiguos o de bajo rendimiento
       const isOldDevice = () => {
