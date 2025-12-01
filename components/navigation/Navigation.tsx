@@ -77,7 +77,7 @@ export function Navigation() {
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="w-12 h-12 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <img
-                  src="/images/logo.svg"
+                  src="/Logo-Bento-Hero.svg"
                   alt="La Parrilla de Champi"
                   className="w-full h-full object-contain"
                 />
@@ -103,26 +103,28 @@ export function Navigation() {
               ))}
 
               {/* Language Switcher */}
-              <button
+              <BrandButton
                 onClick={toggleLanguage}
-                className="flex items-center space-x-1 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                style={{ minWidth: "auto", padding: "0 1.5rem" }}
               >
-                <span
-                  className={`text-sm font-medium ${
-                    language === "es" ? "text-fire-red" : "text-gray-400"
-                  }`}
-                >
-                  ES
+                <span className="flex items-center space-x-2">
+                  <span
+                    className={`text-sm font-medium ${
+                      language === "es" ? "text-fire-red" : "text-gray-400"
+                    }`}
+                  >
+                    ES
+                  </span>
+                  <span className="text-gray-600">|</span>
+                  <span
+                    className={`text-sm font-medium ${
+                      language === "gl" ? "text-fire-blue" : "text-gray-400"
+                    }`}
+                  >
+                    GL
+                  </span>
                 </span>
-                <span className="text-gray-600">|</span>
-                <span
-                  className={`text-sm font-medium ${
-                    language === "gl" ? "text-fire-blue" : "text-gray-400"
-                  }`}
-                >
-                  GL
-                </span>
-              </button>
+              </BrandButton>
 
               <BrandButton href="/menu" className="!text-base">
                 {t.nav.menu}

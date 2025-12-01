@@ -48,7 +48,15 @@ export default function ChampiLogoReveal() {
         ...configRef.current,
         mouseRadius: 80,
         mouseForce: 25,
-        density: 2.0, // Reducir densidad en móvil para mejor rendimiento
+        density: 1.5, // Ajustado para mejor calidad visual
+        particleSize: 2.0, // Partículas más pequeñas para mayor definición
+      };
+    } else {
+      // Desktop también necesita partículas más pequeñas para mejor calidad
+      configRef.current = {
+        ...configRef.current,
+        particleSize: 2.0,
+        density: 1.0, // Menor densidad = más partículas = mejor calidad
       };
     }
 
@@ -317,7 +325,7 @@ export default function ChampiLogoReveal() {
       particlesArrayFront.length = 0;
 
       try {
-        const response = await fetch("/CHAMPI-LOGO-DIGITAL-ALTA-CALIDAD.svg");
+        const response = await fetch("/Logo-Bento-Hero.svg");
 
         if (!response.ok) {
           console.error("Error fetching SVG:", response.status);
@@ -331,14 +339,17 @@ export default function ChampiLogoReveal() {
         const img = new Image();
 
         img.onload = function () {
-          const sizePercent = isMobile ? 1.4 : 1.3;
+          // Aumentar el tamaño un 50% más (0.6 * 1.5 = 0.9, 0.5 * 1.5 = 0.75)
+          const sizePercent = isMobile ? 0.9 : 0.75;
           const maxSize =
             Math.min(canvasFront.width, canvasFront.height) * sizePercent;
           const size = maxSize;
           const x = (canvasFront.width - size) / 2;
           const y = (canvasFront.height - size) / 2;
 
-          ctxFront.imageSmoothingEnabled = false;
+          // Habilitar suavizado para mejor calidad visual
+          ctxFront.imageSmoothingEnabled = true;
+          ctxFront.imageSmoothingQuality = "high";
           ctxFront.drawImage(img, x, y, size, size);
 
           let pixels: ImageData;

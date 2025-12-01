@@ -302,10 +302,10 @@ export default function BubbleMenu({
                   href={item.href}
                   aria-label={item.ariaLabel || item.label}
                   onClick={(e) => {
-                    // Delay closing by 3 seconds to show the active color
+                    // Delay closing by 1.5 seconds to show the active color
                     setTimeout(() => {
                       handleToggle();
-                    }, 3000);
+                    }, 1500);
                   }} // Close menu on click with delay
                   className={[
                     "pill-link",

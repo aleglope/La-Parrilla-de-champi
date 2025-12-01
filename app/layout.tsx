@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ClientProviders } from "@/components/providers/ClientProviders";
 import { DeviceDetector } from "@/components/utils/DeviceDetector";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "La Parrilla de Champi | Carne a la Brasa",
@@ -38,6 +39,7 @@ export default function RootLayout({
         <ClientProviders>
           {children}
         </ClientProviders>
+        <Analytics />
       </body>
     </html>
   );
