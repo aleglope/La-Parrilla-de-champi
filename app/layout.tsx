@@ -3,6 +3,30 @@ import "./globals.css";
 import { ClientProviders } from "@/components/providers/ClientProviders";
 import { DeviceDetector } from "@/components/utils/DeviceDetector";
 import { Analytics } from "@vercel/analytics/react";
+import { Bebas_Neue, Barlow_Condensed, Inter } from "next/font/google";
+
+// Fuente Display - Para títulos principales impactantes
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+// Fuente Heading - Para subtítulos y navegación
+const barlowCondensed = Barlow_Condensed({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
+});
+
+// Fuente Body - Para texto corrido
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "La Parrilla de Champi | Carne a la Brasa",
@@ -29,11 +53,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
+    <html 
+      lang="es" 
+      className={`dark ${bebasNeue.variable} ${barlowCondensed.variable} ${inter.variable}`}
+    >
       <body className="overflow-x-hidden">
         <DeviceDetector />
         <ClientProviders>

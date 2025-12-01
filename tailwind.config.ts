@@ -30,6 +30,15 @@ const config: Config = {
           'blue-bright': '#1789C0',
           'blue-glow': '#2699d0',
         },
+        // Sistema de tonos cálidos para texto (reemplazo de blanco puro)
+        ash: {
+          50: '#F5F3F0',   // Blanco cálido - Títulos principales
+          100: '#EBE8E3',  // Blanco humo - Subtítulos
+          200: '#D9D5CF',  // Gris claro cálido - Texto destacado
+          300: '#B8B3AB',  // Texto normal principal
+          400: '#9A948B',  // Texto secundario
+          500: '#7C766D',  // Placeholders y metadatos
+        },
       },
       backgroundImage: {
         'charcoal-texture': "url('/textures/charcoal-bg.jpg')",
@@ -38,8 +47,10 @@ const config: Config = {
         'gradient-ocean-fire': 'linear-gradient(180deg, #273A46 0%, #283435 50%, #C01F19 100%)',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-bebas)', 'Impact', 'sans-serif'],
+        sans: ['var(--font-body)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Impact', 'sans-serif'],
+        heading: ['var(--font-heading)', 'sans-serif'],
+        body: ['var(--font-body)', 'system-ui', 'sans-serif'],
       },
       animation: {
         'ember-float': 'emberFloat 8s ease-in-out infinite',

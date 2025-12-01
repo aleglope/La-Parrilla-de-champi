@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { DishCard } from './DishCard';
-import { CategoryTabs } from './CategoryTabs';
-import type { Category, Dish } from '@/lib/types';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { DishCard } from "./DishCard";
+import { CategoryTabs } from "./CategoryTabs";
+import type { Category, Dish } from "@/lib/types";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface MenuContentProps {
   categories: Category[];
@@ -22,13 +22,15 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
 
   // Filtrar platos por categoría seleccionada
   const filteredDishes = selectedCategory
-    ? dishes.filter(dish => dish.category_id === selectedCategory && dish.is_available)
-    : dishes.filter(dish => dish.is_available);
+    ? dishes.filter(
+        (dish) => dish.category_id === selectedCategory && dish.is_available
+      )
+    : dishes.filter((dish) => dish.is_available);
 
   // Agrupar platos por categoría
-  const dishesByCategory = categories.map(category => ({
+  const dishesByCategory = categories.map((category) => ({
     ...category,
-    dishes: filteredDishes.filter(dish => dish.category_id === category.id),
+    dishes: filteredDishes.filter((dish) => dish.category_id === category.id),
   }));
 
   return (
@@ -39,12 +41,10 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
       >
-        <h2 className="text-4xl font-bold text-white mb-3">
+        <h2 className="text-4xl font-display text-ash-50 mb-3">
           {t.menu.title}
         </h2>
-        <p className="text-gray-400">
-          {t.menu.subtitle}
-        </p>
+        <p className="text-ash-400 font-body">{t.menu.subtitle}</p>
       </motion.div>
 
       {/* Tabs de categorías */}
@@ -56,7 +56,7 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
 
       {/* Lista de platos */}
       <div className="mt-8">
-        {dishesByCategory.map(category => {
+        {dishesByCategory.map((category) => {
           if (category.dishes.length === 0) return null;
 
           return (
@@ -68,8 +68,10 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
               className="mb-12"
             >
               {!selectedCategory && (
-                <h3 className="text-2xl font-bold text-white mb-6 border-b border-flame-blue/30 pb-3">
-                  {(language === 'gl' && category.name_gl) ? category.name_gl : category.name}
+                <h3 className="text-2xl font-heading font-bold text-ash-100 mb-6 border-b border-flame-blue/30 pb-3">
+                  {language === "gl" && category.name_gl
+                    ? category.name_gl
+                    : category.name}
                 </h3>
               )}
 
@@ -78,11 +80,7 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
                   {category.dishes
                     .sort((a, b) => a.order_index - b.order_index)
                     .map((dish, index) => (
-                      <DishCard
-                        key={dish.id}
-                        dish={dish}
-                        index={index}
-                      />
+                      <DishCard key={dish.id} dish={dish} index={index} />
                     ))}
                 </AnimatePresence>
               </div>
@@ -98,13 +96,10 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
             className="text-center py-20"
           >
             <div className="text-6xl mb-4">🍽️</div>
-            <p className="text-xl text-gray-400">
-              {t.menu.empty}
-            </p>
+            <p className="text-xl text-ash-400 font-body">{t.menu.empty}</p>
           </motion.div>
         )}
       </div>
     </div>
   );
 }
-

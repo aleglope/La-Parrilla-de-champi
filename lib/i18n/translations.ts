@@ -29,6 +29,13 @@ export const translations = {
       button: 'Llamar para Reservar',
       location: 'Visítanos en nuestra ubicación principal'
     },
+    social: {
+      title: 'Síguenos',
+      tapHere: 'Toca aquí',
+      instagram: 'Instagram',
+      twitter: 'Twitter',
+      facebook: 'Facebook'
+    },
     footer: {
       rights: 'Todos los derechos reservados.',
       privacy: 'Política de Privacidad',
@@ -80,6 +87,13 @@ export const translations = {
       subtitle: 'Fai a túa reserva hoxe mesmo',
       button: 'Chamar para Reservar',
       location: 'Visítanos na nosa ubicación principal'
+    },
+    social: {
+      title: 'Síguenos',
+      tapHere: 'Toca aquí',
+      instagram: 'Instagram',
+      twitter: 'Twitter',
+      facebook: 'Facebook'
     },
     footer: {
       rights: 'Todos os dereitos reservados.',

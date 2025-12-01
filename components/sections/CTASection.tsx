@@ -41,14 +41,14 @@ export function CTASection() {
             initial={{ scale: 0.8 }}
             whileInView={{ scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="text-4xl md:text-6xl font-bold mb-6"
+            className="text-4xl md:text-6xl font-display mb-6"
           >
             <span className="text-fire-glow">{t.cta.title}</span>
             <br />
             <span className="gradient-text">{t.cta.subtitle}</span>
           </motion.h2>
 
-          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-ash-300 font-body mb-10 max-w-2xl mx-auto">
             {t.hero.description}
           </p>
 
@@ -72,7 +72,7 @@ export function CTASection() {
               <div className="w-40 h-40 bg-charcoal-dark rounded-lg flex items-center justify-center">
                 <span className="text-6xl">📲</span>
               </div>
-              <p className="text-charcoal-dark font-bold mt-4">Escanea aquí</p>
+              <p className="text-charcoal-dark font-heading font-bold mt-4">Escanea aquí</p>
             </div>
           </motion.div>
         </div>

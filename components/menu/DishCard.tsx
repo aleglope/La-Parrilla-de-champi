@@ -53,28 +53,28 @@ export const DishCard = forwardRef<HTMLDivElement, DishCardProps>(
         {/* Contenido */}
         <div className="p-5">
           <div className="flex justify-between items-start mb-3">
-            <h4 className="text-lg font-bold text-white group-hover:text-fire-red transition-colors flex-1">
+            <h4 className="text-lg font-heading font-bold text-ash-100 group-hover:text-fire-red transition-colors flex-1">
               {name}
             </h4>
-            <span className="text-2xl font-bold text-fire-red ml-3 flex-shrink-0">
+            <span className="text-2xl font-heading font-bold text-fire-red ml-3 flex-shrink-0">
               {dish.price.toFixed(2)}€
             </span>
           </div>
 
           {description && (
-            <p className="text-sm text-gray-400 leading-relaxed line-clamp-3">
+            <p className="text-sm text-ash-400 font-body leading-relaxed line-clamp-3">
               {description}
             </p>
           )}
 
           {/* Indicador de disponibilidad */}
           <div className="mt-4 flex items-center justify-between">
-            <span className="inline-flex items-center text-xs text-green-400">
+            <span className="inline-flex items-center text-xs text-green-400 font-body">
               <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
               Disponible
             </span>
 
-            <button className="text-flame-blue-bright hover:text-flame-blue-glow text-sm font-medium transition-colors">
+            <button className="text-flame-blue-bright hover:text-flame-blue-glow text-sm font-heading font-medium transition-colors">
               Más info →
             </button>
           </div>

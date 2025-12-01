@@ -4,6 +4,7 @@ import { StorySection } from "@/components/story/StorySection";
 import { CTASection } from "@/components/sections/CTASection";
 import { Navigation } from "@/components/navigation/Navigation";
 import { Footer } from "@/components/layout/Footer";
+import { SocialMediaCard } from "@/components/social/SocialMediaCard";
 
 export default function HomePage() {
   return (
@@ -27,6 +28,13 @@ export default function HomePage() {
       {/* Call to Action */}
       <section id="cta" className="relative z-10 py-16">
         <CTASection />
+      </section>
+
+      {/* Social Media Section */}
+      <section id="social" className="relative z-10 py-8 md:py-12">
+        <div className="container-custom">
+          <SocialMediaCard />
+        </div>
       </section>
 
       {/* Footer */}

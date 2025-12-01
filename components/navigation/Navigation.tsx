@@ -83,10 +83,12 @@ export function Navigation() {
                 />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold text-white leading-tight">
+                <h1 className="text-xl font-display font-normal text-ash-50 leading-tight tracking-wide">
                   La Parrilla de Champi
                 </h1>
-                <p className="text-xs text-gray-400">{t.nav.subtitle}</p>
+                <p className="text-xs text-ash-400 font-body">
+                  {t.nav.subtitle}
+                </p>
               </div>
             </Link>
 
@@ -96,7 +98,7 @@ export function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-gray-300 hover:text-fire-red transition-colors font-medium"
+                  className="text-ash-300 hover:text-fire-red transition-colors font-medium"
                 >
                   {item.label}
                 </Link>
@@ -110,15 +112,15 @@ export function Navigation() {
                 <span className="flex items-center space-x-2">
                   <span
                     className={`text-sm font-medium ${
-                      language === "es" ? "text-fire-red" : "text-gray-400"
+                      language === "es" ? "text-fire-red" : "text-ash-400"
                     }`}
                   >
                     ES
                   </span>
-                  <span className="text-gray-600">|</span>
+                  <span className="text-ash-500">|</span>
                   <span
                     className={`text-sm font-medium ${
-                      language === "gl" ? "text-fire-blue" : "text-gray-400"
+                      language === "gl" ? "text-fire-blue" : "text-ash-400"
                     }`}
                   >
                     GL
@@ -139,15 +141,15 @@ export function Navigation() {
               >
                 <span
                   className={`text-xs font-bold ${
-                    language === "es" ? "text-fire-red" : "text-gray-400"
+                    language === "es" ? "text-fire-red" : "text-ash-400"
                   }`}
                 >
                   ES
                 </span>
-                <span className="text-gray-600">/</span>
+                <span className="text-ash-500">/</span>
                 <span
                   className={`text-xs font-bold ${
-                    language === "gl" ? "text-fire-blue" : "text-gray-400"
+                    language === "gl" ? "text-fire-blue" : "text-ash-400"
                   }`}
                 >
                   GL

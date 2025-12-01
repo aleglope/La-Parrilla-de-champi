@@ -20,7 +20,11 @@ const BrandButton = ({
     return (
       <StyledWrapper className={className}>
         {/* Pasamos ...props al Link también, excepto href y className que ya se pasan */}
-        <Link href={href} className="brand-btn" {...(props as any)}>
+        <Link
+          href={href}
+          className="brand-btn font-heading"
+          {...(props as any)}
+        >
           <div className="dots_border" />
           <span className="btn-content">{children}</span>
         </Link>
@@ -30,7 +34,7 @@ const BrandButton = ({
 
   return (
     <StyledWrapper className={className}>
-      <button {...props} className="brand-btn">
+      <button {...props} className="brand-btn font-heading">
         <div className="dots_border" />
         <span className="btn-content">{children}</span>
       </button>

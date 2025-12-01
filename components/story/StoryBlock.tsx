@@ -61,10 +61,10 @@ export function StoryBlock({ title, content, icon, gradient, index }: StoryBlock
           transition={{ duration: 0.8, delay: 0.2 }}
           className={`flex-1 ${isEven ? 'md:text-left' : 'md:text-right'}`}
         >
-          <h3 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h3 className="text-4xl md:text-5xl font-heading font-bold text-ash-100 mb-6">
             {title}
           </h3>
-          <p className="text-xl text-gray-300 leading-relaxed max-w-2xl">
+          <p className="text-xl text-ash-300 font-body leading-relaxed max-w-2xl">
             {content}
           </p>
 

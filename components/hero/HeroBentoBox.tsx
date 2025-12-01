@@ -34,9 +34,6 @@ export function HeroBentoBox() {
   const sideScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.8]);
   const leftX = useTransform(scrollYProgress, [0, 0.2], [0, -100]);
   const rightX = useTransform(scrollYProgress, [0, 0.2], [0, 100]);
-  
-  // 3. El indicador de scroll desaparece rápido
-  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
 
   return (
     <div
@@ -65,17 +62,17 @@ export function HeroBentoBox() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 drop-shadow-lg"
+                  className="text-4xl md:text-5xl lg:text-6xl font-display mb-6 drop-shadow-lg tracking-wider"
                 >
                   <span className="text-ember block mb-2">{t.hero.title}</span>
-                  <span className="text-white">{t.hero.subtitle}</span>
+                  <span className="text-ash-50">{t.hero.subtitle}</span>
                 </motion.h1>
 
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.7 }}
-                  className="text-lg md:text-xl text-gray-200 mb-8 font-light drop-shadow-md"
+                  className="text-lg md:text-xl text-ash-300 mb-8 font-body font-light drop-shadow-md"
                 >
                   {t.hero.description}
                 </motion.p>
@@ -87,7 +84,7 @@ export function HeroBentoBox() {
                   transition={{ delay: 0.9, type: "spring" }}
                   className="inline-block bg-black/40 backdrop-blur-sm border-2 border-fire-red rounded-full px-6 py-3"
                 >
-                  <p className="text-fire-red font-bold text-lg md:text-xl">
+                  <p className="text-fire-red font-heading font-bold text-lg md:text-xl">
                     ¡Que pasa gentuza! 🔥
                   </p>
                 </motion.div>
@@ -117,10 +114,10 @@ export function HeroBentoBox() {
                 {/* Overlay con texto */}
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div>
-                    <h3 className="text-2xl font-bold text-white mb-2">
+                    <h3 className="text-2xl font-heading font-bold text-ash-100 mb-2">
                       Fuego Auténtico
                     </h3>
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-ash-300 text-sm font-body">
                       Cocinado a la perfección con carbón de calidad
                     </p>
                   </div>
@@ -136,10 +133,10 @@ export function HeroBentoBox() {
                 <div className="absolute inset-0 bg-gradient-to-br from-flame-blue/20 to-fire-red/20 animate-liquid-morph opacity-50 group-hover:opacity-70 transition-opacity" />
 
                 <div className="relative z-10">
-                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  <h2 className="text-2xl md:text-3xl font-heading font-bold text-ash-100 mb-4">
                     {t.menu.title}
                   </h2>
-                  <p className="text-gray-300 mb-6 text-sm">{t.menu.subtitle}</p>
+                  <p className="text-ash-300 mb-6 text-sm font-body">{t.menu.subtitle}</p>
 
                   <BrandButton
                     href="/menu"
@@ -149,7 +146,7 @@ export function HeroBentoBox() {
                   </BrandButton>
 
                   {/* Decoración */}
-                  <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-400">
+                  <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-ash-400 font-body">
                     <span>📱</span>
                     <span>Acceso rápido con QR</span>
                   </div>
@@ -164,8 +161,8 @@ export function HeroBentoBox() {
             >
               <div className="text-4xl">🔥</div>
               <div>
-                <h3 className="font-bold text-white text-lg">100% Natural</h3>
-                <p className="text-sm text-gray-400">Carbón de encina</p>
+                <h3 className="font-heading font-bold text-ash-100 text-lg">100% Natural</h3>
+                <p className="text-sm text-ash-400 font-body">Carbón de encina</p>
               </div>
             </motion.div>
 
@@ -175,8 +172,8 @@ export function HeroBentoBox() {
             >
               <div className="text-4xl">🥩</div>
               <div>
-                <h3 className="font-bold text-white text-lg">Carne Premium</h3>
-                <p className="text-sm text-gray-400">Selección diaria</p>
+                <h3 className="font-heading font-bold text-ash-100 text-lg">Carne Premium</h3>
+                <p className="text-sm text-ash-400 font-body">Selección diaria</p>
               </div>
             </motion.div>
 
@@ -186,41 +183,11 @@ export function HeroBentoBox() {
             >
               <div className="text-4xl">⭐</div>
               <div>
-                <h3 className="font-bold text-white text-lg">Experiencia</h3>
-                <p className="text-sm text-gray-400">+20 años de sabor</p>
+                <h3 className="font-heading font-bold text-ash-100 text-lg">Experiencia</h3>
+                <p className="text-sm text-ash-400 font-body">+20 años de sabor</p>
               </div>
             </motion.div>
           </div>
-
-          {/* Indicador de scroll */}
-          <motion.div
-            style={{ opacity: scrollIndicatorOpacity }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-            className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center pointer-events-none"
-          >
-            <p className="text-sm text-gray-400 mb-2">Descubre más</p>
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="text-flame-blue-bright"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
-            </motion.div>
-          </motion.div>
         </div>
       </div>
     </div>

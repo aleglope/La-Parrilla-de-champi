@@ -3,14 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --font-geist-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-  }
-  
   body {
-    @apply bg-charcoal text-white font-sans antialiased;
+    @apply bg-charcoal text-ash-300 font-body antialiased;
     background-image: 
       radial-gradient(circle at 20% 50%, rgba(193, 31, 25, 0.05) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(23, 137, 192, 0.05) 0%, transparent 50%);
@@ -18,6 +12,24 @@
 
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Aplicar fuentes a elementos específicos */
+  h1 {
+    @apply font-heading text-ash-50;
+  }
+
+  h2 {
+    @apply font-heading text-ash-100;
+  }
+
+  h3, h4, h5, h6 {
+    @apply font-heading text-ash-200;
+  }
+
+  /* Títulos principales (Hero, CTAs importantes) */
+  .title-display {
+    @apply font-display;
   }
 }
 

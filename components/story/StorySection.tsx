@@ -53,10 +53,10 @@ export function StorySection() {
         transition={{ duration: 0.8 }}
         className="text-center mb-20"
       >
-        <h2 className="text-5xl md:text-7xl font-bold mb-6">
+        <h2 className="text-5xl md:text-7xl font-display mb-6">
           <span className="gradient-text">{t.story.title}</span>
         </h2>
-        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+        <p className="text-xl text-ash-300 font-body max-w-2xl mx-auto">
           {t.story.subtitle}
         </p>
       </motion.div>
@@ -84,10 +84,10 @@ export function StorySection() {
         className="text-center mt-32 mb-20"
       >
         <div className="glass-card inline-block px-12 py-8">
-          <p className="text-3xl md:text-4xl font-bold text-ember mb-4">
+          <p className="text-3xl md:text-4xl font-display text-ember mb-4">
             "Donde el fuego encuentra al mar"
           </p>
-          <p className="text-gray-400 text-lg">
+          <p className="text-ash-400 font-body text-lg">
             — La filosofía de La Parrilla de Champi
           </p>
         </div>
