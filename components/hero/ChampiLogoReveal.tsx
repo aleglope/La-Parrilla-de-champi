@@ -27,6 +27,7 @@ export default function ChampiLogoReveal() {
   const canvasBackRef = useRef<HTMLCanvasElement>(null);
   const canvasFrontRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevWidthRef = useRef<number>(0);
 
   const [config, setConfig] = useState<Config>({
     mouseRadius: 50,
@@ -37,6 +38,9 @@ export default function ChampiLogoReveal() {
   });
 
   useEffect(() => {
+    // Inicializar prevWidth
+    prevWidthRef.current = window.innerWidth;
+
     const canvasBack = canvasBackRef.current;
     const canvasFront = canvasFrontRef.current;
     const container = containerRef.current;
@@ -79,10 +83,19 @@ export default function ChampiLogoReveal() {
     function resizeCanvas() {
       if (!container || !canvasBack || !canvasFront) return;
       const { clientWidth, clientHeight } = container;
-      canvasBack.width = clientWidth;
-      canvasBack.height = clientHeight;
-      canvasFront.width = clientWidth;
-      canvasFront.height = clientHeight;
+
+      // Solo actualizar si las dimensiones han cambiado para evitar parpadeos innecesarios
+      if (
+        canvasBack.width !== clientWidth ||
+        canvasBack.height !== clientHeight
+      ) {
+        canvasBack.width = clientWidth;
+        canvasBack.height = clientHeight;
+        canvasFront.width = clientWidth;
+        canvasFront.height = clientHeight;
+        return true;
+      }
+      return false;
     }
 
     // Debounce para resize
@@ -90,11 +103,21 @@ export default function ChampiLogoReveal() {
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        resizeCanvas();
-        // Reset flags for redraw
-        backgroundDrawn = false;
-        initBack();
-        initFront();
+        const currentWidth = window.innerWidth;
+        // En móviles, ignorar cambios pequeños de ancho o si solo cambia la altura (barra URL)
+        if (isMobile && Math.abs(currentWidth - prevWidthRef.current) < 50) {
+          return;
+        }
+
+        prevWidthRef.current = currentWidth;
+        const changed = resizeCanvas();
+
+        if (changed || !backgroundDrawn) {
+          // Reset flags for redraw
+          backgroundDrawn = false;
+          initBack();
+          initFront();
+        }
       }, 250);
     };
 
@@ -120,7 +143,7 @@ export default function ChampiLogoReveal() {
     // Función para obtener la posición correcta del mouse/touch
     function getPosition(e: MouseEvent | TouchEvent) {
       const rect = canvasFront!.getBoundingClientRect();
-      if ('touches' in e) {
+      if ("touches" in e) {
         return {
           x: e.touches[0].clientX - rect.left,
           y: e.touches[0].clientY - rect.top,
@@ -171,15 +194,33 @@ export default function ChampiLogoReveal() {
 
     // Type casting for event listeners due to passive option
     canvasFront.addEventListener("mousemove", handleMouseMove as EventListener);
-    canvasFront.addEventListener("mouseleave", handleMouseLeave as EventListener);
-    canvasFront.addEventListener("touchstart", handleTouchStart as unknown as EventListener, {
-      passive: true,
-    });
-    canvasFront.addEventListener("touchmove", handleTouchMove as unknown as EventListener, {
-      passive: true,
-    });
-    canvasFront.addEventListener("touchend", handleTouchEnd as unknown as EventListener, { passive: true });
-    canvasFront.addEventListener("touchcancel", handleTouchCancel as EventListener);
+    canvasFront.addEventListener(
+      "mouseleave",
+      handleMouseLeave as EventListener
+    );
+    canvasFront.addEventListener(
+      "touchstart",
+      handleTouchStart as unknown as EventListener,
+      {
+        passive: true,
+      }
+    );
+    canvasFront.addEventListener(
+      "touchmove",
+      handleTouchMove as unknown as EventListener,
+      {
+        passive: true,
+      }
+    );
+    canvasFront.addEventListener(
+      "touchend",
+      handleTouchEnd as unknown as EventListener,
+      { passive: true }
+    );
+    canvasFront.addEventListener(
+      "touchcancel",
+      handleTouchCancel as EventListener
+    );
 
     // Clase Partícula
     class Particle {
@@ -292,7 +333,7 @@ export default function ChampiLogoReveal() {
     async function initFront() {
       if (!canvasFront || !ctxFront) return;
       // Limpiar array manteniendo la referencia const (aunque aquí lo re-asignamos vaciándolo)
-      particlesArrayFront.length = 0; 
+      particlesArrayFront.length = 0;
 
       try {
         const response = await fetch("/CHAMPI-LOGO-DIGITAL-ALTA-CALIDAD.svg");
@@ -317,10 +358,10 @@ export default function ChampiLogoReveal() {
 
           ctxFront.imageSmoothingEnabled = false;
           ctxFront.drawImage(img, x, y, size, size);
-          
+
           let pixels: ImageData;
           try {
-             pixels = ctxFront.getImageData(
+            pixels = ctxFront.getImageData(
               0,
               0,
               canvasFront.width,
@@ -330,7 +371,7 @@ export default function ChampiLogoReveal() {
             console.error("Error getting image data", e);
             return;
           }
-          
+
           ctxFront.clearRect(0, 0, canvasFront.width, canvasFront.height);
 
           const step = Math.max(1, Math.floor(config.density));
@@ -427,12 +468,30 @@ export default function ChampiLogoReveal() {
     return () => {
       resizeObserver.disconnect();
       document.removeEventListener("touchend", preventZoom);
-      canvasFront.removeEventListener("mousemove", handleMouseMove as EventListener);
-      canvasFront.removeEventListener("mouseleave", handleMouseLeave as EventListener);
-      canvasFront.removeEventListener("touchstart", handleTouchStart as unknown as EventListener);
-      canvasFront.removeEventListener("touchmove", handleTouchMove as unknown as EventListener);
-      canvasFront.removeEventListener("touchend", handleTouchEnd as unknown as EventListener);
-      canvasFront.removeEventListener("touchcancel", handleTouchCancel as EventListener);
+      canvasFront.removeEventListener(
+        "mousemove",
+        handleMouseMove as EventListener
+      );
+      canvasFront.removeEventListener(
+        "mouseleave",
+        handleMouseLeave as EventListener
+      );
+      canvasFront.removeEventListener(
+        "touchstart",
+        handleTouchStart as unknown as EventListener
+      );
+      canvasFront.removeEventListener(
+        "touchmove",
+        handleTouchMove as unknown as EventListener
+      );
+      canvasFront.removeEventListener(
+        "touchend",
+        handleTouchEnd as unknown as EventListener
+      );
+      canvasFront.removeEventListener(
+        "touchcancel",
+        handleTouchCancel as EventListener
+      );
       if (animationId) {
         cancelAnimationFrame(animationId);
       }
@@ -440,10 +499,7 @@ export default function ChampiLogoReveal() {
   }, [config]);
 
   return (
-    <div 
-      ref={containerRef} 
-      className="relative w-full h-full overflow-hidden"
-    >
+    <div ref={containerRef} className="relative w-full h-full overflow-hidden">
       <canvas
         ref={canvasBackRef}
         id="canvasBack"
@@ -457,4 +513,3 @@ export default function ChampiLogoReveal() {
     </div>
   );
 }
-

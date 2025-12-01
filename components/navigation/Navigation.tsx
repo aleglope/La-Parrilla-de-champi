@@ -5,6 +5,7 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import BubbleMenu from "./BubbleMenu";
+import BrandButton from "@/components/ui/BrandButton";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -123,9 +124,9 @@ export function Navigation() {
                 </span>
               </button>
 
-              <Link href="/menu" className="btn-fire !py-2 !px-6 !text-base">
+              <BrandButton href="/menu" className="!text-base">
                 {t.nav.menu}
-              </Link>
+              </BrandButton>
             </div>
 
             {/* Mobile Language Switcher (Visible when Bubble Menu is closed or as part of header) */}

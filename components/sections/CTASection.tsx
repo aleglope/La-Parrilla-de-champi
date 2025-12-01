@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import BrandButton from '@/components/ui/BrandButton';
 
 /**
  * Sección de Call-to-Action final
@@ -52,12 +53,12 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/menu" className="btn-fire w-full sm:w-auto">
+            <BrandButton href="/menu" className="w-full sm:w-auto">
               {t.nav.menu} 📱
-            </Link>
-            <Link href="/#story" className="btn-flame w-full sm:w-auto">
+            </BrandButton>
+            <BrandButton href="/#story" className="w-full sm:w-auto">
               {t.story.cta}
-            </Link>
+            </BrandButton>
           </div>
 
           {/* QR Code placeholder */}
@@ -79,4 +80,3 @@ export function CTASection() {
     </div>
   );
 }
-

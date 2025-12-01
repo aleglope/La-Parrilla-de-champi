@@ -6,6 +6,7 @@ import Link from "next/link";
 import ChampiLogoReveal from "./ChampiLogoReveal";
 import { VideoBlock } from "./VideoBlock";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import BrandButton from "@/components/ui/BrandButton";
 
 /**
  * Hero Section con layout Bento Box
@@ -140,12 +141,12 @@ export function HeroBentoBox() {
                   </h2>
                   <p className="text-gray-300 mb-6 text-sm">{t.menu.subtitle}</p>
 
-                  <Link
+                  <BrandButton
                     href="/menu"
-                    className="btn-fire inline-block text-center w-full"
+                    className="w-full"
                   >
                     {t.hero.cta} 🍖
-                  </Link>
+                  </BrandButton>
 
                   {/* Decoración */}
                   <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-400">
