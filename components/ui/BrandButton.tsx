@@ -19,8 +19,10 @@ const BrandButton = ({
   if (href) {
     return (
       <StyledWrapper className={className}>
-        <Link href={href} className="brand-btn">
-          {children}
+        {/* Pasamos ...props al Link también, excepto href y className que ya se pasan */}
+        <Link href={href} className="brand-btn" {...(props as any)}>
+          <div className="dots_border" />
+          <span className="btn-content">{children}</span>
         </Link>
       </StyledWrapper>
     );
@@ -29,7 +31,8 @@ const BrandButton = ({
   return (
     <StyledWrapper className={className}>
       <button {...props} className="brand-btn">
-        {children}
+        <div className="dots_border" />
+        <span className="btn-content">{children}</span>
       </button>
     </StyledWrapper>
   );
@@ -44,7 +47,7 @@ const StyledWrapper = styled.div`
     align-items: center;
     justify-content: center;
     color: white;
-    background-color: #283435; /* Charcoal base */
+    background-color: transparent; /* Changed to transparent to let inner mask show */
     min-width: 9em;
     padding: 0 1.5em;
     height: 3em;
@@ -52,7 +55,7 @@ const StyledWrapper = styled.div`
     font-weight: bold;
     font-size: 15px;
     font-family: inherit;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
     z-index: 1;
@@ -60,9 +63,14 @@ const StyledWrapper = styled.div`
     text-decoration: none;
     white-space: nowrap;
 
-    /* Neumorphism for dark theme */
+    /* Neumorphism for dark theme applied to wrapper or handled by inner elements */
     box-shadow: 6px 6px 12px #1a2324, -6px -6px 12px #364647;
     transition: box-shadow 0.3s ease, transform 0.1s ease;
+  }
+
+  .btn-content {
+    position: relative;
+    z-index: 10;
   }
 
   .brand-btn:hover {
@@ -81,25 +89,77 @@ const StyledWrapper = styled.div`
     content: "";
     position: absolute;
     top: 0;
-    left: -100%; /* Start completely off-left */
+    left: -100%;
     width: 100%;
     height: 100%;
     border-radius: 30em;
 
-    /* The sliding line is actually a gradient that looks like a shine/line */
     background: linear-gradient(
       120deg,
       transparent,
       rgba(23, 137, 192, 0.4),
-      /* #1789C0 with opacity */ transparent
+      transparent
     );
 
     transition: all 0.6s ease;
-    z-index: -1;
+    z-index: 5; /* Increased z-index to be on top of mask but below content */
+    pointer-events: none;
   }
 
   .brand-btn:hover::before {
-    left: 100%; /* Slide to completely off-right */
+    left: 100%;
+  }
+
+  /* Animated border light effect */
+  .dots_border {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    background-color: transparent;
+    border-radius: 30em;
+    z-index: -2;
+    pointer-events: none;
+  }
+
+  .dots_border::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      transparent 80%,
+      rgba(255, 255, 255, 0.8) 100%
+    );
+    animation: rotate 3s linear infinite;
+    z-index: -1;
+  }
+
+  /* Inner mask - THIS IS THE BACKGROUND */
+  .brand-btn::after {
+    content: "";
+    position: absolute;
+    inset: 2px; /* A bit more inset to show the light border clearly */
+    background-color: #283435; /* This is the actual button color */
+    border-radius: 30em;
+    z-index: -1; /* Behind content */
+    pointer-events: none;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
   }
 `;
 

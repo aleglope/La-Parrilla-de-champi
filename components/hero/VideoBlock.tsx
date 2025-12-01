@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from "react";
+import Image from "next/image";
 
 /**
  * Bloque de video con fallback a imagen
@@ -10,15 +10,29 @@ import Image from 'next/image';
 export function VideoBlock() {
   const [useVideo, setUseVideo] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [emberPositions, setEmberPositions] = useState<
+    Array<{ left: string; top: string; delay: string; duration: string }>
+  >([]);
 
   useEffect(() => {
+    // Generar posiciones de chispas solo en el cliente
+    const positions = Array.from({ length: 10 }).map(() => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 3}s`,
+      duration: `${5 + Math.random() * 5}s`,
+    }));
+    setEmberPositions(positions);
+
     // Solo cargar video en dispositivos potentes
     const shouldUseVideo = () => {
+      if (typeof window === "undefined") return false;
       const connection = (navigator as any).connection;
-      const isHighSpeed = !connection || connection.effectiveType === '4g';
+      const isHighSpeed = !connection || connection.effectiveType === "4g";
       const isDesktop = window.innerWidth > 768;
-      const hasGoodPerformance = !document.body.classList.contains('low-power-mode');
-      
+      const hasGoodPerformance =
+        !document.body.classList.contains("low-power-mode");
+
       return isHighSpeed && isDesktop && hasGoodPerformance;
     };
 
@@ -35,7 +49,7 @@ export function VideoBlock() {
           playsInline
           onLoadedData={() => setIsLoaded(true)}
           className={`w-full h-full object-cover transition-opacity duration-500 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
+            isLoaded ? "opacity-100" : "opacity-0"
           }`}
           poster="/images/meat-placeholder.jpg"
         >
@@ -53,18 +67,18 @@ export function VideoBlock() {
               <p className="text-gray-400 text-sm">Cocinada con Pasión</p>
             </div>
           </div>
-          
-          {/* Efecto de chispas animadas */}
+
+          {/* Efecto de chispas animadas - Renderizado condicional para evitar hidratación mismatch */}
           <div className="absolute inset-0 overflow-hidden">
-            {[...Array(10)].map((_, i) => (
+            {emberPositions.map((pos, i) => (
               <div
                 key={i}
                 className="absolute w-1 h-1 bg-fire-red rounded-full animate-ember-float"
                 style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 3}s`,
-                  animationDuration: `${5 + Math.random() * 5}s`,
+                  left: pos.left,
+                  top: pos.top,
+                  animationDelay: pos.delay,
+                  animationDuration: pos.duration,
                 }}
               />
             ))}
@@ -77,4 +91,3 @@ export function VideoBlock() {
     </div>
   );
 }
-

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 interface Config {
   mouseRadius: number;
@@ -28,8 +28,7 @@ export default function ChampiLogoReveal() {
   const canvasFrontRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevWidthRef = useRef<number>(0);
-
-  const [config, setConfig] = useState<Config>({
+  const configRef = useRef<Config>({
     mouseRadius: 50,
     mouseForce: 30,
     returnSpeed: 0.2,
@@ -38,6 +37,21 @@ export default function ChampiLogoReveal() {
   });
 
   useEffect(() => {
+    // Detectar móvil y ajustar config UNA SOLA VEZ
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      ) || window.innerWidth < 768;
+
+    if (isMobile) {
+      configRef.current = {
+        ...configRef.current,
+        mouseRadius: 80,
+        mouseForce: 25,
+        density: 2.0, // Reducir densidad en móvil para mejor rendimiento
+      };
+    }
+
     // Inicializar prevWidth
     prevWidthRef.current = window.innerWidth;
 
@@ -52,20 +66,8 @@ export default function ChampiLogoReveal() {
 
     if (!ctxBack || !ctxFront) return;
 
-    // Detectar si es dispositivo móvil
-    const isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      ) || window.innerWidth < 768;
-
-    // Ajustar configuración para móviles
-    if (isMobile) {
-      setConfig((prev) => ({
-        ...prev,
-        mouseRadius: 80,
-        mouseForce: 25,
-      }));
-    }
+    // Usar configRef.current en lugar de config
+    const config = configRef.current;
 
     // Variables del mouse (compartidas)
     const mouse: MousePosition = {
@@ -75,16 +77,14 @@ export default function ChampiLogoReveal() {
     };
 
     // Arrays de partículas
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let particlesArrayBack: Particle[] = [];
     const particlesArrayFront: Particle[] = [];
 
     // Tamaño del canvas
     function resizeCanvas() {
-      if (!container || !canvasBack || !canvasFront) return;
+      if (!container || !canvasBack || !canvasFront) return false;
       const { clientWidth, clientHeight } = container;
 
-      // Solo actualizar si las dimensiones han cambiado para evitar parpadeos innecesarios
+      // Solo actualizar si las dimensiones han cambiado
       if (
         canvasBack.width !== clientWidth ||
         canvasBack.height !== clientHeight
@@ -104,7 +104,7 @@ export default function ChampiLogoReveal() {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
         const currentWidth = window.innerWidth;
-        // En móviles, ignorar cambios pequeños de ancho o si solo cambia la altura (barra URL)
+        // En móviles, ignorar cambios pequeños de ancho
         if (isMobile && Math.abs(currentWidth - prevWidthRef.current) < 50) {
           return;
         }
@@ -113,7 +113,6 @@ export default function ChampiLogoReveal() {
         const changed = resizeCanvas();
 
         if (changed || !backgroundDrawn) {
-          // Reset flags for redraw
           backgroundDrawn = false;
           initBack();
           initFront();
@@ -138,7 +137,7 @@ export default function ChampiLogoReveal() {
       lastTouchEnd = now;
     };
 
-    document.addEventListener("touchend", preventZoom, false);
+    document.addEventListener("touchend", preventZoom, { passive: false });
 
     // Función para obtener la posición correcta del mouse/touch
     function getPosition(e: MouseEvent | TouchEvent) {
@@ -156,7 +155,7 @@ export default function ChampiLogoReveal() {
       }
     }
 
-    // Eventos de mouse/touch en el canvas frontal
+    // Eventos de mouse/touch
     const handleMouseMove = (e: MouseEvent) => {
       const pos = getPosition(e);
       mouse.x = pos.x;
@@ -192,35 +191,18 @@ export default function ChampiLogoReveal() {
       mouse.y = null;
     };
 
-    // Type casting for event listeners due to passive option
-    canvasFront.addEventListener("mousemove", handleMouseMove as EventListener);
-    canvasFront.addEventListener(
-      "mouseleave",
-      handleMouseLeave as EventListener
-    );
-    canvasFront.addEventListener(
-      "touchstart",
-      handleTouchStart as unknown as EventListener,
-      {
-        passive: true,
-      }
-    );
-    canvasFront.addEventListener(
-      "touchmove",
-      handleTouchMove as unknown as EventListener,
-      {
-        passive: true,
-      }
-    );
-    canvasFront.addEventListener(
-      "touchend",
-      handleTouchEnd as unknown as EventListener,
-      { passive: true }
-    );
-    canvasFront.addEventListener(
-      "touchcancel",
-      handleTouchCancel as EventListener
-    );
+    canvasFront.addEventListener("mousemove", handleMouseMove);
+    canvasFront.addEventListener("mouseleave", handleMouseLeave);
+    canvasFront.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+    });
+    canvasFront.addEventListener("touchmove", handleTouchMove, {
+      passive: true,
+    });
+    canvasFront.addEventListener("touchend", handleTouchEnd, {
+      passive: true,
+    });
+    canvasFront.addEventListener("touchcancel", handleTouchCancel);
 
     // Clase Partícula
     class Particle {
@@ -286,21 +268,21 @@ export default function ChampiLogoReveal() {
       }
     }
 
-    // Inicializar capa de fondo (Logo Champi.webp) - Como imagen directa
+    // Inicializar capa de fondo
     let backImageLoaded = false;
     let backImage: HTMLImageElement | null = null;
     let backImagePosition: ImagePosition = { x: 0, y: 0, width: 0, height: 0 };
 
     function initBack() {
       if (!canvasBack) return;
-      particlesArrayBack = [];
 
       const img = new Image();
+      img.crossOrigin = "anonymous"; // Importante para CORS
 
       img.onload = function () {
         backImage = img;
 
-        const sizePercent = isMobile ? 0.35 : 0.3; // Restore original smaller size
+        const sizePercent = isMobile ? 0.35 : 0.3;
         const maxSize =
           Math.min(canvasBack.width, canvasBack.height) * sizePercent;
 
@@ -316,14 +298,14 @@ export default function ChampiLogoReveal() {
         }
 
         const x = (canvasBack.width - imgWidth) / 2;
-        const y = (canvasBack.height - imgHeight) / 2; // Centered vertically
+        const y = (canvasBack.height - imgHeight) / 2;
 
         backImagePosition = { x, y, width: imgWidth, height: imgHeight };
         backImageLoaded = true;
       };
 
-      img.onerror = function () {
-        console.error("Error al cargar Logo-Champi.webp");
+      img.onerror = function (e) {
+        console.error("Error al cargar Logo-Champi.webp:", e);
       };
 
       img.src = "/Logo-Champi.webp";
@@ -332,23 +314,23 @@ export default function ChampiLogoReveal() {
     // Inicializar capa frontal (SVG)
     async function initFront() {
       if (!canvasFront || !ctxFront) return;
-      // Limpiar array manteniendo la referencia const (aunque aquí lo re-asignamos vaciándolo)
       particlesArrayFront.length = 0;
 
       try {
         const response = await fetch("/CHAMPI-LOGO-DIGITAL-ALTA-CALIDAD.svg");
-        const svgText = await response.text();
 
+        if (!response.ok) {
+          console.error("Error fetching SVG:", response.status);
+          return;
+        }
+
+        const svgText = await response.text();
         const blob = new Blob([svgText], { type: "image/svg+xml" });
         const url = URL.createObjectURL(blob);
 
         const img = new Image();
 
         img.onload = function () {
-          // Increase size to cover the background image
-          // The background image is roughly 35% (mobile) or 30% (desktop) of canvas size
-          // We want the SVG particles to be larger than that to cover it completely
-          // Let's make it significantly larger
           const sizePercent = isMobile ? 1.4 : 1.3;
           const maxSize =
             Math.min(canvasFront.width, canvasFront.height) * sizePercent;
@@ -368,7 +350,7 @@ export default function ChampiLogoReveal() {
               canvasFront.height
             );
           } catch (e) {
-            console.error("Error getting image data", e);
+            console.error("Error getting image data:", e);
             return;
           }
 
@@ -393,8 +375,8 @@ export default function ChampiLogoReveal() {
           URL.revokeObjectURL(url);
         };
 
-        img.onerror = function () {
-          console.error("Error al cargar el SVG");
+        img.onerror = function (e) {
+          console.error("Error al cargar el SVG:", e);
         };
 
         img.src = url;
@@ -403,23 +385,22 @@ export default function ChampiLogoReveal() {
       }
     }
 
-    // Animar con máxima fluidez
+    // Animar
     let backgroundDrawn = false;
     let animationId: number;
+    let isAnimating = true;
 
     function animate() {
-      if (!ctxBack || !ctxFront || !canvasBack || !canvasFront) return;
+      if (!isAnimating || !ctxBack || !ctxFront || !canvasBack || !canvasFront)
+        return;
 
       if (!backgroundDrawn && backImageLoaded && backImage) {
         ctxBack.clearRect(0, 0, canvasBack.width, canvasBack.height);
         ctxBack.imageSmoothingEnabled = true;
         ctxBack.imageSmoothingQuality = "high";
 
-        // Calcular centro y radio para el círculo
         const centerX = backImagePosition.x + backImagePosition.width / 2;
         const centerY = backImagePosition.y + backImagePosition.height / 2;
-        // Radio basado en el tamaño de la imagen (la mitad del ancho/alto)
-        // Reducimos un poco el radio para asegurar que el borde cubra bien los bordes de la imagen
         const radius =
           Math.min(backImagePosition.width, backImagePosition.height) / 2;
 
@@ -438,22 +419,20 @@ export default function ChampiLogoReveal() {
         );
         ctxBack.restore();
 
-        // Dibujar borde para encapsular
         ctxBack.beginPath();
         ctxBack.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctxBack.strokeStyle = "#1a2324"; // Color charcoal-dark para coincidir con el tema
-        ctxBack.lineWidth = 8; // Borde visible
+        ctxBack.strokeStyle = "#1a2324";
+        ctxBack.lineWidth = 8;
         ctxBack.stroke();
 
         backgroundDrawn = true;
       }
 
-      // Front canvas (particles) needs clearing every frame
       ctxFront.clearRect(0, 0, canvasFront.width, canvasFront.height);
 
-      for (let i = 0; i < particlesArrayFront.length; i++) {
-        particlesArrayFront[i].update();
-        particlesArrayFront[i].draw(ctxFront);
+      for (const particle of particlesArrayFront) {
+        particle.update();
+        particle.draw(ctxFront);
       }
 
       animationId = requestAnimationFrame(animate);
@@ -466,49 +445,32 @@ export default function ChampiLogoReveal() {
 
     // Cleanup
     return () => {
+      isAnimating = false;
       resizeObserver.disconnect();
       document.removeEventListener("touchend", preventZoom);
-      canvasFront.removeEventListener(
-        "mousemove",
-        handleMouseMove as EventListener
-      );
-      canvasFront.removeEventListener(
-        "mouseleave",
-        handleMouseLeave as EventListener
-      );
-      canvasFront.removeEventListener(
-        "touchstart",
-        handleTouchStart as unknown as EventListener
-      );
-      canvasFront.removeEventListener(
-        "touchmove",
-        handleTouchMove as unknown as EventListener
-      );
-      canvasFront.removeEventListener(
-        "touchend",
-        handleTouchEnd as unknown as EventListener
-      );
-      canvasFront.removeEventListener(
-        "touchcancel",
-        handleTouchCancel as EventListener
-      );
+      canvasFront.removeEventListener("mousemove", handleMouseMove);
+      canvasFront.removeEventListener("mouseleave", handleMouseLeave);
+      canvasFront.removeEventListener("touchstart", handleTouchStart);
+      canvasFront.removeEventListener("touchmove", handleTouchMove);
+      canvasFront.removeEventListener("touchend", handleTouchEnd);
+      canvasFront.removeEventListener("touchcancel", handleTouchCancel);
       if (animationId) {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [config]);
+  }, []); // ✅ Sin dependencias - se ejecuta solo una vez
 
   return (
     <div ref={containerRef} className="relative w-full h-full overflow-hidden">
       <canvas
         ref={canvasBackRef}
         id="canvasBack"
-        className="absolute top-0 left-0 max-w-full max-h-[100vh] touch-none select-none z-[1] cursor-none [@media(pointer:coarse)]:cursor-default"
+        className="absolute top-0 left-0 w-full h-full touch-none select-none z-[1] cursor-none [@media(pointer:coarse)]:cursor-default"
       />
       <canvas
         ref={canvasFrontRef}
         id="canvasFront"
-        className="absolute top-0 left-0 max-w-full max-h-[100vh] touch-none select-none z-[2] cursor-none [@media(pointer:coarse)]:cursor-default"
+        className="absolute top-0 left-0 w-full h-full touch-none select-none z-[2] cursor-none [@media(pointer:coarse)]:cursor-default"
       />
     </div>
   );
