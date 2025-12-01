@@ -111,19 +111,21 @@ export function Navigation() {
               >
                 <span className="flex items-center space-x-2">
                   <span
-                    className={`text-sm font-medium ${
+                    className={`text-sm font-medium transition-colors ${
+                      language === "gl"
+                        ? "text-flame-blue-bright"
+                        : "text-ash-400"
+                    }`}
+                  >
+                    GL
+                  </span>
+                  <span className="text-ash-500">|</span>
+                  <span
+                    className={`text-sm font-medium transition-colors ${
                       language === "es" ? "text-fire-red" : "text-ash-400"
                     }`}
                   >
                     ES
-                  </span>
-                  <span className="text-ash-500">|</span>
-                  <span
-                    className={`text-sm font-medium ${
-                      language === "gl" ? "text-fire-blue" : "text-ash-400"
-                    }`}
-                  >
-                    GL
                   </span>
                 </span>
               </BrandButton>
@@ -134,34 +136,51 @@ export function Navigation() {
             </div>
 
             {/* Mobile Language Switcher (Visible when Bubble Menu is closed or as part of header) */}
-            <div className="flex items-center md:hidden space-x-4 mr-16">
-              <button
+            <div className="flex items-center md:hidden space-x-3 mr-[4.5rem]">
+              <BrandButton
                 onClick={toggleLanguage}
-                className="flex items-center space-x-1 px-2 py-1 rounded-full bg-white/5 border border-white/10"
+                style={{ minWidth: "auto", padding: "0 1rem", height: "2.5em" }}
               >
-                <span
-                  className={`text-xs font-bold ${
-                    language === "es" ? "text-fire-red" : "text-ash-400"
-                  }`}
-                >
-                  ES
+                <span className="flex items-center space-x-1">
+                  <span
+                    className={`text-xs font-bold transition-colors ${
+                      language === "gl"
+                        ? "text-flame-blue-bright"
+                        : "text-ash-400"
+                    }`}
+                  >
+                    GL
+                  </span>
+                  <span className="text-ash-500">/</span>
+                  <span
+                    className={`text-xs font-bold transition-colors ${
+                      language === "es" ? "text-fire-red" : "text-ash-400"
+                    }`}
+                  >
+                    ES
+                  </span>
                 </span>
-                <span className="text-ash-500">/</span>
-                <span
-                  className={`text-xs font-bold ${
-                    language === "gl" ? "text-fire-blue" : "text-ash-400"
-                  }`}
-                >
-                  GL
-                </span>
-              </button>
+              </BrandButton>
             </div>
           </div>
         </div>
       </motion.nav>
 
-      {/* Bubble Menu for Mobile */}
-      <div className="md:hidden fixed top-4 right-4 z-[1002]">
+      {/* Bubble Menu for Mobile - Now with motion animation and proper overflow handling */}
+      <motion.div
+        initial={{ y: -100, opacity: 0 }}
+        animate={{
+          y: isHidden ? "-200%" : 0,
+          opacity: isHidden ? 0 : 1,
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="md:hidden fixed top-4 right-4 z-[1002]"
+        style={{
+          overflow: "hidden",
+          pointerEvents: isHidden ? "none" : "auto",
+          visibility: isHidden ? "hidden" : "visible",
+        }}
+      >
         <BubbleMenu
           logo="/images/logo.svg"
           items={bubbleMenuItems}
@@ -170,8 +189,9 @@ export function Navigation() {
           useFixedPosition={true}
           className="!top-0 !right-0 !left-auto !p-0"
           style={{ position: "relative" }}
+          isHidden={isHidden}
         />
-      </div>
+      </motion.div>
     </>
   );
 }

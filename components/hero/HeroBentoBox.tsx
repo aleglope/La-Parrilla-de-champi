@@ -45,14 +45,14 @@ export function HeroBentoBox() {
         {/* Fondo con gradiente animado */}
         <div className="absolute inset-0 bg-gradient-ocean-fire opacity-20" />
 
-        <div className="container-custom w-full h-full flex items-center py-10">
+        <div className="container-custom w-full h-full flex items-center py-10 pt-24 md:pt-10">
           {/* Layout Bento Box */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 w-full max-h-[800px]">
             
             {/* Bloque 1: Texto e Intro (Izquierda) */}
             <motion.div
               style={{ opacity: sideOpacity, scale: sideScale, x: leftX }}
-              className="md:col-span-4 md:row-span-2 glass-card p-8 md:p-10 flex flex-col justify-center relative overflow-hidden min-h-[300px] md:min-h-[600px]"
+              className="md:col-span-4 md:row-span-2 glass-card p-6 md:p-10 flex flex-col justify-center relative overflow-hidden min-h-[250px] md:min-h-[600px]"
             >
               {/* Efecto de brillo de fondo */}
               <div className="absolute inset-0 bg-gradient-to-br from-fire-red/5 via-transparent to-flame-blue/5 animate-pulse" />
@@ -94,7 +94,7 @@ export function HeroBentoBox() {
             {/* Bloque 2: Logo Animado (Centro - Eje Central) - ESTE ES EL QUE CRECE */}
             <motion.div
               style={{ scale: centerScale, y: centerY, zIndex: 10 }}
-              className="md:col-span-4 md:row-span-2 glass-card p-0 flex flex-col justify-center items-center relative overflow-hidden min-h-[300px] md:min-h-[600px]"
+              className="md:col-span-4 md:row-span-2 glass-card p-0 flex flex-col justify-center items-center relative overflow-hidden min-h-[250px] md:min-h-[600px]"
             >
               {/* ChampiLogoReveal como contenido principal */}
               <div className="absolute inset-0 w-full h-full">
@@ -154,10 +154,10 @@ export function HeroBentoBox() {
               </motion.div>
             </div>
 
-            {/* Fila Inferior: Info Destacada - También se desvanecen */}
+            {/* Fila Inferior: Info Destacada - También se desvanecen - Ocultas en móvil */}
             <motion.div
               style={{ opacity: sideOpacity, y: 50 }}
-              className="md:col-span-4 glass-card p-6 flex items-center space-x-4 hover:border-fire-red transition-colors min-h-[120px]"
+              className="hidden md:flex md:col-span-4 glass-card p-6 items-center space-x-4 hover:border-fire-red transition-colors min-h-[120px]"
             >
               <div className="text-4xl">🔥</div>
               <div>
@@ -168,7 +168,7 @@ export function HeroBentoBox() {
 
             <motion.div
               style={{ opacity: sideOpacity, y: 50 }}
-              className="md:col-span-4 glass-card p-6 flex items-center space-x-4 hover:border-flame-blue-bright transition-colors min-h-[120px]"
+              className="hidden md:flex md:col-span-4 glass-card p-6 items-center space-x-4 hover:border-flame-blue-bright transition-colors min-h-[120px]"
             >
               <div className="text-4xl">🥩</div>
               <div>
@@ -179,7 +179,7 @@ export function HeroBentoBox() {
 
             <motion.div
               style={{ opacity: sideOpacity, y: 50 }}
-              className="md:col-span-4 glass-card p-6 flex items-center space-x-4 hover:border-fire-red transition-colors min-h-[120px]"
+              className="hidden md:flex md:col-span-4 glass-card p-6 items-center space-x-4 hover:border-fire-red transition-colors min-h-[120px]"
             >
               <div className="text-4xl">⭐</div>
               <div>

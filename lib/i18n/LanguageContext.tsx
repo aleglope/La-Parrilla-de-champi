@@ -12,13 +12,17 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('es');
+  const [language, setLanguage] = useState<Language>('gl'); // Default to Galician
 
   // Load saved language from local storage on mount
   useEffect(() => {
     const savedLang = localStorage.getItem('language') as Language;
     if (savedLang && (savedLang === 'es' || savedLang === 'gl')) {
       setLanguage(savedLang);
+    } else {
+      // If no saved language, set default to Galician
+      setLanguage('gl');
+      localStorage.setItem('language', 'gl');
     }
   }, []);
 

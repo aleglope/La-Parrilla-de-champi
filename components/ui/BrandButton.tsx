@@ -151,7 +151,13 @@ const StyledWrapper = styled.div`
     content: "";
     position: absolute;
     inset: 2px; /* A bit more inset to show the light border clearly */
-    background-color: #283435; /* This is the actual button color */
+    background-color: rgba(
+      40,
+      52,
+      53,
+      0.6
+    ); /* Semi-transparent charcoal for subtle effect */
+    backdrop-filter: blur(8px); /* Blur effect for glass morphism */
     border-radius: 30em;
     z-index: -1; /* Behind content */
     pointer-events: none;
