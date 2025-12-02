@@ -5,9 +5,16 @@
 @layer base {
   body {
     @apply bg-charcoal text-ash-300 font-body antialiased;
-    background-image: 
-      radial-gradient(circle at 20% 50%, rgba(193, 31, 25, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(23, 137, 192, 0.05) 0%, transparent 50%);
+    background-image: radial-gradient(
+        circle at 20% 50%,
+        rgba(193, 31, 25, 0.05) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 80%,
+        rgba(23, 137, 192, 0.05) 0%,
+        transparent 50%
+      );
   }
 
   html {
@@ -23,7 +30,10 @@
     @apply font-heading text-ash-100;
   }
 
-  h3, h4, h5, h6 {
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading text-ash-200;
   }
 
@@ -53,12 +63,12 @@
   .text-fire-glow {
     @apply text-fire-red;
     text-shadow: 0 0 20px rgba(193, 31, 25, 0.8),
-                 0 0 40px rgba(193, 31, 25, 0.5);
+      0 0 40px rgba(193, 31, 25, 0.5);
   }
 
   /* Texto con efecto de brasa */
   .text-ember {
-    background: linear-gradient(135deg, #C01F19 0%, #ff6b35 50%, #C01F19 100%);
+    background: linear-gradient(135deg, #c01f19 0%, #ff6b35 50%, #c01f19 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -105,13 +115,10 @@
     border-radius: inherit;
     box-sizing: border-box;
     padding: 3px;
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
+    -webkit-mask: linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     mask-composite: exclude;
   }
 
@@ -170,12 +177,17 @@
     position: relative;
     z-index: 1;
     border-radius: inherit;
-    overflow: hidden;
+    /* NO usar overflow: hidden aquí - rompe la animación 3D */
   }
 
+  /* El flip se controla desde Tailwind en el componente */
+  /* Las siguientes reglas son fallback por si Tailwind no carga */
   .dish-card--flippable:hover .card-3d,
-  .dish-card--flippable:focus-visible .card-3d,
-  .dish-card[data-touch-flipped="true"] .card-3d {
+  .dish-card--flippable:focus-visible .card-3d {
+    transform: rotateY(180deg);
+  }
+
+  .dish-card .card-3d[data-touch-flipped="true"] {
     transform: rotateY(180deg);
   }
 }
@@ -183,7 +195,8 @@
 @layer utilities {
   /* Animación de shimmer para textos */
   @keyframes ember-shimmer {
-    0%, 100% {
+    0%,
+    100% {
       background-position: 0% 50%;
     }
     50% {
@@ -194,7 +207,7 @@
   /* Sombra de fuego */
   .shadow-fire {
     box-shadow: 0 10px 40px rgba(193, 31, 25, 0.4),
-                0 0 20px rgba(193, 31, 25, 0.2);
+      0 0 20px rgba(193, 31, 25, 0.2);
   }
 
   /* Gradiente de texto animado */
@@ -205,7 +218,8 @@
   }
 
   @keyframes gradient-shift {
-    0%, 100% {
+    0%,
+    100% {
       background-position: 0% center;
     }
     50% {
@@ -238,7 +252,7 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -249,13 +263,14 @@
   }
 
   .liquid-loader::before {
-    content: '';
+    content: "";
     @apply absolute inset-0 bg-gradient-to-r from-fire-red via-flame-blue-bright to-fire-red;
     animation: liquid-wave 2s ease-in-out infinite;
   }
 
   @keyframes liquid-wave {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateX(-100%) skewX(-15deg);
     }
     50% {
@@ -281,4 +296,3 @@
     display: none;
   }
 }
-

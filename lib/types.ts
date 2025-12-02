@@ -19,6 +19,10 @@ export interface Dish {
   description_gl?: string | null;
   price: number;
   image_url: string | null;
+  /** Timestamp de cuando se subió la imagen */
+  image_uploaded_at?: string | null;
+  /** Tamaño de la imagen en KB */
+  image_size_kb?: number | null;
   is_available: boolean;
   order_index: number;
   created_at: string;

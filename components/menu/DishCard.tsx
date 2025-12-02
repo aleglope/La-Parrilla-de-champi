@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * Card individual de plato con efecto flip
+ * Optimizado para carga de imágenes con lazy loading y prioridad
+ * Muestra imagen por defecto cuando no hay imagen personalizada
+ */
+
 import {
   forwardRef,
   useEffect,
@@ -8,10 +14,12 @@ import {
   type KeyboardEvent,
 } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import type { Dish } from "@/lib/types";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import type { Language } from "@/lib/i18n/translations";
+
+/** Ruta de la imagen por defecto para platos sin imagen */
+const DEFAULT_DISH_IMAGE = '/images/default-dish.svg';
 
 type LocalizedText = {
   es: string;
@@ -38,6 +46,8 @@ const getTapHint = (language: Language) =>
 interface DishCardProps {
   dish: Dish;
   index: number;
+  /** Si es true, la imagen se carga con prioridad (para above-the-fold) */
+  priority?: boolean;
 }
 
 /**
@@ -45,10 +55,11 @@ interface DishCardProps {
  * Mantiene datos actuales y muestra la foto al hover (desktop) o tap (móvil)
  */
 export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
-  ({ dish, index }, ref) => {
+  ({ dish, index, priority = false }, ref) => {
     const { language } = useLanguage();
     const [isTouchDevice, setIsTouchDevice] = useState(false);
     const [isMobileFlipped, setIsMobileFlipped] = useState(false);
+    const [imageError, setImageError] = useState(false);
 
     const name = language === "gl" && dish.name_gl ? dish.name_gl : dish.name;
     const description =
@@ -61,8 +72,15 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
     const tapHint = getTapHint(language);
     const badgeText = "Selección Champi";
 
-    const canRevealImage = Boolean(dish.image_url);
+    // Determinar qué imagen mostrar
+    // Si hay imagen personalizada válida, usarla; si no, usar la imagen por defecto
+    const hasCustomImage = Boolean(dish.image_url) && !imageError;
+    const imageToShow = hasCustomImage ? dish.image_url! : DEFAULT_DISH_IMAGE;
+    
+    // Siempre permitir el flip ya que ahora siempre hay una imagen (personalizada o por defecto)
+    const canRevealImage = !imageError;
 
+    // Detectar dispositivo táctil
     useEffect(() => {
       const win = globalThis.window;
       if (!win) return;
@@ -80,11 +98,17 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
       return undefined;
     }, []);
 
+    // Resetear flip cuando cambia el tipo de dispositivo
     useEffect(() => {
       if (!isTouchDevice) {
         setIsMobileFlipped(false);
       }
     }, [isTouchDevice]);
+
+    // Resetear error de imagen cuando cambia la URL
+    useEffect(() => {
+      setImageError(false);
+    }, [dish.image_url]);
 
     const handleToggle = () => {
       if (!isTouchDevice || !canRevealImage) return;
@@ -97,6 +121,11 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
         event.preventDefault();
         handleToggle();
       }
+    };
+
+    const handleImageError = () => {
+      console.warn(`[DishCard] Error cargando imagen para: ${dish.name}`);
+      setImageError(true);
     };
 
     const containerClasses = [
@@ -134,6 +163,10 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
       ? { perspective: "1400px" }
       : undefined;
 
+    // Determinar loading strategy basado en prioridad
+    // Las primeras 6 imágenes (above-the-fold) se cargan con prioridad
+    const shouldPrioritize = priority || index < 6;
+
     return (
       <motion.button
         ref={ref}
@@ -159,7 +192,10 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
           data-touch-flipped={
             isTouchDevice && isMobileFlipped ? "true" : "false"
           }
-          className="card-3d relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)] data-[touch-flipped=true]:[transform:rotateY(180deg)]"
+          className="card-3d relative h-full w-full transition-transform duration-700"
+          style={{
+            transformStyle: 'preserve-3d',
+          }}
         >
           {/* Cara frontal */}
           <div className="absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/5 bg-gradient-to-b from-charcoal-dark/95 via-charcoal-dark/80 to-charcoal-dark p-5 text-ash-100 shadow-[0_15px_45px_rgba(0,0,0,0.55)] [backface-visibility:hidden]">
@@ -198,9 +234,11 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
                 {availabilityLabel}
               </span>
 
-              <span className="text-[0.65rem] font-heading uppercase tracking-[0.3em] text-flame-blue-bright">
-                {infoLabel}
-              </span>
+              {canRevealImage && (
+                <span className="text-[0.65rem] font-heading uppercase tracking-[0.3em] text-flame-blue-bright">
+                  {infoLabel}
+                </span>
+              )}
             </div>
 
             {/* Elementos decorativos */}
@@ -211,18 +249,36 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
 
           {/* Cara posterior con imagen */}
           {canRevealImage && (
-            <div className="absolute inset-0 overflow-hidden rounded-3xl border border-fire-red/30 bg-charcoal-dark/80 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-              <Image
-                src={dish.image_url!}
-                alt={name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                loading="lazy"
+            <div 
+              className="absolute inset-0 rounded-3xl border border-fire-red/30 bg-charcoal-dark"
+              style={{
+                backfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)',
+              }}
+            >
+              {/* Imagen usando img estándar para máxima compatibilidad */}
+              <img
+                src={imageToShow}
+                alt={`Imagen de ${name}`}
+                className="absolute inset-0 w-full h-full object-cover rounded-3xl"
+                loading={shouldPrioritize ? "eager" : "lazy"}
+                onError={handleImageError}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal-dark/80 via-charcoal-dark/10 to-transparent" />
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-charcoal-dark/90 via-charcoal-dark/20 to-transparent pointer-events-none" />
+              
+              {/* Nombre del plato en la imagen */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                <h4 className="text-lg font-heading font-bold text-white drop-shadow-lg">
+                  {name}
+                </h4>
+                <span className="text-xl font-heading font-bold text-fire-red drop-shadow-lg">
+                  {dish.price.toFixed(2)}€
+                </span>
+              </div>
+
               {isTouchDevice && (
-                <div className="absolute inset-x-0 bottom-4 flex justify-center">
+                <div className="absolute inset-x-0 top-4 flex justify-center z-10">
                   <span className="rounded-full bg-charcoal-dark/70 px-4 py-1 text-xs font-heading tracking-[0.2em] text-ash-100">
                     {tapHint}
                   </span>

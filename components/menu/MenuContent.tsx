@@ -82,7 +82,13 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
                   {category.dishes
                     .sort((a, b) => a.order_index - b.order_index)
                     .map((dish, index) => (
-                      <DishCard key={dish.id} dish={dish} index={index} />
+                      <DishCard 
+                        key={dish.id} 
+                        dish={dish} 
+                        index={index}
+                        // Priorizar carga de primeras 6 imágenes (above-the-fold)
+                        priority={index < 6}
+                      />
                     ))}
                 </AnimatePresence>
               </div>
