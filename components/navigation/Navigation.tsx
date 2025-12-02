@@ -83,10 +83,10 @@ export function Navigation() {
                 />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-display font-normal text-ash-50 leading-tight tracking-wide">
-                  La Parrilla de Champi
+                <h1 className="text-lg md:text-xl font-display uppercase tracking-[0.45em] text-ash-50 drop-shadow-[0_5px_20px_rgba(0,0,0,0.55)] transition-colors">
+                  LA PARRILLA DE CHAMPI
                 </h1>
-                <p className="text-xs text-ash-400 font-body">
+                <p className="text-xs text-ash-400 font-body uppercase tracking-[0.35em]">
                   {t.nav.subtitle}
                 </p>
               </div>
@@ -98,7 +98,7 @@ export function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-ash-300 hover:text-fire-red transition-colors font-medium"
+                  className="text-ash-300 hover:text-fire-red transition-colors font-heading text-xs tracking-[0.4em] uppercase"
                 >
                   {item.label}
                 </Link>

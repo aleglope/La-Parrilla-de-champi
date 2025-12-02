@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { MenuContent } from '@/components/menu/MenuContent';
 import { MenuSkeleton } from '@/components/menu/MenuSkeleton';
+import { MenuHeader } from '@/components/menu/MenuHeader';
 import { getCategories, getDishes } from '@/lib/supabase/menu-service';
 
 /**
@@ -17,23 +18,8 @@ export default async function MenuPage() {
 
   return (
     <main className="min-h-screen bg-charcoal pb-20">
-      {/* Header minimalista */}
-      <header className="sticky top-0 z-50 bg-charcoal-dark/95 backdrop-blur-lg border-b border-flame-blue/20">
-        <div className="container-custom py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-fire-red">La Parrilla de Champi</h1>
-              <p className="text-sm text-gray-400">Carne a la Brasa</p>
-            </div>
-            <a 
-              href="/"
-              className="text-flame-blue-bright hover:text-flame-blue-glow transition-colors text-sm font-medium"
-            >
-              ← Volver
-            </a>
-          </div>
-        </div>
-      </header>
+      {/* Header con selector de idioma */}
+      <MenuHeader />
 
       {/* Contenido del menú */}
       <Suspense fallback={<MenuSkeleton />}>

@@ -22,10 +22,9 @@ export function CategoryTabs({
 
   return (
     <div className="sticky top-[73px] z-40 py-4 -mx-4 px-4 md:mx-0 md:px-0">
-      {/* Blur background container */}
-      <div className="absolute inset-0 bg-charcoal/95 backdrop-blur-lg -mx-4 md:mx-0 md:rounded-xl" />
+      {/* Background container removed to prevent horizontal scroll overflow */}
 
-      <div className="relative flex gap-3 overflow-x-auto hide-scrollbar pb-[2rem] pl-3 pt-[2rem]">
+      <div className="relative flex gap-3 overflow-x-auto hide-scrollbar pb-[2rem] pl-6 pt-[2rem]">
         {/* Tab "Todos" */}
         <BrandButton
           onClick={() => onSelectCategory(null)}

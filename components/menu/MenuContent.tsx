@@ -41,10 +41,12 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
       >
-        <h2 className="text-4xl font-display text-ash-50 mb-3">
+        <h2 className="text-4xl md:text-5xl font-display text-ash-50 mb-3 uppercase tracking-[0.45em] drop-shadow-[0_5px_30px_rgba(192,31,25,0.35)]">
           {t.menu.title}
         </h2>
-        <p className="text-ash-400 font-body">{t.menu.subtitle}</p>
+        <p className="text-ash-300 font-heading text-sm md:text-base uppercase tracking-[0.55em]">
+          <span className="text-ember">{t.menu.subtitle}</span>
+        </p>
       </motion.div>
 
       {/* Tabs de categorías */}
