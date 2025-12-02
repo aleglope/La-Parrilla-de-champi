@@ -186,8 +186,6 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
         onKeyDown={handleKeyDown}
         style={cardPerspective}
       >
-        <span aria-hidden className="card-border-animation" />
-        <span aria-hidden className="card-border-glow" />
         <div
           data-touch-flipped={
             isTouchDevice && isMobileFlipped ? "true" : "false"
