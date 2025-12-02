@@ -76,6 +76,108 @@
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
+
+  /* Animación personalizada para las cards del menú */
+  .dish-card {
+    isolation: isolate;
+    position: relative;
+  }
+
+  .dish-card > .card-border-animation,
+  .dish-card > .card-border-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .dish-card > .card-border-animation {
+    padding: 3px;
+    box-sizing: border-box;
+  }
+
+  .dish-card > .card-border-animation::before,
+  .dish-card > .card-border-animation::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-sizing: border-box;
+    padding: 3px;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  /* Base gradiente constante */
+  .dish-card > .card-border-animation::after {
+    background: linear-gradient(
+      135deg,
+      rgba(192, 31, 25, 0.35),
+      rgba(23, 137, 192, 0.35),
+      rgba(235, 141, 70, 0.4)
+    );
+    opacity: 0.65;
+    filter: drop-shadow(0 0 20px rgba(192, 31, 25, 0.4));
+  }
+
+  /* Rayo que recorre el borde */
+  .dish-card > .card-border-animation::before {
+    background: conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0) 0deg,
+      rgba(255, 255, 255, 0) 230deg,
+      rgba(255, 255, 255, 0.9) 250deg,
+      rgba(23, 137, 192, 0.95) 280deg,
+      rgba(192, 31, 25, 0.95) 310deg,
+      rgba(255, 255, 255, 0) 330deg,
+      rgba(255, 255, 255, 0) 360deg
+    );
+    animation: dish-border-spin 3s linear infinite;
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6))
+      drop-shadow(0 0 40px rgba(192, 31, 25, 0.8));
+    mix-blend-mode: screen;
+  }
+
+  .dish-card[data-has-image="false"] > .card-border-animation::before {
+    opacity: 0.35;
+  }
+
+  .dish-card[data-has-image="false"] > .card-border-animation::after {
+    opacity: 0.4;
+  }
+
+  .dish-card > .card-border-glow {
+    inset: -22px;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.18),
+      rgba(192, 31, 25, 0.35),
+      rgba(0, 0, 0, 0)
+    );
+    filter: blur(32px);
+    opacity: 0.45;
+  }
+
+  .dish-card > .card-3d {
+    position: relative;
+    z-index: 1;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+
+  .dish-card--flippable:hover .card-3d,
+  .dish-card--flippable:focus-visible .card-3d,
+  .dish-card[data-touch-flipped="true"] .card-3d {
+    transform: rotateY(180deg);
+  }
 }
 
 @layer utilities {
@@ -108,6 +210,15 @@
     }
     50% {
       background-position: 100% center;
+    }
+  }
+
+  @keyframes dish-border-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
     }
   }
 

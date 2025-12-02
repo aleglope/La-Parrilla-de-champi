@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import type { Category } from '@/lib/types';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import type { Category } from "@/lib/types";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import BrandButton from "@/components/ui/BrandButton";
 
 interface CategoryTabsProps {
   categories: Category[];
@@ -13,44 +13,66 @@ interface CategoryTabsProps {
 /**
  * Tabs para filtrar por categoría
  */
-export function CategoryTabs({ categories, selectedCategory, onSelectCategory }: CategoryTabsProps) {
+export function CategoryTabs({
+  categories,
+  selectedCategory,
+  onSelectCategory,
+}: CategoryTabsProps) {
   const { language } = useLanguage();
 
   return (
-    <div className="sticky top-[73px] z-40 bg-charcoal/95 backdrop-blur-lg py-4 -mx-4 px-4 md:mx-0 md:px-0">
-      <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+    <div className="sticky top-[73px] z-40 py-4 -mx-4 px-4 md:mx-0 md:px-0">
+      {/* Blur background container */}
+      <div className="absolute inset-0 bg-charcoal/95 backdrop-blur-lg -mx-4 md:mx-0 md:rounded-xl" />
+
+      <div className="relative flex gap-3 overflow-x-auto hide-scrollbar pb-[2rem] pl-3 pt-[2rem]">
         {/* Tab "Todos" */}
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+        <BrandButton
           onClick={() => onSelectCategory(null)}
-          className={`px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-all ${
+          className={`!min-w-fit !h-12 !rounded-full transition-all duration-300 flex-shrink-0 ${
             selectedCategory === null
-              ? 'bg-fire-red text-white shadow-fire'
-              : 'bg-charcoal-light text-gray-400 hover:text-white hover:bg-charcoal-dark'
+              ? "!border-fire-red !shadow-[0_0_20px_rgba(192,31,25,0.5)]"
+              : ""
           }`}
         >
-          {language === 'es' ? 'Todos' : 'Todos'}
-        </motion.button>
+          <span
+            className={
+              selectedCategory === null
+                ? "text-fire-red font-bold"
+                : "text-gray-300"
+            }
+          >
+            {language === "es" ? "Todos" : "Todos"}
+          </span>
+        </BrandButton>
 
         {/* Tabs de categorías */}
         {categories
           .sort((a, b) => a.order_index - b.order_index)
-          .map(category => (
-            <motion.button
+          .map((category) => (
+            <BrandButton
               key={category.id}
-              whileTap={{ scale: 0.95 }}
               onClick={() => onSelectCategory(category.id)}
-              className={`px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-all ${
+              className={`!min-w-fit !rounded-full !h-12 transition-all duration-300 flex-shrink-0 ${
                 selectedCategory === category.id
-                  ? 'bg-fire-red text-white shadow-fire'
-                  : 'bg-charcoal-light text-gray-400 hover:text-white hover:bg-charcoal-dark'
+                  ? "!border-fire-red !shadow-[0_0_20px_rgba(192,31,25,0.5)]"
+                  : ""
               }`}
             >
-              {(language === 'gl' && category.name_gl) ? category.name_gl : category.name}
-            </motion.button>
+              <span
+                className={
+                  selectedCategory === category.id
+                    ? "text-fire-red font-bold"
+                    : "text-gray-300"
+                }
+              >
+                {language === "gl" && category.name_gl
+                  ? category.name_gl
+                  : category.name}
+              </span>
+            </BrandButton>
           ))}
       </div>
     </div>
   );
 }
-
