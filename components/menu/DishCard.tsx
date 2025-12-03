@@ -193,10 +193,15 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
           className="card-3d relative h-full w-full transition-transform duration-700"
           style={{
             transformStyle: 'preserve-3d',
+            WebkitTransformStyle: 'preserve-3d',
+            WebkitFontSmoothing: 'antialiased',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            willChange: 'transform',
           }}
         >
           {/* Cara frontal */}
-          <div className="absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/5 bg-gradient-to-b from-charcoal-dark/95 via-charcoal-dark/80 to-charcoal-dark p-5 text-ash-100 shadow-[0_15px_45px_rgba(0,0,0,0.55)] [backface-visibility:hidden]">
+          <div className="absolute inset-0 flex flex-col justify-between rounded-3xl border border-white/5 bg-gradient-to-b from-charcoal-dark via-charcoal-dark/95 to-charcoal-dark p-5 text-ash-100 shadow-[0_15px_45px_rgba(0,0,0,0.55)] [backface-visibility:hidden]">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-fire-red/30 bg-fire-red/10 px-3 py-1 text-[0.6rem] font-heading uppercase tracking-[0.25em] text-fire-red">
                 {badgeText}
@@ -238,11 +243,6 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
                 </span>
               )}
             </div>
-
-            {/* Elementos decorativos */}
-            <div className="pointer-events-none absolute -left-6 top-10 h-32 w-32 rounded-full bg-fire-red/30 blur-3xl" />
-            <div className="pointer-events-none absolute -right-4 bottom-10 h-24 w-24 rounded-full bg-flame-blue/40 blur-3xl" />
-            <div className="pointer-events-none absolute inset-0 rounded-3xl border border-white/5" />
           </div>
 
           {/* Cara posterior con imagen */}

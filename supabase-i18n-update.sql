@@ -19,3 +19,5 @@ UPDATE dishes SET name_gl = name, description_gl = description WHERE name_gl IS 
 
 
 
+
+

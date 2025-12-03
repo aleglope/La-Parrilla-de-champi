@@ -91,6 +91,10 @@
   .dish-card {
     isolation: isolate;
     position: relative;
+    /* Forzar hardware acceleration para mejor rendering en móvil */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
   }
 
   .dish-card > .card-3d {
@@ -98,6 +102,9 @@
     z-index: 1;
     border-radius: inherit;
     /* NO usar overflow: hidden aquí - rompe la animación 3D */
+    /* Optimizar rendering en móvil */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* El flip se controla desde Tailwind en el componente */
