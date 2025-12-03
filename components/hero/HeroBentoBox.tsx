@@ -15,7 +15,7 @@ import BrandButton from "@/components/ui/BrandButton";
 export function HeroBentoBox() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
-  
+
   // Capturar scroll relativo al contenedor extendido
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -27,7 +27,7 @@ export function HeroBentoBox() {
   // 1. El bloque central crece (scale) y se vuelve completamente opaco
   const centerScale = useTransform(scrollYProgress, [0, 0.4], [1, 1.8]);
   // Opcional: Desplazamiento Y para centrarlo aún más si es necesario
-  const centerY = useTransform(scrollYProgress, [0, 0.4], [0, -50]); 
+  const centerY = useTransform(scrollYProgress, [0, 0.4], [0, -50]);
 
   // 2. Los bloques laterales se desvanecen y se desplazan hacia afuera para dar espacio
   const sideOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
@@ -45,10 +45,9 @@ export function HeroBentoBox() {
         {/* Fondo con gradiente animado */}
         <div className="absolute inset-0 bg-gradient-ocean-fire opacity-20" />
 
-        <div className="container-custom w-full h-full flex items-center py-10 pt-24 md:pt-10">
+        <div className="container-custom w-full h-full flex items-start md:items-center py-10 pt-24 md:pt-10">
           {/* Layout Bento Box */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 w-full max-h-[800px]">
-            
             {/* Bloque 1: Texto e Intro (Izquierda) */}
             <motion.div
               style={{ opacity: sideOpacity, scale: sideScale, x: leftX }}
@@ -56,7 +55,7 @@ export function HeroBentoBox() {
             >
               {/* Efecto de brillo de fondo */}
               <div className="absolute inset-0 bg-gradient-to-br from-fire-red/5 via-transparent to-flame-blue/5 animate-pulse" />
-              
+
               <div className="relative z-10">
                 <motion.h1
                   initial={{ opacity: 0 }}
@@ -102,8 +101,8 @@ export function HeroBentoBox() {
               </div>
             </motion.div>
 
-            {/* Columna Derecha: Video y CTA */}
-            <div className="md:col-span-4 md:row-span-2 grid grid-rows-2 gap-4 md:gap-6">
+            {/* Columna Derecha: Video y CTA - OCULTO EN MÓVIL */}
+            <div className="hidden md:grid md:col-span-4 md:row-span-2 grid-rows-2 gap-4 md:gap-6">
               {/* Bloque 3: Video/Cinemagraph (Arriba Derecha) */}
               <motion.div
                 style={{ opacity: sideOpacity, scale: sideScale, x: rightX }}
@@ -136,12 +135,11 @@ export function HeroBentoBox() {
                   <h2 className="text-2xl md:text-3xl font-heading font-bold text-ash-100 mb-4">
                     {t.menu.title}
                   </h2>
-                  <p className="text-ash-300 mb-6 text-sm font-body">{t.menu.subtitle}</p>
+                  <p className="text-ash-300 mb-6 text-sm font-body">
+                    {t.menu.subtitle}
+                  </p>
 
-                  <BrandButton
-                    href="/menu"
-                    className="w-full"
-                  >
+                  <BrandButton href="/menu" className="w-full">
                     {t.hero.cta} 🍖
                   </BrandButton>
 
@@ -161,8 +159,12 @@ export function HeroBentoBox() {
             >
               <div className="text-4xl">🔥</div>
               <div>
-                <h3 className="font-heading font-bold text-ash-100 text-lg">100% Natural</h3>
-                <p className="text-sm text-ash-400 font-body">Carbón de encina</p>
+                <h3 className="font-heading font-bold text-ash-100 text-lg">
+                  100% Natural
+                </h3>
+                <p className="text-sm text-ash-400 font-body">
+                  Carbón de encina
+                </p>
               </div>
             </motion.div>
 
@@ -172,8 +174,12 @@ export function HeroBentoBox() {
             >
               <div className="text-4xl">🥩</div>
               <div>
-                <h3 className="font-heading font-bold text-ash-100 text-lg">Carne Premium</h3>
-                <p className="text-sm text-ash-400 font-body">Selección diaria</p>
+                <h3 className="font-heading font-bold text-ash-100 text-lg">
+                  Carne Premium
+                </h3>
+                <p className="text-sm text-ash-400 font-body">
+                  Selección diaria
+                </p>
               </div>
             </motion.div>
 
@@ -183,8 +189,12 @@ export function HeroBentoBox() {
             >
               <div className="text-4xl">⭐</div>
               <div>
-                <h3 className="font-heading font-bold text-ash-100 text-lg">Experiencia</h3>
-                <p className="text-sm text-ash-400 font-body">+20 años de sabor</p>
+                <h3 className="font-heading font-bold text-ash-100 text-lg">
+                  Experiencia
+                </h3>
+                <p className="text-sm text-ash-400 font-body">
+                  +20 años de sabor
+                </p>
               </div>
             </motion.div>
           </div>

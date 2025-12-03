@@ -19,7 +19,7 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 import type { Language } from "@/lib/i18n/translations";
 
 /** Ruta de la imagen por defecto para platos sin imagen */
-const DEFAULT_DISH_IMAGE = '/images/default-dish.svg';
+const DEFAULT_DISH_IMAGE = "/images/default-dish.svg";
 
 type LocalizedText = {
   es: string;
@@ -76,7 +76,7 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
     // Si hay imagen personalizada válida, usarla; si no, usar la imagen por defecto
     const hasCustomImage = Boolean(dish.image_url) && !imageError;
     const imageToShow = hasCustomImage ? dish.image_url! : DEFAULT_DISH_IMAGE;
-    
+
     // Siempre permitir el flip ya que ahora siempre hay una imagen (personalizada o por defecto)
     const canRevealImage = !imageError;
 
@@ -114,6 +114,30 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
       if (!isTouchDevice || !canRevealImage) return;
       setIsMobileFlipped((prev) => !prev);
     };
+
+    // Cerrar al hacer click fuera
+    useEffect(() => {
+      if (!isMobileFlipped || !isTouchDevice) return;
+
+      const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+        if (
+          ref &&
+          "current" in ref &&
+          ref.current &&
+          !ref.current.contains(event.target as Node)
+        ) {
+          setIsMobileFlipped(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("touchstart", handleClickOutside);
+      };
+    }, [isMobileFlipped, isTouchDevice, ref]);
 
     const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
       if (!canRevealImage || !isTouchDevice) return;
@@ -192,12 +216,12 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
           }
           className="card-3d relative h-full w-full transition-transform duration-700"
           style={{
-            transformStyle: 'preserve-3d',
-            WebkitTransformStyle: 'preserve-3d',
-            WebkitFontSmoothing: 'antialiased',
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            willChange: 'transform',
+            transformStyle: "preserve-3d",
+            WebkitTransformStyle: "preserve-3d",
+            WebkitFontSmoothing: "antialiased",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            willChange: "transform",
           }}
         >
           {/* Cara frontal */}
@@ -247,11 +271,11 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
 
           {/* Cara posterior con imagen */}
           {canRevealImage && (
-            <div 
+            <div
               className="absolute inset-0 rounded-3xl border border-fire-red/30 bg-charcoal-dark"
               style={{
-                backfaceVisibility: 'hidden',
-                transform: 'rotateY(180deg)',
+                backfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
               }}
             >
               {/* Imagen usando img estándar para máxima compatibilidad */}
@@ -264,7 +288,7 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
               />
               {/* Overlay gradient */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-charcoal-dark/90 via-charcoal-dark/20 to-transparent pointer-events-none" />
-              
+
               {/* Nombre del plato en la imagen */}
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
                 <h4 className="text-lg font-heading font-bold text-white drop-shadow-lg">

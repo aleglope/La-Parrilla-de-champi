@@ -109,9 +109,11 @@
 
   /* El flip se controla desde Tailwind en el componente */
   /* Las siguientes reglas son fallback por si Tailwind no carga */
-  .dish-card--flippable:hover .card-3d,
-  .dish-card--flippable:focus-visible .card-3d {
-    transform: rotateY(180deg);
+  @media (hover: hover) {
+    .dish-card--flippable:hover .card-3d,
+    .dish-card--flippable:focus-visible .card-3d {
+      transform: rotateY(180deg);
+    }
   }
 
   .dish-card .card-3d[data-touch-flipped="true"] {
