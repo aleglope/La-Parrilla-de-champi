@@ -8,12 +8,14 @@ interface BrandButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   href?: string;
+  withGlow?: boolean;
 }
 
 const BrandButton = ({
   children,
   className,
   href,
+  withGlow = true,
   ...props
 }: BrandButtonProps) => {
   if (href) {
@@ -25,7 +27,7 @@ const BrandButton = ({
           className="brand-btn font-heading"
           {...(props as any)}
         >
-          <div className="dots_border" />
+          {withGlow && <div className="dots_border" />}
           <span className="btn-content">{children}</span>
         </Link>
       </StyledWrapper>
@@ -35,7 +37,7 @@ const BrandButton = ({
   return (
     <StyledWrapper className={className}>
       <button {...props} className="brand-btn font-heading">
-        <div className="dots_border" />
+        {withGlow && <div className="dots_border" />}
         <span className="btn-content">{children}</span>
       </button>
     </StyledWrapper>

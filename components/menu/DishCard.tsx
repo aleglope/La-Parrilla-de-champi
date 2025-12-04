@@ -35,7 +35,7 @@ const getAvailabilityLabel = (language: Language, isAvailable: boolean) =>
     : getLocalizedText(language, { es: "No disponible", gl: "Non dispoñible" });
 
 const getInfoLabel = (language: Language) =>
-  getLocalizedText(language, { es: "Más info", gl: "Máis info" });
+  getLocalizedText(language, { es: "FOTO →", gl: "FOTO →" });
 
 const getTapHint = (language: Language) =>
   getLocalizedText(language, {
@@ -232,7 +232,7 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
               </div>
 
               <div className="flex items-start justify-between gap-4">
-                <h4 className="text-xl font-heading font-bold leading-tight text-ash-50">
+                <h4 className="text-4xl font-heading font-bold leading-tight text-ash-50">
                   {name}
                 </h4>
                 <span className="text-2xl font-heading font-bold text-fire-red whitespace-nowrap">
@@ -241,13 +241,13 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
               </div>
 
               {description && (
-                <p className="text-sm font-body leading-relaxed text-ash-300 line-clamp-3">
+                <p className="text-base font-body leading-relaxed text-ash-300 line-clamp-3">
                   {description}
                 </p>
               )}
             </div>
 
-            <div className="mt-6 flex items-center justify-between text-xs font-body text-ash-300">
+            <div className="mt-6 flex items-center justify-between text-sm font-body text-ash-300">
               <span
                 className={`inline-flex items-center gap-2 ${
                   dish.is_available ? "text-emerald-300" : "text-fire-red/70"
@@ -262,8 +262,13 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
               </span>
 
               {canRevealImage && (
-                <span className="text-[0.65rem] font-heading uppercase tracking-[0.3em] text-flame-blue-bright">
-                  {infoLabel}
+                <span className="inline-flex items-center gap-1">
+                  <span className="text-[0.85rem] font-heading uppercase tracking-[0.3em] text-flame-blue-bright">
+                    FOTO
+                  </span>
+                  <span className="text-[1.2rem] text-flame-blue-bright">
+                    →
+                  </span>
                 </span>
               )}
             </div>

@@ -1,21 +1,30 @@
-'use client';
+"use client";
 
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { useRef } from 'react';
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { useRef } from "react";
+import Image from "next/image";
 
 interface StoryBlockProps {
-  title: string;
-  content: string;
-  icon: string;
-  gradient: string;
-  index: number;
+  readonly title: string;
+  readonly content: string;
+  readonly icon: string;
+  readonly iconImage?: string; // Optional image path for icon
+  readonly gradient: string;
+  readonly index: number;
 }
 
 /**
  * Bloque individual de historia con animaciones de scroll
  */
-export function StoryBlock({ title, content, icon, gradient, index }: StoryBlockProps) {
+export function StoryBlock({
+  title,
+  content,
+  icon,
+  iconImage,
+  gradient,
+  index,
+}: StoryBlockProps) {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.3,
@@ -24,7 +33,7 @@ export function StoryBlock({ title, content, icon, gradient, index }: StoryBlock
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"]
+    offset: ["start end", "end start"],
   });
 
   // Animaciones de parallax
@@ -40,17 +49,31 @@ export function StoryBlock({ title, content, icon, gradient, index }: StoryBlock
       <motion.div
         ref={ref}
         style={{ y, scale, opacity }}
-        className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-8 md:gap-16 items-center`}
+        className={`flex flex-col ${
+          isEven ? "md:flex-row" : "md:flex-row-reverse"
+        } gap-8 md:gap-16 items-center`}
       >
         {/* Icono decorativo */}
         <motion.div
           initial={{ scale: 0, rotate: -180 }}
           animate={inView ? { scale: 1, rotate: 0 } : {}}
-          transition={{ duration: 0.8, type: 'spring' }}
+          transition={{ duration: 0.8, type: "spring" }}
           className="flex-shrink-0"
         >
-          <div className={`w-32 h-32 md:w-48 md:h-48 rounded-full bg-gradient-to-br ${gradient} backdrop-blur-sm flex items-center justify-center border border-flame-blue/20 shadow-2xl`}>
-            <span className="text-6xl md:text-8xl">{icon}</span>
+          <div
+            className={`w-32 h-32 md:w-48 md:h-48 rounded-full bg-gradient-to-br ${gradient} backdrop-blur-sm flex items-center justify-center border border-flame-blue/20 shadow-2xl`}
+          >
+            {iconImage ? (
+              <Image
+                src={iconImage}
+                alt={title}
+                width={128}
+                height={128}
+                className="w-20 h-20 md:w-32 md:h-32 object-contain"
+              />
+            ) : (
+              <span className="text-6xl md:text-8xl">{icon}</span>
+            )}
           </div>
         </motion.div>
 
@@ -59,7 +82,7 @@ export function StoryBlock({ title, content, icon, gradient, index }: StoryBlock
           initial={{ opacity: 0, x: isEven ? -50 : 50 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className={`flex-1 ${isEven ? 'md:text-left' : 'md:text-right'}`}
+          className={`flex-1 ${isEven ? "md:text-left" : "md:text-right"}`}
         >
           <h3 className="text-4xl md:text-5xl font-heading font-bold text-ash-100 mb-6">
             {title}
@@ -71,19 +94,26 @@ export function StoryBlock({ title, content, icon, gradient, index }: StoryBlock
           {/* Línea decorativa */}
           <motion.div
             initial={{ width: 0 }}
-            animate={inView ? { width: '100%' } : {}}
+            animate={inView ? { width: "100%" } : {}}
             transition={{ duration: 1, delay: 0.5 }}
-            className={`h-1 bg-gradient-to-r ${isEven ? 'from-fire-red to-transparent' : 'from-transparent to-flame-blue-bright'} mt-6 max-w-md ${isEven ? '' : 'md:ml-auto'}`}
+            className={`h-1 bg-gradient-to-r ${
+              isEven
+                ? "from-fire-red to-transparent"
+                : "from-transparent to-flame-blue-bright"
+            } mt-6 max-w-md ${isEven ? "" : "md:ml-auto"}`}
           />
         </motion.div>
       </motion.div>
 
       {/* Decoración de fondo */}
       <motion.div
-        style={{ opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0, 0.2, 0]) }}
-        className={`absolute top-0 ${isEven ? 'left-0' : 'right-0'} w-64 h-64 bg-gradient-to-br ${gradient} rounded-full blur-3xl -z-10`}
+        style={{
+          opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0, 0.2, 0]),
+        }}
+        className={`absolute top-0 ${
+          isEven ? "left-0" : "right-0"
+        } w-64 h-64 bg-gradient-to-br ${gradient} rounded-full blur-3xl -z-10`}
       />
     </div>
   );
 }
-

@@ -98,7 +98,7 @@ export function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-ash-300 hover:text-fire-red transition-colors font-heading text-xs tracking-[0.4em] uppercase"
+                  className="text-ash-300 hover:text-fire-red transition-colors font-heading text-sm tracking-[0.4em] uppercase"
                 >
                   {item.label}
                 </Link>

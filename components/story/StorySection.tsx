@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { StoryBlock } from './StoryBlock';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { StoryBlock } from "./StoryBlock";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 /**
  * Sección de historia con Scrollytelling
@@ -18,28 +18,31 @@ export function StorySection() {
 
   const storyBlocks = [
     {
-      title: 'El Fuego que nos une',
+      title: "El Fuego que nos une",
       content: t.story.p1,
-      icon: '🔥',
-      gradient: 'from-fire-red/20 to-transparent',
+      icon: "🔥",
+      iconImage: "/images/llama-de-historia.webp",
+      gradient: "from-fire-red/20 to-transparent",
     },
     {
-      title: 'El Alma del Mar',
+      title: "El Alma del Mar",
       content: t.story.p2,
-      icon: '🌊',
-      gradient: 'from-flame-blue/20 to-transparent',
+      icon: "🌊",
+      gradient: "from-flame-blue/20 to-transparent",
     },
     {
-      title: 'Carbón de Calidad',
-      content: 'Seleccionamos cuidadosamente cada pieza de carbón de encina. El secreto está en la brasa perfecta: no muy fuerte para quemar, no muy suave para cocinar. El punto justo que hace brillar cada corte.',
-      icon: '⚫',
-      gradient: 'from-charcoal/20 to-transparent',
+      title: "Carbón de Calidad",
+      content:
+        "Seleccionamos cuidadosamente cada pieza de carbón de encina. El secreto está en la brasa perfecta: no muy fuerte para quemar, no muy suave para cocinar. El punto justo que hace brillar cada corte.",
+      icon: "⚫",
+      gradient: "from-charcoal/20 to-transparent",
     },
     {
-      title: 'Carne Premium',
-      content: 'Trabajamos con los mejores proveedores locales para ofrecerte cortes de primera calidad. Cada pieza es seleccionada por nuestro maestro parrillero con más de dos décadas de experiencia.',
-      icon: '🥩',
-      gradient: 'from-fire-red/20 to-flame-blue/20',
+      title: "Carne Premium",
+      content:
+        "Trabajamos con los mejores proveedores locales para ofrecerte cortes de primera calidad. Cada pieza es seleccionada por nuestro maestro parrillero con más de dos décadas de experiencia.",
+      icon: "🥩",
+      gradient: "from-fire-red/20 to-flame-blue/20",
     },
   ];
 
@@ -69,6 +72,7 @@ export function StorySection() {
             title={block.title}
             content={block.content}
             icon={block.icon}
+            iconImage={block.iconImage}
             gradient={block.gradient}
             index={index}
           />
@@ -95,4 +99,3 @@ export function StorySection() {
     </div>
   );
 }
-

@@ -30,7 +30,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "La Parrilla de Champi | Carne a la Brasa",
-  description: "¡Que pasa gentuza! Descubre la mejor carne a la brasa de la ciudad. Experiencia gastronómica única con sabor a fuego y mar.",
+  description:
+    "¡Que pasa gentuza! Descubre la mejor carne a la brasa de la ciudad. Experiencia gastronómica única con sabor a fuego y mar.",
   keywords: "parrilla, carne a la brasa, restaurante, champi, asador, barbacoa",
   authors: [{ name: "La Parrilla de Champi" }],
   openGraph: {
@@ -53,18 +54,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html 
-      lang="es" 
+    <html
+      lang="es"
+      suppressHydrationWarning={true}
       className={`dark ${bebasNeue.variable} ${barlowCondensed.variable} ${inter.variable}`}
     >
       <body className="overflow-x-hidden">
         <DeviceDetector />
-        <ClientProviders>
-          {children}
-        </ClientProviders>
+        <ClientProviders>{children}</ClientProviders>
         <Analytics />
       </body>
     </html>
   );
 }
-

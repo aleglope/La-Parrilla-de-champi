@@ -57,7 +57,7 @@ export function MenuHeader() {
               aria-label={`Volver a ${t.nav.home}`}
               className="hidden sm:block group"
             >
-              <span className="inline-flex items-center gap-3 rounded-full border border-flame-blue/30 bg-white/5 px-5 py-2 font-heading text-[0.65rem] uppercase tracking-[0.55em] text-ash-200 transition-all duration-300 group-hover:bg-fire-red/10 group-hover:border-fire-red/50 group-hover:text-ash-50 group-hover:shadow-[0_18px_50px_rgba(192,31,25,0.35)]">
+              <span className="inline-flex items-center gap-3 rounded-full border border-flame-blue/30 bg-white/5 px-5 py-2 font-heading text-[0.85rem] uppercase tracking-[0.55em] text-ash-200 transition-all duration-300 group-hover:bg-fire-red/10 group-hover:border-fire-red/50 group-hover:text-ash-50 group-hover:shadow-[0_18px_50px_rgba(192,31,25,0.35)]">
                 <span className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-charcoal-dark via-charcoal-light/30 to-charcoal-dark shadow-[0_10px_25px_rgba(0,0,0,0.45)] text-ash-100 text-lg transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-fire-red/80 group-hover:via-fire-red group-hover:to-flame-blue/60 group-hover:border-transparent group-hover:text-white">
                   <span
                     className="absolute inset-0 rounded-full bg-gradient-to-br from-fire-red/30 via-transparent to-flame-blue/30 blur-md opacity-70 transition-opacity duration-300 group-hover:opacity-100"

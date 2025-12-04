@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 /**
  * Formulario de login para el admin
@@ -10,34 +10,34 @@ import { motion } from 'framer-motion';
  */
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        router.push('/admin');
+        router.push("/admin");
         router.refresh();
       } else {
-        setError(data.error || 'Credenciales incorrectas');
+        setError(data.error || "Credenciales incorrectas");
       }
     } catch (err) {
-      setError('Error al iniciar sesión');
-      console.error('Login error:', err);
+      setError("Error al iniciar sesión");
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +46,10 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-300 mb-2"
+        >
           Email
         </label>
         <input
@@ -61,7 +64,10 @@ export function LoginForm() {
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-300 mb-2"
+        >
           Contraseña
         </label>
         <input
@@ -93,20 +99,27 @@ export function LoginForm() {
         {isLoading ? (
           <span className="flex items-center justify-center">
             <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
             </svg>
             Verificando...
           </span>
         ) : (
-          'Iniciar Sesión'
+          "Iniciar Sesión"
         )}
       </button>
-
-      <p className="text-xs text-gray-500 text-center">
-        Credenciales por defecto: admin@laparrilla.com / admin123
-      </p>
     </form>
   );
 }
-

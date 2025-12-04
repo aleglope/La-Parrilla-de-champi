@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export function Footer() {
   const { t } = useLanguage();
@@ -16,27 +16,30 @@ export function Footer() {
           La Parrilla de Champi - {t.nav.subtitle}
         </p>
         <div className="flex justify-center space-x-6 text-sm text-ash-400 font-body">
-          <Link href="/menu" className="hover:text-flame-blue-bright transition-colors">
+          <Link
+            href="/menu"
+            className="hover:text-flame-blue-bright transition-colors"
+          >
             {t.nav.menu}
           </Link>
           <span>|</span>
-          <Link href="/#story" className="hover:text-flame-blue-bright transition-colors">
+          <Link
+            href="/#story"
+            className="hover:text-flame-blue-bright transition-colors"
+          >
             {t.story.title}
           </Link>
           <span>|</span>
-          <Link href="/admin" className="hover:text-flame-blue-bright transition-colors">
+          <Link
+            href="/admin"
+            className="hover:text-flame-blue-bright transition-colors"
+          >
             Admin
           </Link>
         </div>
         <div className="flex justify-center space-x-6 text-xs text-ash-500 font-body mt-6">
-          <Link href="#" className="hover:text-ash-300">
-            {t.footer.privacy}
-          </Link>
-          <Link href="#" className="hover:text-ash-300">
-            {t.footer.terms}
-          </Link>
-          <Link href="#" className="hover:text-ash-300">
-            {t.footer.contact}
+          <Link href="/aviso-legal" className="hover:text-ash-300">
+            {t.footer.legalNotice}
           </Link>
         </div>
         <p className="text-xs text-ash-500 font-body mt-4">
@@ -46,8 +49,3 @@ export function Footer() {
     </footer>
   );
 }
-
-
-
-
-
