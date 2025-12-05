@@ -20,34 +20,33 @@ export function StorySection() {
     {
       title: "El Fuego que nos une",
       content: t.story.p1,
-      icon: "🔥",
       iconImage: "/images/llama-de-historia.webp",
       gradient: "from-fire-red/20 to-transparent",
     },
     {
       title: "El Alma del Mar",
       content: t.story.p2,
-      icon: "🌊",
+      iconImage: "/images/ola-del-mar.svg",
       gradient: "from-flame-blue/20 to-transparent",
     },
     {
       title: "Carbón de Calidad",
-      content:
-        "Seleccionamos cuidadosamente cada pieza de carbón de encina. El secreto está en la brasa perfecta: no muy fuerte para quemar, no muy suave para cocinar. El punto justo que hace brillar cada corte.",
-      icon: "⚫",
-      gradient: "from-charcoal/20 to-transparent",
+      content: t.story.p3,
+      iconImage: "/images/parrilla.svg",
+      imageClassName: "rounded-full border-2 border-white/10",
+      gradient: "from-charcoal-dark/60 to-charcoal/30",
     },
     {
       title: "Carne Premium",
-      content:
-        "Trabajamos con los mejores proveedores locales para ofrecerte cortes de primera calidad. Cada pieza es seleccionada por nuestro maestro parrillero con más de dos décadas de experiencia.",
-      icon: "🥩",
-      gradient: "from-fire-red/20 to-flame-blue/20",
+      content: t.story.p4,
+      iconImage: "/images/parrilla-carne.svg",
+      imageClassName: "rounded-full border-2 border-white/10",
+      gradient: "from-fire-red/30 to-fire-red-dark/10",
     },
   ];
 
   return (
-    <div className="container-custom">
+    <div className="container-custom relative">
       {/* Título de la sección */}
       <motion.div
         ref={titleRef}
@@ -71,8 +70,8 @@ export function StorySection() {
             key={index}
             title={block.title}
             content={block.content}
-            icon={block.icon}
             iconImage={block.iconImage}
+            imageClassName={block.imageClassName}
             gradient={block.gradient}
             index={index}
           />
