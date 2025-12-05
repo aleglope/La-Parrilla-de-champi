@@ -21,7 +21,8 @@ export const translations = {
       subtitle: "Desde 1995",
       p1: "En La Parrilla de Champi, llevamos más de 25 años dedicados a perfeccionar el arte de la parrilla. Lo que comenzó como un pequeño sueño familiar se ha convertido en un referente gastronómico.",
       p2: "Nuestra pasión por la calidad y el servicio nos impulsa cada día. Seleccionamos las mejores carnes y productos locales para ofrecer una experiencia inolvidable a nuestros comensales.",
-      p3: "Ven a conocernos y descubre por qué nuestros clientes vuelven una y otra vez.",
+      p3: "Seleccionamos cuidadosamente cada pieza de carbón de encina. El secreto está en la brasa perfecta: no muy fuerte para quemar, no muy suave para cocinar. El punto justo que hace brillar cada corte.",
+      p4: "Trabajamos con los mejores proveedores locales para ofrecerte cortes de primera calidad. Cada pieza es seleccionada por nuestro maestro parrillero con más de dos décadas de experiencia.",
       cta: "Conócenos Mejor",
     },
     cta: {
@@ -79,7 +80,8 @@ export const translations = {
       subtitle: "Dende 1995",
       p1: "Na Parrilla de Champi, levamos máis de 25 anos dedicados a perfeccionar a arte da parrilla. O que comezou como un pequeno soño familiar converteuse nun referente gastronómico.",
       p2: "A nosa paixón pola calidade e o servizo impúlsanos cada día. Seleccionamos as mellores carnes e produtos locais para ofrecer unha experiencia inesquecible aos nosos comensais.",
-      p3: "Ven a coñecernos e descubre por que os nosos clientes volven unha e outra vez.",
+      p3: "Seleccionamos coidadosamente cada peza de carbón de encina. O segredo está na brasa perfecta: non moi forte para queimar, non moi suave para cociñar. O punto xusto que fai brillar cada corte.",
+      p4: "Traballamos cos mellores provedores locais para ofrecerche cortes de primeira calidade. Cada peza é seleccionada polo noso mestre parrilleiro con máis de dúas décadas de experiencia.",
       cta: "Coñécenos Mellor",
     },
     cta: {
