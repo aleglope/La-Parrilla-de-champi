@@ -37,20 +37,20 @@ export default function LegalNoticePage() {
                 <h3 className="text-lg font-bold text-ash-100">
                   Denominación Social
                 </h3>
-                <p>[Nombre del Restaurante / Razón Social]</p>
+                <p>LA PARRILLA DE CHAMPI SL</p>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-lg font-bold text-ash-100">NIF/CIF</h3>
-                <p>[Número de Identificación Fiscal]</p>
+                <h3 className="text-lg font-bold text-ash-100">NIF</h3>
+                <p>B24828030</p>
               </div>
 
               <div className="space-y-2">
                 <h3 className="text-lg font-bold text-ash-100">
                   Domicilio Social
                 </h3>
-                <p>[Dirección Completa del Restaurante]</p>
-                <p>[Código Postal, Ciudad, Provincia]</p>
+                <p>PRAZA MARQUES DE MONROY, NUM 8 PLANTA BAJ</p>
+                <p>15200 NOIA - (A CORUÑA)</p>
               </div>
 
               <div className="space-y-2">
@@ -65,13 +65,9 @@ export default function LegalNoticePage() {
                 Datos Registrales
               </h3>
               <p>
-                [Datos de inscripción en el Registro Mercantil: Tomo, Folio,
-                Sección, Hoja, etc.]
+                Inscrita en el Registro Mercantil de SANTIAGO DE COMPOSTELA.
                 <br />
-                <span className="text-sm text-ash-400 italic">
-                  (Solo si el restaurante está inscrito en el Registro
-                  Mercantil)
-                </span>
+                IRUS: 1000461862464
               </p>
             </div>
           </div>

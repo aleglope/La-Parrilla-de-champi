@@ -8,8 +8,9 @@ import Image from "next/image";
 interface StoryBlockProps {
   readonly title: string;
   readonly content: string;
-  readonly icon: string;
+  readonly icon?: string; // Optional emoji icon (deprecated, use iconImage instead)
   readonly iconImage?: string; // Optional image path for icon
+  readonly imageClassName?: string; // Optional custom classes for the image
   readonly gradient: string;
   readonly index: number;
 }
@@ -22,6 +23,7 @@ export function StoryBlock({
   content,
   icon,
   iconImage,
+  imageClassName,
   gradient,
   index,
 }: StoryBlockProps) {
@@ -69,7 +71,9 @@ export function StoryBlock({
                 alt={title}
                 width={128}
                 height={128}
-                className="w-20 h-20 md:w-32 md:h-32 object-contain"
+                className={`w-20 h-20 md:w-32 md:h-32 object-contain ${
+                  imageClassName || ""
+                }`}
               />
             ) : (
               <span className="text-6xl md:text-8xl">{icon}</span>

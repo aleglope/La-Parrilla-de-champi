@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ClientProviders } from "@/components/providers/ClientProviders";
 import { DeviceDetector } from "@/components/utils/DeviceDetector";
@@ -40,11 +40,12 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_ES",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
   themeColor: "#C01F19",
 };
 

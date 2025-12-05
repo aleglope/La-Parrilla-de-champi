@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import BrandButton from "@/components/ui/BrandButton";
 
