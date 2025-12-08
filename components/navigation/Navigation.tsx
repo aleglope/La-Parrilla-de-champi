@@ -48,7 +48,7 @@ export function Navigation() {
       hoverStyles: { bgColor: "#1789C0", textColor: "#ffffff" }, // Bright Blue
     },
     {
-      label: "Reservar",
+      label: t.nav.reservations,
       href: "/reservas",
       rotation: 5,
       hoverStyles: { bgColor: "#283435", textColor: "#ffffff" }, // Charcoal
@@ -132,6 +132,10 @@ export function Navigation() {
 
               <BrandButton href="/menu" className="!text-base">
                 {t.nav.menu}
+              </BrandButton>
+
+              <BrandButton href="/reservas" className="!text-base">
+                {t.nav.reservations}
               </BrandButton>
             </div>
 

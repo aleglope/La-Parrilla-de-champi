@@ -37,9 +37,17 @@ export function Footer() {
             Admin
           </Link>
         </div>
-        <div className="flex justify-center space-x-6 text-xs text-ash-500 font-body mt-6">
+        <div className="flex justify-center flex-wrap gap-4 text-xs text-ash-500 font-body mt-6">
           <Link href="/aviso-legal" className="hover:text-ash-300">
             {t.footer.legalNotice}
+          </Link>
+          <span>|</span>
+          <Link href="/politica-privacidad" className="hover:text-ash-300">
+            {t.footer.privacyPolicy}
+          </Link>
+          <span>|</span>
+          <Link href="/politica-cookies" className="hover:text-ash-300">
+            {t.footer.cookiePolicy}
           </Link>
         </div>
         <p className="text-xs text-ash-500 font-body mt-4">
