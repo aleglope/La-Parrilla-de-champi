@@ -1,0 +1,82 @@
+.navButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.navButtonPrimary {
+  background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(221, 36, 118, 0.3);
+}
+
+.navButtonPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(221, 36, 118, 0.4);
+}
+
+.navButtonPrimary:active {
+  transform: translateY(0);
+}
+
+.navButtonSecondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #a0aec0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.navButtonSecondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.navButtonLink {
+  color: #60a5fa;
+  background: transparent;
+  padding: 0.625rem 1rem;
+}
+
+.navButtonLink:hover {
+  color: #93c5fd;
+  transform: translateX(4px);
+  text-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.logoContainer {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(221, 36, 118, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.logoContainer:hover {
+  transform: rotate(5deg) scale(1.05);
+}
+
+.headerTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(to right, #fff, #cbd5e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
