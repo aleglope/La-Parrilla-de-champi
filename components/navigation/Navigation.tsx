@@ -3,15 +3,21 @@
 import { useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { translations } from "@/lib/i18n/translations";
 import BubbleMenu from "./BubbleMenu";
 import BrandButton from "@/components/ui/BrandButton";
+import InfoModal from "@/components/ui/InfoModal";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const [showClosedModal, setShowClosedModal] = useState(false);
+  const [checkingReservations, setCheckingReservations] = useState(false);
   const { scrollY } = useScroll();
   const { t, language, setLanguage } = useLanguage();
+  const router = useRouter();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() || 0;
@@ -52,8 +58,42 @@ export function Navigation() {
       href: "/reservas",
       rotation: 5,
       hoverStyles: { bgColor: "#283435", textColor: "#ffffff" }, // Charcoal
+      onClick: (e: React.MouseEvent) => handleReservationClick(e), // Add custom handler
     },
   ];
+
+  const handleReservationClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (checkingReservations) return;
+
+    setCheckingReservations(true);
+
+    try {
+      const response = await fetch("/api/reservations/settings");
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.reservationsEnabled) {
+          // Reservations are open, navigate
+          router.push("/reservas");
+        } else {
+          // Reservations are closed, show modal
+          setShowClosedModal(true);
+        }
+      } else {
+        // Error checking status, allow navigation anyway
+        console.error("Error checking reservation status:", data.error);
+        router.push("/reservas");
+      }
+    } catch (error) {
+      // Network error, allow navigation anyway
+      console.error("Network error checking reservation status:", error);
+      router.push("/reservas");
+    } finally {
+      setCheckingReservations(false);
+    }
+  };
 
   const toggleLanguage = () => {
     setLanguage(language === "es" ? "gl" : "es");
@@ -134,8 +174,11 @@ export function Navigation() {
                 {t.nav.menu}
               </BrandButton>
 
-              <BrandButton href="/reservas" className="!text-base">
-                {t.nav.reservations}
+              <BrandButton
+                onClick={handleReservationClick}
+                className="!text-base cursor-pointer"
+              >
+                {checkingReservations ? "..." : t.nav.reservations}
               </BrandButton>
             </div>
 
@@ -196,6 +239,16 @@ export function Navigation() {
           isHidden={isHidden}
         />
       </motion.div>
+
+      {/* Info Modal for closed reservations */}
+      <InfoModal
+        isOpen={showClosedModal}
+        onClose={() => setShowClosedModal(false)}
+        title={translations[language].reservations.closed.title}
+        message={translations[language].reservations.closed.message}
+        icon="🔒"
+        buttonText={translations[language].reservations.closed.button}
+      />
     </>
   );
 }

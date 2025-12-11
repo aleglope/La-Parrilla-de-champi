@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { DayPicker } from "react-day-picker";
 import { format, parse } from "date-fns";
 import { es } from "date-fns/locale";
@@ -30,7 +31,18 @@ export default function DatePicker({
   placeholder = "Selecciona una fecha",
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({
+    top: 0,
+    left: 0,
+    width: 0,
+  });
   const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Parse value to Date or undefined
   const selectedDate = value
@@ -66,6 +78,37 @@ export default function DatePicker({
     }
   };
 
+  // Calculate dropdown position
+  const updateDropdownPosition = () => {
+    if (!buttonRef.current) return;
+
+    const rect = buttonRef.current.getBoundingClientRect();
+    setDropdownPosition({
+      top: rect.bottom + window.scrollY + 8,
+      left: rect.left + window.scrollX,
+      width: rect.width,
+    });
+  };
+
+  // Update position when opening or on scroll/resize
+  useEffect(() => {
+    if (isOpen) {
+      updateDropdownPosition();
+
+      const handleScroll = () => updateDropdownPosition();
+      const handleResize = () => updateDropdownPosition();
+
+      // Capture phase to catch all scrolls
+      window.addEventListener("scroll", handleScroll, true);
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+        window.removeEventListener("scroll", handleScroll, true);
+        window.removeEventListener("resize", handleResize);
+      };
+    }
+  }, [isOpen]);
+
   // Close calendar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -94,6 +137,7 @@ export default function DatePicker({
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Input Button */}
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
@@ -139,150 +183,176 @@ export default function DatePicker({
         </svg>
       </button>
 
-      {/* Calendar Dropdown */}
-      {isOpen && !disabled && (
-        <div className="absolute top-full left-0 mt-2 z-[9999] bg-charcoal-light border-2 border-flame-blue/30 rounded-2xl p-4 shadow-2xl shadow-black/50 backdrop-blur-lg animate-[fadeInScale_0.2s_ease-out]">
-          <style jsx global>{`
-            /* DayPicker Tailwind overrides */
-            .rdp {
-              --rdp-cell-size: 40px;
-              margin: 0;
-              color: #ebe8e3;
-            }
-
-            .rdp-caption {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              margin-bottom: 1rem;
-            }
-
-            .rdp-caption_label {
-              font-size: 1.125rem;
-              font-weight: 700;
-              background: linear-gradient(to right, #c01f19, #1789c0, #c01f19);
-              background-size: 200% auto;
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              background-clip: text;
-              animation: gradient-shift 4s ease infinite;
-            }
-
-            @keyframes gradient-shift {
-              0%,
-              100% {
-                background-position: 0% center;
-              }
-              50% {
-                background-position: 100% center;
-              }
-            }
-
-            .rdp-nav_button {
-              width: 32px;
-              height: 32px;
-              border-radius: 0.5rem;
-              background: transparent;
-              border: none;
-              color: #b8b3ab;
-              cursor: pointer;
-              transition: all 0.2s ease;
-            }
-
-            .rdp-nav_button:hover:not(:disabled) {
-              background: #314a78;
-              color: #f5f3f0;
-              transform: scale(1.1);
-            }
-
-            .rdp-nav_button:disabled {
-              opacity: 0.3;
-              cursor: not-allowed;
-            }
-
-            .rdp-head_cell {
-              color: #9a948b;
-              font-weight: 600;
-              font-size: 0.875rem;
-              text-transform: uppercase;
-              padding: 0.5rem 0;
-            }
-
-            .rdp-cell {
-              padding: 2px;
-            }
-
-            .rdp-button {
-              width: 100%;
-              height: 100%;
-              border-radius: 0.5rem;
-              border: 2px solid transparent;
-              background: transparent;
-              color: #b8b3ab;
-              font-weight: 500;
-              cursor: pointer;
-              transition: all 0.2s ease;
-            }
-
-            .rdp-button:hover:not(.rdp-day_disabled):not(.day-selected) {
-              background: rgba(23, 137, 192, 0.2);
-              color: #ebe8e3;
-              border-color: #1789c0;
-              transform: scale(1.05);
-            }
-
-            .rdp-day_today:not(.day-selected) {
-              font-weight: 700;
-              color: #1789c0;
-            }
-
-            .day-selected {
-              background: linear-gradient(135deg, #1789c0, #314a78) !important;
-              color: white !important;
-              font-weight: 700;
-              border-color: #2699d0;
-              box-shadow: 0 4px 12px rgba(23, 137, 192, 0.4);
-            }
-
-            .day-selected:hover {
-              background: linear-gradient(135deg, #2699d0, #1789c0) !important;
-              transform: scale(1.05);
-            }
-
-            .day-disabled {
-              color: #7c766d !important;
-              opacity: 0.4;
-              cursor: not-allowed !important;
-              text-decoration: line-through;
-              background: rgba(124, 118, 109, 0.1) !important;
-            }
-
-            .day-disabled:hover {
-              background: rgba(124, 118, 109, 0.1) !important;
-              transform: none !important;
-              border-color: transparent !important;
-            }
-
-            .rdp-day_outside {
-              opacity: 0.5;
-            }
-          `}</style>
-          <DayPicker
-            mode="single"
-            selected={selectedDate}
-            onSelect={handleDayClick}
-            disabled={disabledDays}
-            locale={es}
-            showOutsideDays
-            fixedWeeks
-            modifiersClassNames={{
-              selected: "day-selected",
-              disabled: "day-disabled",
-              today: "day-today",
+      {/* Calendar Dropdown - Rendered as Portal with absolute positioning */}
+      {mounted &&
+        isOpen &&
+        !disabled &&
+        createPortal(
+          <div
+            ref={containerRef}
+            className="absolute bg-charcoal-light border-2 border-flame-blue/30 rounded-2xl p-4 shadow-2xl shadow-black/50 backdrop-blur-lg animate-[fadeInScale_0.2s_ease-out]"
+            style={{
+              top: `${dropdownPosition.top}px`,
+              left: `${dropdownPosition.left}px`,
+              minWidth: `${dropdownPosition.width}px`,
+              zIndex: 99999,
             }}
-          />
-        </div>
-      )}
+          >
+            <style jsx global>{`
+              /* DayPicker Tailwind overrides */
+              .rdp {
+                --rdp-cell-size: 40px;
+                margin: 0;
+                color: #ebe8e3;
+              }
+
+              .rdp-caption {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 1rem;
+              }
+
+              .rdp-caption_label {
+                font-size: 1.125rem;
+                font-weight: 700;
+                background: linear-gradient(
+                  to right,
+                  #c01f19,
+                  #1789c0,
+                  #c01f19
+                );
+                background-size: 200% auto;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                animation: gradient-shift 4s ease infinite;
+              }
+
+              @keyframes gradient-shift {
+                0%,
+                100% {
+                  background-position: 0% center;
+                }
+                50% {
+                  background-position: 100% center;
+                }
+              }
+
+              .rdp-nav_button {
+                width: 32px;
+                height: 32px;
+                border-radius: 0.5rem;
+                background: transparent;
+                border: none;
+                color: #b8b3ab;
+                cursor: pointer;
+                transition: all 0.2s ease;
+              }
+
+              .rdp-nav_button:hover:not(:disabled) {
+                background: #314a78;
+                color: #f5f3f0;
+                transform: scale(1.1);
+              }
+
+              .rdp-nav_button:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+              }
+
+              .rdp-head_cell {
+                color: #9a948b;
+                font-weight: 600;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                padding: 0.5rem 0;
+              }
+
+              .rdp-cell {
+                padding: 2px;
+              }
+
+              .rdp-button {
+                width: 100%;
+                height: 100%;
+                border-radius: 0.5rem;
+                border: 2px solid transparent;
+                background: transparent;
+                color: #b8b3ab;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+              }
+
+              .rdp-button:hover:not(.rdp-day_disabled):not(.day-selected) {
+                background: rgba(23, 137, 192, 0.2);
+                color: #ebe8e3;
+                border-color: #1789c0;
+                transform: scale(1.05);
+              }
+
+              .rdp-day_today:not(.day-selected) {
+                font-weight: 700;
+                color: #1789c0;
+              }
+
+              .day-selected {
+                background: linear-gradient(
+                  135deg,
+                  #1789c0,
+                  #314a78
+                ) !important;
+                color: white !important;
+                font-weight: 700;
+                border-color: #2699d0;
+                box-shadow: 0 4px 12px rgba(23, 137, 192, 0.4);
+              }
+
+              .day-selected:hover {
+                background: linear-gradient(
+                  135deg,
+                  #2699d0,
+                  #1789c0
+                ) !important;
+                transform: scale(1.05);
+              }
+
+              .day-disabled {
+                color: #7c766d !important;
+                opacity: 0.4;
+                cursor: not-allowed !important;
+                text-decoration: line-through;
+                background: rgba(124, 118, 109, 0.1) !important;
+              }
+
+              .day-disabled:hover {
+                background: rgba(124, 118, 109, 0.1) !important;
+                transform: none !important;
+                border-color: transparent !important;
+              }
+
+              .rdp-day_outside {
+                opacity: 0.5;
+              }
+            `}</style>
+            <DayPicker
+              mode="single"
+              selected={selectedDate}
+              onSelect={handleDayClick}
+              disabled={disabledDays}
+              locale={es}
+              showOutsideDays
+              fixedWeeks
+              modifiersClassNames={{
+                selected: "day-selected",
+                disabled: "day-disabled",
+                today: "day-today",
+              }}
+            />
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

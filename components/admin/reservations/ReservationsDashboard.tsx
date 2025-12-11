@@ -7,6 +7,7 @@ import type { Reservation, ReservationStatus } from "@/lib/types/reservations";
 import CapacityManager from "./CapacityManager";
 import ClosedDaysManager from "./ClosedDaysManager";
 import DatePicker from "@/components/ui/DatePicker";
+import ReservationToggle from "./ReservationToggle";
 
 export default function ReservationsDashboard() {
   const { language } = useLanguage();
@@ -141,6 +142,11 @@ export default function ReservationsDashboard() {
         >
           🔄 Actualizar
         </button>
+      </div>
+
+      {/* Reservation Toggle */}
+      <div className="mb-8">
+        <ReservationToggle />
       </div>
 
       {/* Tabs Navigation */}

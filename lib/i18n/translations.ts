@@ -185,6 +185,19 @@ export const translations = {
           status: "Estado",
           actions: "Acciones",
         },
+        toggle: {
+          title: "Sistema de Reservas Online",
+          enabled: "Activo",
+          disabled: "Cerrado",
+          confirmEnable: "¿Activar reservas online?",
+          confirmDisable: "¿Cerrar el sistema de reservas?",
+        },
+      },
+      closed: {
+        title: "Reservas Cerradas Temporalmente",
+        message:
+          "Lo sentimos, pero el restaurante tiene cerradas las reservas online en este momento. Por favor, llámanos directamente para consultar disponibilidad.",
+        button: "Entendido",
       },
     },
   },
@@ -372,6 +385,19 @@ export const translations = {
           status: "Estado",
           actions: "Accións",
         },
+        toggle: {
+          title: "Sistema de Reservas Online",
+          enabled: "Activo",
+          disabled: "Pechado",
+          confirmEnable: "¿Activar reservas online?",
+          confirmDisable: "¿Pechar o sistema de reservas?",
+        },
+      },
+      closed: {
+        title: "Reservas Pechadas Temporalmente",
+        message:
+          "Sentímolo, pero o restaurante ten pechadas as reservas online neste momento. Por favor, chámanos directamente para consultar dispoñibilidade.",
+        button: "Entendido",
       },
     },
   },

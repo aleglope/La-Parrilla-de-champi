@@ -40,6 +40,29 @@ export default function ReservationForm() {
     guests: number;
   } | null>(null);
   const [closedDays, setClosedDays] = useState<string[]>([]);
+  const [reservationsEnabled, setReservationsEnabled] = useState<boolean>(true);
+  const [checkingStatus, setCheckingStatus] = useState<boolean>(true);
+
+  // Check if reservations are globally enabled
+  useEffect(() => {
+    checkReservationStatus();
+  }, []);
+
+  const checkReservationStatus = async () => {
+    try {
+      const response = await fetch("/api/reservations/settings");
+      if (response.ok) {
+        const data = await response.json();
+        setReservationsEnabled(data.reservationsEnabled ?? true);
+      }
+    } catch (error) {
+      console.error("Error checking reservation status:", error);
+      // On error, assume enabled to not block users
+      setReservationsEnabled(true);
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
 
   // Fetch closed days on mount
   useEffect(() => {
@@ -241,6 +264,43 @@ export default function ReservationForm() {
 
   // Get minimum date (today)
   const today = new Date().toISOString().split("T")[0];
+
+  if (checkingStatus) {
+    return (
+      <div className="glass-card max-w-3xl mx-auto p-12 text-center">
+        <div className="animate-pulse">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-flame-blue to-flame-blue-bright rounded-full" />
+          <p className="text-ash-300 font-body">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!reservationsEnabled) {
+    return (
+      <div className="glass-card max-w-3xl mx-auto p-12 text-center">
+        {/* Icon */}
+        <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-fire-red to-fire-red-dark rounded-full flex items-center justify-center text-5xl text-white shadow-lg">
+          🔒
+        </div>
+
+        {/* Title */}
+        <h2 className="text-3xl font-heading font-black mb-4">
+          <span className="gradient-text">{t.closed.title}</span>
+        </h2>
+
+        {/* Message */}
+        <p className="text-ash-300 text-lg mb-8 leading-relaxed font-body max-w-lg mx-auto">
+          {t.closed.message}
+        </p>
+
+        {/* Back Button */}
+        <BrandButton onClick={() => (window.location.href = "/")}>
+          Volver al Inicio
+        </BrandButton>
+      </div>
+    );
+  }
 
   if (success) {
     return (

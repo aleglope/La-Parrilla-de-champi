@@ -18,7 +18,7 @@ interface ReservationEmailData {
 export async function sendReservationConfirmation(data: ReservationEmailData) {
   try {
     const { data: emailData, error } = await resend.emails.send({
-      from: "La Parrilla de Champi <reservas@laparrilladechampi.com>",
+      from: "La Parrilla de Champi <reservas@reservas.laparrilladechampi.es>",
       to: [data.guestEmail],
       subject: `Confirmación de Reserva - ${data.reservationDate} a las ${data.timeSlot}`,
       html: generateConfirmationEmailHTML(data),
@@ -45,7 +45,7 @@ export async function sendAdminNotification(data: ReservationEmailData) {
     const adminEmail = process.env.ADMIN_EMAIL || "admin@laparrilla.com";
 
     const { data: emailData, error } = await resend.emails.send({
-      from: "Sistema de Reservas <sistema@laparrilladechampi.com>",
+      from: "Sistema de Reservas <sistema@reservas.laparrilladechampi.es>",
       to: [adminEmail],
       subject: `Nueva Reserva - ${data.reservationDate} a las ${data.timeSlot}`,
       html: generateAdminNotificationHTML(data),
@@ -201,7 +201,9 @@ function generateAdminNotificationHTML(data: ReservationEmailData): string {
       </tr>
       <tr>
         <td style="padding: 10px 0; font-weight: bold;">Comensales:</td>
-        <td style="padding: 10px 0;">${data.guestsCount}</td>
+        <td style="padding: 10px 0; font-weight: bold; font-size: 18px; color: #2c3e50;">${
+          data.guestsCount
+        }</td>
       </tr>
       ${
         data.specialRequests
