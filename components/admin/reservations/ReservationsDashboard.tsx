@@ -8,6 +8,7 @@ import CapacityManager from "./CapacityManager";
 import ClosedDaysManager from "./ClosedDaysManager";
 import DatePicker from "@/components/ui/DatePicker";
 import ReservationToggle from "./ReservationToggle";
+import ManualReservationModal from "./ManualReservationModal";
 
 export default function ReservationsDashboard() {
   const { language } = useLanguage();
@@ -25,6 +26,7 @@ export default function ReservationsDashboard() {
   const [statusFilter, setStatusFilter] = useState<ReservationStatus | "all">(
     "all"
   );
+  const [showManualModal, setShowManualModal] = useState(false);
 
   useEffect(() => {
     if (activeTab === "reservations") {
@@ -136,12 +138,21 @@ export default function ReservationsDashboard() {
         <h1 className="text-4xl font-heading font-black">
           <span className="gradient-text">{t.dashboard}</span>
         </h1>
-        <button
-          onClick={fetchReservations}
-          className="px-6 py-3 bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-200 shadow-lg hover:shadow-flame-blue-bright/30"
-        >
-          🔄 Actualizar
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowManualModal(true)}
+            className="px-6 py-3 bg-gradient-to-r from-fire-red to-fire-red-dark text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-200 shadow-lg hover:shadow-fire-red/30 flex items-center gap-2"
+          >
+            <span className="text-xl">+</span>
+            <span>Nueva Reserva</span>
+          </button>
+          <button
+            onClick={fetchReservations}
+            className="px-6 py-3 bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-200 shadow-lg hover:shadow-flame-blue-bright/30"
+          >
+            🔄 Actualizar
+          </button>
+        </div>
       </div>
 
       {/* Reservation Toggle */}
@@ -406,6 +417,13 @@ export default function ReservationsDashboard() {
           )}
         </>
       )}
+
+      {/* Manual Reservation Modal */}
+      <ManualReservationModal
+        isOpen={showManualModal}
+        onClose={() => setShowManualModal(false)}
+        onSuccess={fetchReservations}
+      />
     </div>
   );
 }
