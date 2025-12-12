@@ -47,6 +47,7 @@ export function CategoryTabs({
 
         {/* Tabs de categorías */}
         {categories
+          .filter((c) => !c.parent_id) // Only show root categories
           .sort((a, b) => a.order_index - b.order_index)
           .map((category) => (
             <BrandButton

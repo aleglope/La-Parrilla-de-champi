@@ -7,6 +7,7 @@ export interface Category {
   name: string;
   name_gl?: string | null;
   order_index: number;
+  parent_id?: string | null;
   created_at: string;
 }
 
@@ -46,4 +47,3 @@ export interface CategoryFormData {
   name_gl?: string;
   order_index: number;
 }
-
