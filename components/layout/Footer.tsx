@@ -15,24 +15,24 @@ export function Footer() {
         <p className="text-ash-400 font-body mb-6">
           La Parrilla de Champi - {t.nav.subtitle}
         </p>
-        <div className="flex justify-center space-x-6 text-sm text-ash-400 font-body">
+        <div className="flex justify-center items-center gap-3 md:gap-6 text-base md:text-sm text-ash-400 font-body">
           <Link
             href="/menu"
-            className="hover:text-flame-blue-bright transition-colors"
+            className="py-3 px-2 hover:text-flame-blue-bright transition-colors touch-manipulation"
           >
             {t.nav.menu}
           </Link>
-          <span>|</span>
+          <span className="select-none">|</span>
           <Link
             href="/#story"
-            className="hover:text-flame-blue-bright transition-colors"
+            className="py-3 px-2 hover:text-flame-blue-bright transition-colors touch-manipulation"
           >
             {t.story.title}
           </Link>
-          <span>|</span>
+          <span className="select-none">|</span>
           <Link
             href="/admin"
-            className="hover:text-flame-blue-bright transition-colors"
+            className="py-3 px-2 hover:text-flame-blue-bright transition-colors touch-manipulation"
           >
             Admin
           </Link>

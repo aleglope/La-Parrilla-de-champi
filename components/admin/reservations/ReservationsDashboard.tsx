@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { translations } from "@/lib/i18n/translations";
 import type { Reservation, ReservationStatus } from "@/lib/types/reservations";
@@ -28,13 +28,7 @@ export default function ReservationsDashboard() {
   );
   const [showManualModal, setShowManualModal] = useState(false);
 
-  useEffect(() => {
-    if (activeTab === "reservations") {
-      fetchReservations();
-    }
-  }, [filter, statusFilter, specificDate, activeTab]);
-
-  const fetchReservations = async () => {
+  const fetchReservations = useCallback(async () => {
     setLoading(true);
     try {
       const today = new Date().toISOString().split("T")[0];
@@ -69,7 +63,13 @@ export default function ReservationsDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, statusFilter, specificDate]);
+
+  useEffect(() => {
+    if (activeTab === "reservations") {
+      fetchReservations();
+    }
+  }, [activeTab, fetchReservations]);
 
   const updateReservationStatus = async (
     id: string,
@@ -129,6 +129,231 @@ export default function ReservationsDashboard() {
       day: "numeric",
       month: "short",
     });
+  };
+
+  // Render the reservations list based on loading/data state
+  const renderReservationsList = () => {
+    if (loading) {
+      return (
+        <div className="text-center py-16 font-body text-xl text-ash-400">
+          Cargando reservas...
+        </div>
+      );
+    }
+
+    if (reservations.length === 0) {
+      return (
+        <div className="glass-card p-12 rounded-2xl text-center">
+          <p className="text-xl font-body text-ash-300">
+            No hay reservas para mostrar
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="glass-card p-6 rounded-2xl overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-ash-500/20">
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                {t.table.date}
+              </th>
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                {t.table.time}
+              </th>
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                {t.table.name}
+              </th>
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                {t.table.guests}
+              </th>
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                {t.table.phone}
+              </th>
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                {t.table.source}
+              </th>
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                {t.table.status}
+              </th>
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                {t.table.actions}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {reservations.map((reservation) => (
+              <tr
+                key={reservation.id}
+                className="border-b border-ash-500/10 hover:bg-charcoal-light/30 transition-colors"
+              >
+                <td className="px-4 py-4 font-body text-ash-100">
+                  {formatDate(reservation.reservationDate)}
+                </td>
+                <td className="px-4 py-4 font-heading font-bold text-fire-red">
+                  {reservation.timeSlot}
+                </td>
+                <td className="px-4 py-4 font-body text-ash-100">
+                  {reservation.guestName}
+                </td>
+                <td className="px-4 py-4 font-body text-ash-100">
+                  {reservation.guestsCount}
+                </td>
+                <td className="px-4 py-4 font-body text-ash-100">
+                  {reservation.guestPhone}
+                </td>
+                <td className="px-4 py-4">
+                  <span className={getSourceBadgeClass(reservation.source)}>
+                    {t.source[reservation.source as keyof typeof t.source]}
+                  </span>
+                </td>
+                <td className="px-4 py-4">
+                  <span className={getStatusBadgeClass(reservation.status)}>
+                    {reservation.status === "no_show"
+                      ? t.status.noShow
+                      : t.status[reservation.status as keyof typeof t.status] ||
+                        reservation.status}
+                  </span>
+                </td>
+                <td className="px-4 py-4">
+                  <div className="flex gap-2">
+                    {reservation.status === "pending" && (
+                      <button
+                        className="px-3 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold transition-colors"
+                        onClick={() =>
+                          updateReservationStatus(reservation.id, "confirmed")
+                        }
+                        title={t.actions.confirm}
+                      >
+                        ✓
+                      </button>
+                    )}
+                    {(reservation.status === "pending" ||
+                      reservation.status === "confirmed") && (
+                      <button
+                        className="px-3 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-bold transition-colors"
+                        onClick={() =>
+                          updateReservationStatus(reservation.id, "cancelled")
+                        }
+                        title={t.actions.cancel}
+                      >
+                        ✕
+                      </button>
+                    )}
+                    {reservation.status === "confirmed" && (
+                      <button
+                        className="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition-colors"
+                        onClick={() =>
+                          updateReservationStatus(reservation.id, "completed")
+                        }
+                        title={t.actions.markCompleted}
+                      >
+                        ✔
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  // Render the content for the active tab
+  const renderTabContent = () => {
+    if (activeTab === "capacity") {
+      return <CapacityManager />;
+    }
+
+    if (activeTab === "closed") {
+      return <ClosedDaysManager />;
+    }
+
+    // Default: Reservations tab
+    return (
+      <>
+        {/* Filters */}
+        <div className="glass-card p-6 rounded-2xl mb-8">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex gap-2">
+              <button
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
+                  filter === "all"
+                    ? "bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white"
+                    : "bg-charcoal-light text-ash-300 hover:bg-charcoal hover:text-ash-100"
+                }`}
+                onClick={() => setFilter("all")}
+              >
+                {t.filters.all}
+              </button>
+              <button
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
+                  filter === "today"
+                    ? "bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white"
+                    : "bg-charcoal-light text-ash-300 hover:bg-charcoal hover:text-ash-100"
+                }`}
+                onClick={() => setFilter("today")}
+              >
+                {t.filters.today}
+              </button>
+              <button
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
+                  filter === "upcoming"
+                    ? "bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white"
+                    : "bg-charcoal-light text-ash-300 hover:bg-charcoal hover:text-ash-100"
+                }`}
+                onClick={() => setFilter("upcoming")}
+              >
+                {t.filters.upcoming}
+              </button>
+              <button
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
+                  filter === "specific"
+                    ? "bg-gradient-to-r from-fire-red to-fire-red-dark text-white"
+                    : "bg-charcoal-light text-ash-300 hover:bg-charcoal hover:text-ash-100"
+                }`}
+                onClick={() => setFilter("specific")}
+              >
+                📅 Fecha específica
+              </button>
+            </div>
+
+            {/* DatePicker for specific date */}
+            {filter === "specific" && (
+              <div className="flex-1 min-w-[250px]">
+                <DatePicker
+                  value={specificDate}
+                  onChange={setSpecificDate}
+                  className="w-full"
+                  placeholder="Selecciona una fecha"
+                />
+              </div>
+            )}
+
+            <select
+              className="px-4 py-2 bg-charcoal-light text-ash-100 border-2 border-flame-blue/30 rounded-xl font-semibold transition-all duration-300 outline-none hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as ReservationStatus | "all")
+              }
+            >
+              <option value="all">{t.filters.all}</option>
+              <option value="pending">{t.status.pending}</option>
+              <option value="confirmed">{t.status.confirmed}</option>
+              <option value="cancelled">{t.status.cancelled}</option>
+              <option value="no_show">{t.status.noShow}</option>
+              <option value="completed">{t.status.completed}</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Reservations List */}
+        {renderReservationsList()}
+      </>
+    );
   };
 
   return (
@@ -195,228 +420,7 @@ export default function ReservationsDashboard() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "capacity" ? (
-        <CapacityManager />
-      ) : activeTab === "closed" ? (
-        <ClosedDaysManager />
-      ) : (
-        <>
-          {/* Filters */}
-          <div className="glass-card p-6 rounded-2xl mb-8">
-            <div className="flex flex-wrap gap-4 items-center">
-              <div className="flex gap-2">
-                <button
-                  className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
-                    filter === "all"
-                      ? "bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white"
-                      : "bg-charcoal-light text-ash-300 hover:bg-charcoal hover:text-ash-100"
-                  }`}
-                  onClick={() => setFilter("all")}
-                >
-                  {t.filters.all}
-                </button>
-                <button
-                  className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
-                    filter === "today"
-                      ? "bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white"
-                      : "bg-charcoal-light text-ash-300 hover:bg-charcoal hover:text-ash-100"
-                  }`}
-                  onClick={() => setFilter("today")}
-                >
-                  {t.filters.today}
-                </button>
-                <button
-                  className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
-                    filter === "upcoming"
-                      ? "bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white"
-                      : "bg-charcoal-light text-ash-300 hover:bg-charcoal hover:text-ash-100"
-                  }`}
-                  onClick={() => setFilter("upcoming")}
-                >
-                  {t.filters.upcoming}
-                </button>
-                <button
-                  className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
-                    filter === "specific"
-                      ? "bg-gradient-to-r from-fire-red to-fire-red-dark text-white"
-                      : "bg-charcoal-light text-ash-300 hover:bg-charcoal hover:text-ash-100"
-                  }`}
-                  onClick={() => setFilter("specific")}
-                >
-                  📅 Fecha específica
-                </button>
-              </div>
-
-              {/* DatePicker for specific date */}
-              {filter === "specific" && (
-                <div className="flex-1 min-w-[250px]">
-                  <DatePicker
-                    value={specificDate}
-                    onChange={setSpecificDate}
-                    className="w-full"
-                    placeholder="Selecciona una fecha"
-                  />
-                </div>
-              )}
-
-              <select
-                className="px-4 py-2 bg-charcoal-light text-ash-100 border-2 border-flame-blue/30 rounded-xl font-semibold transition-all duration-300 outline-none hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
-                value={statusFilter}
-                onChange={(e) =>
-                  setStatusFilter(e.target.value as ReservationStatus | "all")
-                }
-              >
-                <option value="all">{t.filters.all}</option>
-                <option value="pending">{t.status.pending}</option>
-                <option value="confirmed">{t.status.confirmed}</option>
-                <option value="cancelled">{t.status.cancelled}</option>
-                <option value="no_show">{t.status.noShow}</option>
-                <option value="completed">{t.status.completed}</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Reservations List */}
-          {loading ? (
-            <div className="text-center py-16 font-body text-xl text-ash-400">
-              Cargando reservas...
-            </div>
-          ) : reservations.length === 0 ? (
-            <div className="glass-card p-12 rounded-2xl text-center">
-              <p className="text-xl font-body text-ash-300">
-                No hay reservas para mostrar
-              </p>
-            </div>
-          ) : (
-            <div className="glass-card p-6 rounded-2xl overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-ash-500/20">
-                    <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
-                      {t.table.date}
-                    </th>
-                    <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
-                      {t.table.time}
-                    </th>
-                    <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
-                      {t.table.name}
-                    </th>
-                    <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
-                      {t.table.guests}
-                    </th>
-                    <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
-                      {t.table.phone}
-                    </th>
-                    <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
-                      {t.table.source}
-                    </th>
-                    <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
-                      {t.table.status}
-                    </th>
-                    <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
-                      {t.table.actions}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reservations.map((reservation) => (
-                    <tr
-                      key={reservation.id}
-                      className="border-b border-ash-500/10 hover:bg-charcoal-light/30 transition-colors"
-                    >
-                      <td className="px-4 py-4 font-body text-ash-100">
-                        {formatDate(reservation.reservationDate)}
-                      </td>
-                      <td className="px-4 py-4 font-heading font-bold text-fire-red">
-                        {reservation.timeSlot}
-                      </td>
-                      <td className="px-4 py-4 font-body text-ash-100">
-                        {reservation.guestName}
-                      </td>
-                      <td className="px-4 py-4 font-body text-ash-100">
-                        {reservation.guestsCount}
-                      </td>
-                      <td className="px-4 py-4 font-body text-ash-100">
-                        {reservation.guestPhone}
-                      </td>
-                      <td className="px-4 py-4">
-                        <span
-                          className={getSourceBadgeClass(reservation.source)}
-                        >
-                          {
-                            t.source[
-                              reservation.source as keyof typeof t.source
-                            ]
-                          }
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span
-                          className={getStatusBadgeClass(reservation.status)}
-                        >
-                          {t.status[
-                            reservation.status.replace(
-                              "_",
-                              ""
-                            ) as keyof typeof t.status
-                          ] || reservation.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex gap-2">
-                          {reservation.status === "pending" && (
-                            <button
-                              className="px-3 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold transition-colors"
-                              onClick={() =>
-                                updateReservationStatus(
-                                  reservation.id,
-                                  "confirmed"
-                                )
-                              }
-                              title={t.actions.confirm}
-                            >
-                              ✓
-                            </button>
-                          )}
-                          {(reservation.status === "pending" ||
-                            reservation.status === "confirmed") && (
-                            <button
-                              className="px-3 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-bold transition-colors"
-                              onClick={() =>
-                                updateReservationStatus(
-                                  reservation.id,
-                                  "cancelled"
-                                )
-                              }
-                              title={t.actions.cancel}
-                            >
-                              ✕
-                            </button>
-                          )}
-                          {reservation.status === "confirmed" && (
-                            <button
-                              className="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition-colors"
-                              onClick={() =>
-                                updateReservationStatus(
-                                  reservation.id,
-                                  "completed"
-                                )
-                              }
-                              title={t.actions.markCompleted}
-                            >
-                              ✔
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      )}
+      {renderTabContent()}
 
       {/* Manual Reservation Modal */}
       <ManualReservationModal

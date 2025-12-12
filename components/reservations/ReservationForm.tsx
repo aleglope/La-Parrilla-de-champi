@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { translations } from "@/lib/i18n/translations";
 import type {
@@ -43,12 +43,7 @@ export default function ReservationForm() {
   const [reservationsEnabled, setReservationsEnabled] = useState<boolean>(true);
   const [checkingStatus, setCheckingStatus] = useState<boolean>(true);
 
-  // Check if reservations are globally enabled
-  useEffect(() => {
-    checkReservationStatus();
-  }, []);
-
-  const checkReservationStatus = async () => {
+  const checkReservationStatus = useCallback(async () => {
     try {
       const response = await fetch("/api/reservations/settings");
       if (response.ok) {
@@ -62,14 +57,14 @@ export default function ReservationForm() {
     } finally {
       setCheckingStatus(false);
     }
-  };
-
-  // Fetch closed days on mount
-  useEffect(() => {
-    fetchClosedDays();
   }, []);
 
-  const fetchClosedDays = async () => {
+  // Check if reservations are globally enabled
+  useEffect(() => {
+    checkReservationStatus();
+  }, [checkReservationStatus]);
+
+  const fetchClosedDays = useCallback(async () => {
     try {
       const response = await fetch(
         "/api/reservations/availability/closed-days"
@@ -81,7 +76,44 @@ export default function ReservationForm() {
     } catch (error) {
       console.error("Error fetching closed days:", error);
     }
-  };
+  }, []);
+
+  // Fetch closed days on mount
+  useEffect(() => {
+    fetchClosedDays();
+  }, [fetchClosedDays]);
+
+  const fetchAvailableSlots = useCallback(
+    async (date: string) => {
+      setIsLoadingSlots(true);
+      try {
+        const response = await fetch(
+          `/api/reservations/availability?date=${date}`
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setAvailableSlots(data);
+          // Reset time slot if previously selected slot is no longer available
+          if (formData.timeSlot) {
+            const slotStillAvailable = data.timeSlots?.some(
+              (slot: any) => slot.time === formData.timeSlot && slot.available
+            );
+            if (!slotStillAvailable) {
+              setFormData((prev) => ({ ...prev, timeSlot: "" }));
+            }
+          }
+        } else {
+          console.error("Error fetching availability:", data.error);
+        }
+      } catch (error) {
+        console.error("Network error fetching availability:", error);
+      } finally {
+        setIsLoadingSlots(false);
+      }
+    },
+    [formData.timeSlot]
+  );
 
   // Fetch available time slots when date changes
   useEffect(() => {
@@ -90,36 +122,7 @@ export default function ReservationForm() {
     } else {
       setAvailableSlots(null);
     }
-  }, [formData.reservationDate]);
-
-  const fetchAvailableSlots = async (date: string) => {
-    setIsLoadingSlots(true);
-    try {
-      const response = await fetch(
-        `/api/reservations/availability?date=${date}`
-      );
-      const data = await response.json();
-
-      if (response.ok) {
-        setAvailableSlots(data);
-        // Reset time slot if previously selected slot is no longer available
-        if (formData.timeSlot) {
-          const slotStillAvailable = data.timeSlots?.some(
-            (slot: any) => slot.time === formData.timeSlot && slot.available
-          );
-          if (!slotStillAvailable) {
-            setFormData((prev) => ({ ...prev, timeSlot: "" }));
-          }
-        }
-      } else {
-        console.error("Error fetching availability:", data.error);
-      }
-    } catch (error) {
-      console.error("Network error fetching availability:", error);
-    } finally {
-      setIsLoadingSlots(false);
-    }
-  };
+  }, [formData.reservationDate, fetchAvailableSlots]);
 
   const validateForm = (): boolean => {
     const newErrors: ReservationFormErrors = {};
@@ -240,18 +243,24 @@ export default function ReservationForm() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    const type = e.target.type;
+
+    // Transform value based on field type
+    let transformedValue: string | number | boolean;
+    if (type === "checkbox") {
+      transformedValue = checked;
+    } else if (name === "guestsCount") {
+      transformedValue = parseInt(value) || 0;
+    } else {
+      transformedValue = value;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        type === "checkbox"
-          ? checked
-          : name === "guestsCount"
-          ? parseInt(value) || 0
-          : value,
+      [name]: transformedValue,
     }));
+
     // Clear error for this field
     if (errors[name as keyof ReservationFormErrors]) {
       setErrors((prev) => {
@@ -260,6 +269,65 @@ export default function ReservationForm() {
         return newErrors;
       });
     }
+  };
+
+  // Render time slot selector based on loading/availability state
+  const renderTimeSlotSelector = () => {
+    if (isLoadingSlots) {
+      return (
+        <div className="px-4 py-3 bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white rounded-xl text-sm font-medium text-center animate-pulse">
+          {t.availability.loading}
+        </div>
+      );
+    }
+
+    if (!formData.reservationDate) {
+      return (
+        <select
+          className="w-full px-4 py-3 bg-charcoal-light/50 text-ash-400 border-2 border-flame-blue/20 rounded-xl font-body cursor-not-allowed"
+          disabled
+        >
+          <option>{t.form.datePlaceholder}</option>
+        </select>
+      );
+    }
+
+    if (!availableSlots?.isOpen) {
+      return (
+        <div className="px-4 py-3 bg-gradient-to-r from-ash-500 to-ash-400 text-white rounded-xl text-sm font-medium text-center">
+          {t.availability.closed}
+        </div>
+      );
+    }
+
+    if (availableSlots.timeSlots.length === 0) {
+      return (
+        <div className="px-4 py-3 bg-gradient-to-r from-fire-red to-fire-red-dark text-white rounded-xl text-sm font-medium text-center">
+          {t.availability.noSlots}
+        </div>
+      );
+    }
+
+    return (
+      <select
+        id="timeSlot"
+        name="timeSlot"
+        value={formData.timeSlot}
+        onChange={handleInputChange}
+        className={`w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl font-body transition-all duration-300 outline-none cursor-pointer appearance-none bg-[url('data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'12\\' height=\\'12\\' viewBox=\\'0 0 12 12\\'%3E%3Cpath fill=\\'%23B8B3AB\\' d=\\'M6 9L1 4h10z\\'/%3E%3C/svg%3E')] bg-no-repeat bg-[right_1rem_center] pr-10 ${
+          errors.timeSlot
+            ? "border-fire-red"
+            : "border-flame-blue/30 hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
+        }`}
+      >
+        <option value="">{t.form.timePlaceholder}</option>
+        {availableSlots.timeSlots.map((slot) => (
+          <option key={slot.time} value={slot.time} disabled={!slot.available}>
+            {slot.time} {!slot.available && `- ${t.availability.full}`}
+          </option>
+        ))}
+      </select>
+    );
   };
 
   // Get minimum date (today)
@@ -295,7 +363,10 @@ export default function ReservationForm() {
         </p>
 
         {/* Back Button */}
-        <BrandButton onClick={() => (window.location.href = "/")}>
+        <BrandButton
+          onClick={() => (window.location.href = "/")}
+          withGlow={false}
+        >
           Volver al Inicio
         </BrandButton>
       </div>
@@ -377,6 +448,7 @@ export default function ReservationForm() {
           <BrandButton
             onClick={() => setSuccess(false)}
             className="flex-1 sm:flex-initial"
+            withGlow={false}
           >
             {t.confirmation.newReservation}
           </BrandButton>
@@ -548,49 +620,7 @@ export default function ReservationForm() {
           >
             {t.form.time}
           </label>
-          {isLoadingSlots ? (
-            <div className="px-4 py-3 bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white rounded-xl text-sm font-medium text-center animate-pulse">
-              {t.availability.loading}
-            </div>
-          ) : !formData.reservationDate ? (
-            <select
-              className="w-full px-4 py-3 bg-charcoal-light/50 text-ash-400 border-2 border-flame-blue/20 rounded-xl font-body cursor-not-allowed"
-              disabled
-            >
-              <option>{t.form.datePlaceholder}</option>
-            </select>
-          ) : !availableSlots?.isOpen ? (
-            <div className="px-4 py-3 bg-gradient-to-r from-ash-500 to-ash-400 text-white rounded-xl text-sm font-medium text-center">
-              {t.availability.closed}
-            </div>
-          ) : availableSlots.timeSlots.length === 0 ? (
-            <div className="px-4 py-3 bg-gradient-to-r from-fire-red to-fire-red-dark text-white rounded-xl text-sm font-medium text-center">
-              {t.availability.noSlots}
-            </div>
-          ) : (
-            <select
-              id="timeSlot"
-              name="timeSlot"
-              value={formData.timeSlot}
-              onChange={handleInputChange}
-              className={`w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl font-body transition-all duration-300 outline-none cursor-pointer appearance-none bg-[url('data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'12\\' height=\\'12\\' viewBox=\\'0 0 12 12\\'%3E%3Cpath fill=\\'%23B8B3AB\\' d=\\'M6 9L1 4h10z\\'/%3E%3C/svg%3E')] bg-no-repeat bg-[right_1rem_center] pr-10 ${
-                errors.timeSlot
-                  ? "border-fire-red"
-                  : "border-flame-blue/30 hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
-              }`}
-            >
-              <option value="">{t.form.timePlaceholder}</option>
-              {availableSlots.timeSlots.map((slot) => (
-                <option
-                  key={slot.time}
-                  value={slot.time}
-                  disabled={!slot.available}
-                >
-                  {slot.time} {!slot.available && `- ${t.availability.full}`}
-                </option>
-              ))}
-            </select>
-          )}
+          {renderTimeSlotSelector()}
           {errors.timeSlot && (
             <span className="text-fire-red text-sm font-medium">
               {errors.timeSlot}

@@ -247,6 +247,7 @@ export default function BubbleMenu({
           onClick={handleToggle}
           aria-label={menuAriaLabel}
           aria-pressed={isMenuOpen}
+          withGlow={false}
           className={[
             "bubble toggle-bubble menu-btn",
             isMenuOpen ? "open" : "",
