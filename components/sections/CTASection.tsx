@@ -53,7 +53,7 @@ export function CTASection() {
 
           <div className="flex flex-col gap-4 justify-center items-center max-w-md mx-auto w-full">
             <BrandButton
-              href="tel:+34912345678"
+              href="tel:711248086"
               className="w-full"
               withGlow={false}
             >

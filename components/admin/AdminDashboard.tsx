@@ -6,11 +6,10 @@ import { motion } from "framer-motion";
 import { CategoriesManager } from "./CategoriesManager";
 import { DishesManager } from "./DishesManager";
 import type { Category, Dish } from "@/lib/types";
-import styles from "./AdminDashboard.module.css";
 
 interface AdminDashboardProps {
-  categories: Category[];
-  dishes: Dish[];
+  readonly categories: Category[];
+  readonly dishes: Dish[];
 }
 
 /**
@@ -22,7 +21,7 @@ export function AdminDashboard({
 }: AdminDashboardProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"dishes" | "categories">("dishes");
-  const [categories, setCategories] = useState(initialCategories);
+  const [categories] = useState(initialCategories);
   const [dishes, setDishes] = useState(initialDishes);
 
   const handleLogout = async () => {
@@ -51,11 +50,13 @@ export function AdminDashboard({
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className={styles.logoContainer}>
+              <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#ff512f] to-[#dd2476] flex items-center justify-center shadow-lg shadow-[#dd2476]/30 transition-transform duration-300 hover:rotate-[5deg] hover:scale-105">
                 <span className="text-2xl">🔥</span>
               </div>
               <div>
-                <h1 className={styles.headerTitle}>Panel de Administración</h1>
+                <h1 className="text-xl font-extrabold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                  Panel de Administración
+                </h1>
                 <p className="text-sm text-gray-400">La Parrilla de Champi</p>
               </div>
             </div>
@@ -63,7 +64,7 @@ export function AdminDashboard({
             <div className="flex items-center space-x-4">
               <a
                 href="/admin/reservations"
-                className={`${styles.navButton} ${styles.navButtonPrimary}`}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-[0.95rem] bg-gradient-to-br from-[#ff512f] to-[#dd2476] text-white shadow-lg shadow-[#dd2476]/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#dd2476]/40 active:translate-y-0 transition-all duration-300 border-none cursor-pointer no-underline"
               >
                 <span>📅</span>
                 <span>Reservas</span>
@@ -72,13 +73,13 @@ export function AdminDashboard({
                 href="/menu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${styles.navButton} ${styles.navButtonLink}`}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-[0.95rem] text-blue-400 bg-transparent hover:text-blue-300 hover:translate-x-1 hover:shadow-[0_0_20px_rgba(96,165,250,0.4)] transition-all duration-300 no-underline"
               >
                 Ver Menú Público →
               </a>
               <button
                 onClick={handleLogout}
-                className={`${styles.navButton} ${styles.navButtonSecondary}`}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-[0.95rem] bg-white/5 text-gray-400 border border-white/10 backdrop-blur-md hover:bg-white/10 hover:text-white hover:border-white/20 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
               >
                 Cerrar Sesión
               </button>

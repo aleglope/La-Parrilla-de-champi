@@ -182,7 +182,7 @@ export function HeroBentoBox() {
                     Experiencia
                   </h3>
                   <p className="text-sm text-ash-400 font-body">
-                    demostrada masivamente!
+                    Demostrada masivamente!
                   </p>
                 </div>
               </motion.div>
