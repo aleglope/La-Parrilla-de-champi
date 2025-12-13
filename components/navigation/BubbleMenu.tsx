@@ -15,19 +15,19 @@ type MenuItem = {
 };
 
 export type BubbleMenuProps = {
-  logo: ReactNode | string;
-  onMenuClick?: (open: boolean) => void;
-  className?: string;
-  style?: CSSProperties;
-  menuAriaLabel?: string;
-  menuBg?: string;
-  menuContentColor?: string;
-  useFixedPosition?: boolean;
-  items?: MenuItem[];
-  animationEase?: string;
-  animationDuration?: number;
-  staggerDelay?: number;
-  isHidden?: boolean;
+  readonly logo: ReactNode | string;
+  readonly onMenuClick?: (open: boolean) => void;
+  readonly className?: string;
+  readonly style?: CSSProperties;
+  readonly menuAriaLabel?: string;
+  readonly menuBg?: string;
+  readonly menuContentColor?: string;
+  readonly useFixedPosition?: boolean;
+  readonly items?: MenuItem[];
+  readonly animationEase?: string;
+  readonly animationDuration?: number;
+  readonly staggerDelay?: number;
+  readonly isHidden?: boolean;
 };
 
 const DEFAULT_ITEMS: MenuItem[] = [
@@ -313,12 +313,11 @@ export default function BubbleMenu({
               "gap-x-0 gap-y-1",
               "pointer-events-auto",
             ].join(" ")}
-            role="menu"
             aria-label="Menu links"
           >
             {menuItems.map((item, idx) => (
               <li
-                key={idx}
+                key={`${item.label}-${item.href}`}
                 role="none"
                 className={[
                   "pill-col",

@@ -49,7 +49,7 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   try {
     // Verificar autenticación de admin
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const isAdmin = cookieStore.get("admin-auth")?.value === "true";
 
     if (!isAdmin) {

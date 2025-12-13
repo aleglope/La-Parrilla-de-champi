@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   try {
     // Check authentication using admin-auth cookie
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
 
     if (!isAuthenticated) {
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication using admin-auth cookie
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
 
     if (!isAuthenticated) {
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       .upsert(
         {
           date,
-          is_open: isOpen !== undefined ? isOpen : true,
+          is_open: isOpen === undefined ? true : isOpen,
           max_capacity: maxCapacity || null,
           notes: notes || null,
         },
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // Check authentication using admin-auth cookie
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
 
     if (!isAuthenticated) {

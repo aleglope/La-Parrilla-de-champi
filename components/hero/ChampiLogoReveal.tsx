@@ -23,6 +23,73 @@ interface ImagePosition {
   height: number;
 }
 
+// Clase Partícula - moved outside component to avoid linter errors and improve performance
+class Particle {
+  x: number;
+  y: number;
+  baseX: number;
+  baseY: number;
+  color: string;
+  size: number;
+  density: number;
+
+  constructor(x: number, y: number, color: string, particleSize: number) {
+    this.x = x;
+    this.y = y;
+    this.baseX = x;
+    this.baseY = y;
+    this.color = color;
+    this.size = particleSize;
+    this.density = Math.random() * 2 + 1;
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(
+      this.x - this.size / 2,
+      this.y - this.size / 2,
+      this.size,
+      this.size
+    );
+  }
+
+  update(
+    mouse: MousePosition,
+    config: { mouseForce: number; returnSpeed: number }
+  ) {
+    const dx = this.x - this.baseX;
+    const dy = this.y - this.baseY;
+
+    if (mouse.x != null && mouse.y != null) {
+      const mdx = mouse.x - this.x;
+      const mdy = mouse.y - this.y;
+      const distanceSquared = mdx * mdx + mdy * mdy;
+      const maxDistanceSquared = mouse.radius * mouse.radius;
+
+      if (distanceSquared < maxDistanceSquared) {
+        const distance = Math.sqrt(distanceSquared);
+        const force = (mouse.radius - distance) / mouse.radius;
+        const directionX =
+          (mdx / distance) * force * this.density * config.mouseForce;
+        const directionY =
+          (mdy / distance) * force * this.density * config.mouseForce;
+
+        this.x -= directionX;
+        this.y -= directionY;
+        return;
+      }
+    }
+
+    if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+      this.x -= dx * config.returnSpeed;
+      this.y -= dy * config.returnSpeed;
+    } else {
+      this.x = this.baseX;
+      this.y = this.baseY;
+    }
+  }
+}
+
 export default function ChampiLogoReveal() {
   const canvasBackRef = useRef<HTMLCanvasElement>(null);
   const canvasFrontRef = useRef<HTMLCanvasElement>(null);
@@ -32,7 +99,7 @@ export default function ChampiLogoReveal() {
     mouseRadius: 50,
     mouseForce: 30,
     returnSpeed: 0.2,
-    particleSize: 2.0,
+    particleSize: 2,
     density: 1.2,
   });
 
@@ -49,14 +116,14 @@ export default function ChampiLogoReveal() {
         mouseRadius: 80,
         mouseForce: 25,
         density: 1.5, // Ajustado para mejor calidad visual
-        particleSize: 2.0, // Partículas más pequeñas para mayor definición
+        particleSize: 2, // Partículas más pequeñas para mayor definición
       };
     } else {
       // Desktop también necesita partículas más pequeñas para mejor calidad
       configRef.current = {
         ...configRef.current,
-        particleSize: 2.0,
-        density: 1.0, // Menor densidad = más partículas = mejor calidad
+        particleSize: 2,
+        density: 1, // Menor densidad = más partículas = mejor calidad
       };
     }
 
@@ -157,17 +224,22 @@ export default function ChampiLogoReveal() {
         };
       } else {
         return {
-          x: (e as MouseEvent).clientX - rect.left,
-          y: (e as MouseEvent).clientY - rect.top,
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
         };
       }
     }
 
-    // Eventos de mouse/touch
-    const handleMouseMove = (e: MouseEvent) => {
+    // Evento compartido para actualizar posición del mouse/touch
+    const updateMousePosition = (e: MouseEvent | TouchEvent) => {
       const pos = getPosition(e);
       mouse.x = pos.x;
       mouse.y = pos.y;
+    };
+
+    // Eventos de mouse/touch
+    const handleMouseMove = (e: MouseEvent) => {
+      updateMousePosition(e);
     };
 
     const handleMouseLeave = () => {
@@ -176,15 +248,11 @@ export default function ChampiLogoReveal() {
     };
 
     const handleTouchStart = (e: TouchEvent) => {
-      const pos = getPosition(e);
-      mouse.x = pos.x;
-      mouse.y = pos.y;
+      updateMousePosition(e);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      const pos = getPosition(e);
-      mouse.x = pos.x;
-      mouse.y = pos.y;
+      updateMousePosition(e);
     };
 
     const handleTouchEnd = () => {
@@ -211,70 +279,6 @@ export default function ChampiLogoReveal() {
       passive: true,
     });
     canvasFront.addEventListener("touchcancel", handleTouchCancel);
-
-    // Clase Partícula
-    class Particle {
-      x: number;
-      y: number;
-      baseX: number;
-      baseY: number;
-      color: string;
-      size: number;
-      density: number;
-
-      constructor(x: number, y: number, color: string) {
-        this.x = x;
-        this.y = y;
-        this.baseX = x;
-        this.baseY = y;
-        this.color = color;
-        this.size = config.particleSize;
-        this.density = Math.random() * 2 + 1;
-      }
-
-      draw(ctx: CanvasRenderingContext2D) {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(
-          this.x - this.size / 2,
-          this.y - this.size / 2,
-          this.size,
-          this.size
-        );
-      }
-
-      update() {
-        const dx = this.x - this.baseX;
-        const dy = this.y - this.baseY;
-
-        if (mouse.x != null && mouse.y != null) {
-          const mdx = mouse.x - this.x;
-          const mdy = mouse.y - this.y;
-          const distanceSquared = mdx * mdx + mdy * mdy;
-          const maxDistanceSquared = mouse.radius * mouse.radius;
-
-          if (distanceSquared < maxDistanceSquared) {
-            const distance = Math.sqrt(distanceSquared);
-            const force = (mouse.radius - distance) / mouse.radius;
-            const directionX =
-              (mdx / distance) * force * this.density * config.mouseForce;
-            const directionY =
-              (mdy / distance) * force * this.density * config.mouseForce;
-
-            this.x -= directionX;
-            this.y -= directionY;
-            return;
-          }
-        }
-
-        if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-          this.x -= dx * config.returnSpeed;
-          this.y -= dy * config.returnSpeed;
-        } else {
-          this.x = this.baseX;
-          this.y = this.baseY;
-        }
-      }
-    }
 
     // Inicializar capa de fondo
     let backImageLoaded = false;
@@ -378,7 +382,9 @@ export default function ChampiLogoReveal() {
                 const green = pixels.data[index + 1];
                 const blue = pixels.data[index + 2];
                 const color = `rgb(${red},${green},${blue})`;
-                particlesArrayFront.push(new Particle(x, y, color));
+                particlesArrayFront.push(
+                  new Particle(x, y, color, config.particleSize)
+                );
               }
             }
           }
@@ -442,7 +448,7 @@ export default function ChampiLogoReveal() {
       ctxFront.clearRect(0, 0, canvasFront.width, canvasFront.height);
 
       for (const particle of particlesArrayFront) {
-        particle.update();
+        particle.update(mouse, config);
         particle.draw(ctxFront);
       }
 

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Componente reutilizable de upload de imágenes
@@ -6,8 +6,8 @@
  * y opción de usar imagen por defecto
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   validateImage,
   compressImage,
@@ -16,13 +16,13 @@ import {
   IMAGE_CONFIG,
   ERROR_MESSAGES,
   type CompressedImageResult,
-} from '@/utils/imageHelpers';
-import { ImagePreview } from './ImagePreview';
+} from "@/utils/imageHelpers";
+import { ImagePreview } from "./ImagePreview";
 
 // ============ Constantes ============
 
 /** Ruta de la imagen por defecto para platos sin imagen */
-export const DEFAULT_DISH_IMAGE = '/images/default-dish.svg';
+export const DEFAULT_DISH_IMAGE = "/images/default-dish.svg";
 
 // ============ Tipos ============
 
@@ -65,10 +65,10 @@ export function ImageUploadField({
   onImageReady,
   onUseDefault,
   disabled = false,
-  label = 'Imagen del plato',
+  label = "Imagen del plato",
   helpText,
   showDefaultOption = true,
-}: ImageUploadFieldProps) {
+}: Readonly<ImageUploadFieldProps>) {
   // Estados
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -85,7 +85,7 @@ export function ImageUploadField({
 
   // Refs
   const inputRef = useRef<HTMLInputElement>(null);
-  const dropZoneRef = useRef<HTMLDivElement>(null);
+  const dropZoneRef = useRef<HTMLButtonElement>(null);
 
   // Inicializar con imagen existente o por defecto
   useEffect(() => {
@@ -106,33 +106,36 @@ export function ImageUploadField({
   /**
    * Handler para seleccionar/deseleccionar imagen por defecto
    */
-  const handleUseDefaultChange = useCallback((checked: boolean) => {
-    setUseDefaultImage(checked);
-    setError(null);
-    
-    if (checked) {
-      // Limpiar preview anterior si no es existente
-      if (previewData && !previewData.isExisting) {
-        revokePreviewUrl(previewData.url);
+  const handleUseDefaultChange = useCallback(
+    (checked: boolean) => {
+      setUseDefaultImage(checked);
+      setError(null);
+
+      if (checked) {
+        // Limpiar preview anterior si no es existente
+        if (previewData && !previewData.isExisting) {
+          revokePreviewUrl(previewData.url);
+        }
+        // Establecer preview con imagen por defecto
+        setPreviewData({
+          url: DEFAULT_DISH_IMAGE,
+          sizeKb: 0,
+          originalSizeKb: 0,
+          dimensions: { width: 800, height: 600 },
+          isExisting: false,
+          isDefault: true,
+        });
+        // Notificar al padre que se usa imagen por defecto
+        onImageReady(null);
+        onUseDefault?.(true);
+      } else {
+        // Limpiar el preview de imagen por defecto
+        setPreviewData(null);
+        onUseDefault?.(false);
       }
-      // Establecer preview con imagen por defecto
-      setPreviewData({
-        url: DEFAULT_DISH_IMAGE,
-        sizeKb: 0,
-        originalSizeKb: 0,
-        dimensions: { width: 800, height: 600 },
-        isExisting: false,
-        isDefault: true,
-      });
-      // Notificar al padre que se usa imagen por defecto
-      onImageReady(null);
-      onUseDefault?.(true);
-    } else {
-      // Limpiar el preview de imagen por defecto
-      setPreviewData(null);
-      onUseDefault?.(false);
-    }
-  }, [previewData, onImageReady, onUseDefault]);
+    },
+    [previewData, onImageReady, onUseDefault]
+  );
 
   // Limpiar blob URLs al desmontar
   useEffect(() => {
@@ -144,76 +147,107 @@ export function ImageUploadField({
   }, [previewData]);
 
   /**
+   * Valida y comprime la imagen
+   */
+  const validateAndCompress = async (
+    file: File
+  ): Promise<CompressedImageResult | null> => {
+    // Validar imagen
+    const validation = await validateImage(file);
+    if (!validation.isValid) {
+      setError(validation.error || ERROR_MESSAGES.INVALID_TYPE);
+      return null;
+    }
+
+    // Comprimir imagen
+    try {
+      return await compressImage(file);
+    } catch (compressionError) {
+      console.error("Error de compresión:", compressionError);
+      setError(ERROR_MESSAGES.COMPRESSION_FAILED);
+      return null;
+    }
+  };
+
+  /**
+   * Limpia el preview anterior si es necesario
+   */
+  const cleanupPreviousPreview = () => {
+    if (previewData && !previewData.isExisting && !previewData.isDefault) {
+      revokePreviewUrl(previewData.url);
+    }
+  };
+
+  /**
+   * Actualiza el estado con la nueva imagen procesada
+   */
+  const updateImageState = async (compressed: CompressedImageResult) => {
+    // Convertir a base64
+    const base64 = await fileToBase64(compressed.file);
+
+    // Crear preview URL
+    const previewUrl = createPreviewUrl(compressed.file);
+
+    // Limpiar preview anterior
+    cleanupPreviousPreview();
+
+    // Resetear opción de imagen por defecto
+    setUseDefaultImage(false);
+    onUseDefault?.(false);
+
+    // Actualizar estado
+    setPreviewData({
+      url: previewUrl,
+      sizeKb: compressed.sizeKB,
+      originalSizeKb: compressed.originalSizeKB,
+      dimensions: compressed.dimensions,
+      isExisting: false,
+      isDefault: false,
+    });
+
+    // Notificar al componente padre
+    onImageReady({
+      file: compressed.file,
+      base64,
+      previewUrl,
+      sizeKb: compressed.sizeKB,
+      originalSizeKb: compressed.originalSizeKB,
+      dimensions: compressed.dimensions,
+    });
+
+    console.log(
+      `[ImageUpload] Imagen procesada: ${compressed.originalSizeKB.toFixed(
+        1
+      )}KB → ${compressed.sizeKB.toFixed(
+        1
+      )}KB (${compressed.compressionRatio.toFixed(0)}% reducción)`
+    );
+  };
+
+  /**
    * Procesa el archivo seleccionado: valida y comprime
    */
-  const processFile = useCallback(async (file: File) => {
-    setError(null);
-    setIsProcessing(true);
+  const processFile = useCallback(
+    async (file: File) => {
+      setError(null);
+      setIsProcessing(true);
 
-    try {
-      // 1. Validar imagen
-      const validation = await validateImage(file);
-      if (!validation.isValid) {
-        setError(validation.error || ERROR_MESSAGES.INVALID_TYPE);
-        setIsProcessing(false);
-        return;
-      }
-
-      // 2. Comprimir imagen
-      let compressed: CompressedImageResult;
       try {
-        compressed = await compressImage(file);
-      } catch (compressionError) {
-        console.error('Error de compresión:', compressionError);
+        const compressed = await validateAndCompress(file);
+        if (!compressed) {
+          return;
+        }
+
+        await updateImageState(compressed);
+      } catch (err) {
+        console.error("Error procesando imagen:", err);
         setError(ERROR_MESSAGES.COMPRESSION_FAILED);
+      } finally {
         setIsProcessing(false);
-        return;
       }
-
-      // 3. Convertir a base64
-      const base64 = await fileToBase64(compressed.file);
-
-      // 4. Crear preview URL
-      const previewUrl = createPreviewUrl(compressed.file);
-
-      // 5. Limpiar preview anterior si existe (y no es default)
-      if (previewData && !previewData.isExisting && !previewData.isDefault) {
-        revokePreviewUrl(previewData.url);
-      }
-
-      // 6. Resetear opción de imagen por defecto
-      setUseDefaultImage(false);
-      onUseDefault?.(false);
-
-      // 7. Actualizar estado
-      setPreviewData({
-        url: previewUrl,
-        sizeKb: compressed.sizeKB,
-        originalSizeKb: compressed.originalSizeKB,
-        dimensions: compressed.dimensions,
-        isExisting: false,
-        isDefault: false,
-      });
-
-      // 8. Notificar al componente padre
-      onImageReady({
-        file: compressed.file,
-        base64,
-        previewUrl,
-        sizeKb: compressed.sizeKB,
-        originalSizeKb: compressed.originalSizeKB,
-        dimensions: compressed.dimensions,
-      });
-
-      console.log(`[ImageUpload] Imagen procesada: ${compressed.originalSizeKB.toFixed(1)}KB → ${compressed.sizeKB.toFixed(1)}KB (${compressed.compressionRatio.toFixed(0)}% reducción)`);
-
-    } catch (err) {
-      console.error('Error procesando imagen:', err);
-      setError(ERROR_MESSAGES.COMPRESSION_FAILED);
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [onImageReady, previewData]);
+    },
+    [onImageReady, previewData, onUseDefault]
+  );
 
   /**
    * Convierte un File a base64
@@ -230,14 +264,17 @@ export function ImageUploadField({
   /**
    * Handler para cambio de archivo via input
    */
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      processFile(file);
-    }
-    // Resetear input para permitir seleccionar el mismo archivo
-    e.target.value = '';
-  }, [processFile]);
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        processFile(file);
+      }
+      // Resetear input para permitir seleccionar el mismo archivo
+      e.target.value = "";
+    },
+    [processFile]
+  );
 
   /**
    * Handler para eliminar imagen
@@ -256,11 +293,14 @@ export function ImageUploadField({
   /**
    * Handlers de drag & drop
    */
-  const handleDragEnter = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!disabled) setIsDragging(true);
-  }, [disabled]);
+  const handleDragEnter = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!disabled) setIsDragging(true);
+    },
+    [disabled]
+  );
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -276,18 +316,21 @@ export function ImageUploadField({
     e.stopPropagation();
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
 
-    if (disabled) return;
+      if (disabled) return;
 
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      processFile(file);
-    }
-  }, [disabled, processFile]);
+      const file = e.dataTransfer.files?.[0];
+      if (file) {
+        processFile(file);
+      }
+    },
+    [disabled, processFile]
+  );
 
   /**
    * Click en zona de drop abre el selector de archivos
@@ -299,88 +342,45 @@ export function ImageUploadField({
   }, [disabled]);
 
   // Texto de formatos permitidos
-  const allowedFormatsText = IMAGE_CONFIG.ALLOWED_EXTENSIONS.join(', ').toUpperCase();
+  const allowedFormatsText =
+    IMAGE_CONFIG.ALLOWED_EXTENSIONS.join(", ").toUpperCase();
 
-  return (
-    <div className="space-y-3">
-      {/* Label */}
-      <label className="block text-sm font-medium text-gray-300">
-        {label}
-      </label>
+  /**
+   * Renderiza la zona de upload o el botón de cambiar imagen
+   */
+  const renderUploadZone = () => {
+    // No mostrar nada si usa imagen por defecto
+    if (useDefaultImage) return null;
 
-      {/* Opción de usar imagen por defecto */}
-      {showDefaultOption && (
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-charcoal-dark/50 border border-white/5">
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useDefaultImage}
-              onChange={(e) => handleUseDefaultChange(e.target.checked)}
-              disabled={disabled}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-fire-red/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-fire-red"></div>
-          </label>
-          <div className="flex-1">
-            <p className="text-sm text-gray-200">Sin imagen personalizada</p>
-            <p className="text-xs text-gray-500">Se mostrará una imagen genérica de plato</p>
-          </div>
-          {useDefaultImage && (
-            <div className="w-12 h-12 rounded-lg overflow-hidden border border-fire-red/30">
-              <img 
-                src={DEFAULT_DISH_IMAGE} 
-                alt="Imagen por defecto" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Preview de imagen existente o nueva (solo si no usa default) */}
-      <AnimatePresence mode="wait">
-        {previewData && !previewData.isDefault && (
-          <motion.div
-            key="preview"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <ImagePreview
-              imageUrl={previewData.url}
-              altText="Preview del plato"
-              originalSizeKb={previewData.originalSizeKb}
-              compressedSizeKb={previewData.sizeKb}
-              dimensions={previewData.dimensions}
-              isLoading={isProcessing}
-              onRemove={handleRemove}
-              canRemove={!disabled}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Zona de drop / Botón de cambiar (solo si no usa imagen por defecto) */}
-      {!previewData && !useDefaultImage ? (
-        <div
+    // Si no hay preview, mostrar zona de drop
+    if (!previewData) {
+      return (
+        <button
+          type="button"
           ref={dropZoneRef}
           onClick={handleZoneClick}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
+          disabled={disabled}
           className={`
             relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
-            transition-all duration-200
-            ${isDragging
-              ? 'border-fire-red bg-fire-red/10'
-              : 'border-flame-blue/30 hover:border-flame-blue/60 bg-charcoal-dark/50'
+            transition-all duration-200 w-full
+            ${
+              isDragging
+                ? "border-fire-red bg-fire-red/10"
+                : "border-flame-blue/30 hover:border-flame-blue/60 bg-charcoal-dark/50"
             }
-            ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+            disabled:opacity-50 disabled:cursor-not-allowed
           `}
         >
           {/* Icono */}
-          <div className={`mx-auto w-12 h-12 mb-4 ${isDragging ? 'text-fire-red' : 'text-flame-blue-bright'}`}>
+          <div
+            className={`mx-auto w-12 h-12 mb-4 ${
+              isDragging ? "text-fire-red" : "text-flame-blue-bright"
+            }`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -400,34 +400,43 @@ export function ImageUploadField({
           {/* Texto */}
           <p className="text-gray-300 mb-2">
             {isDragging ? (
-              <span className="text-fire-red font-semibold">Suelta la imagen aquí</span>
+              <span className="text-fire-red font-semibold">
+                Suelta la imagen aquí
+              </span>
             ) : (
               <>
-                <span className="text-fire-red font-semibold">Haz clic</span> o arrastra una imagen
+                <span className="text-fire-red font-semibold">Haz clic</span> o
+                arrastra una imagen
               </>
             )}
           </p>
 
           {/* Info de formatos */}
           <p className="text-xs text-gray-500">
-            {allowedFormatsText} • Máx {IMAGE_CONFIG.MAX_SIZE_BEFORE_COMPRESSION / 1024 / 1024}MB
+            {allowedFormatsText} • Máx{" "}
+            {IMAGE_CONFIG.MAX_SIZE_BEFORE_COMPRESSION / 1024 / 1024}MB
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            Se comprimirá automáticamente a WebP (máx {IMAGE_CONFIG.TARGET_SIZE_KB}KB)
+            Se comprimirá automáticamente a WebP (máx{" "}
+            {IMAGE_CONFIG.TARGET_SIZE_KB}KB)
           </p>
 
           {/* Input oculto */}
           <input
             ref={inputRef}
             type="file"
-            accept={IMAGE_CONFIG.ALLOWED_TYPES.join(',')}
+            accept={IMAGE_CONFIG.ALLOWED_TYPES.join(",")}
             onChange={handleFileChange}
             disabled={disabled}
             className="hidden"
           />
-        </div>
-      ) : previewData && !previewData.isDefault ? (
-        /* Botón para cambiar imagen cuando ya hay una personalizada */
+        </button>
+      );
+    }
+
+    // Si hay preview pero no es por defecto, mostrar botón de cambiar
+    if (previewData && !previewData.isDefault) {
+      return (
         <button
           type="button"
           onClick={handleZoneClick}
@@ -459,14 +468,83 @@ export function ImageUploadField({
             </span>
           )}
         </button>
-      ) : null}
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Label */}
+      <label className="block text-sm font-medium text-gray-300">{label}</label>
+
+      {/* Opción de usar imagen por defecto */}
+      {showDefaultOption && (
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-charcoal-dark/50 border border-white/5">
+          <label
+            className="relative inline-flex items-center cursor-pointer"
+            aria-label="Usar imagen por defecto"
+          >
+            <input
+              type="checkbox"
+              checked={useDefaultImage}
+              onChange={(e) => handleUseDefaultChange(e.target.checked)}
+              disabled={disabled}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-fire-red/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-fire-red"></div>
+          </label>
+          <div className="flex-1">
+            <p className="text-sm text-gray-200">Sin imagen personalizada</p>
+            <p className="text-xs text-gray-500">
+              Se mostrará una imagen genérica de plato
+            </p>
+          </div>
+          {useDefaultImage && (
+            <div className="w-12 h-12 rounded-lg overflow-hidden border border-fire-red/30">
+              <img
+                src={DEFAULT_DISH_IMAGE}
+                alt="Imagen por defecto"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Preview de imagen existente o nueva (solo si no usa default) */}
+      <AnimatePresence mode="wait">
+        {previewData && !previewData.isDefault && (
+          <motion.div
+            key="preview"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <ImagePreview
+              imageUrl={previewData.url}
+              altText="Preview del plato"
+              originalSizeKb={previewData.originalSizeKb}
+              compressedSizeKb={previewData.sizeKb}
+              dimensions={previewData.dimensions}
+              isLoading={isProcessing}
+              onRemove={handleRemove}
+              canRemove={!disabled}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Zona de drop / Botón de cambiar (solo si no usa imagen por defecto) */}
+      {renderUploadZone()}
 
       {/* Input oculto para cuando hay preview */}
       {previewData && (
         <input
           ref={inputRef}
           type="file"
-          accept={IMAGE_CONFIG.ALLOWED_TYPES.join(',')}
+          accept={IMAGE_CONFIG.ALLOWED_TYPES.join(",")}
           onChange={handleFileChange}
           disabled={disabled}
           className="hidden"
@@ -516,11 +594,12 @@ export function ImageUploadField({
             className="flex items-center justify-center gap-3 p-4 bg-charcoal-dark rounded-lg"
           >
             <div className="w-6 h-6 border-2 border-flame-blue-bright border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm text-gray-300">Comprimiendo imagen...</span>
+            <span className="text-sm text-gray-300">
+              Comprimiendo imagen...
+            </span>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 }
-

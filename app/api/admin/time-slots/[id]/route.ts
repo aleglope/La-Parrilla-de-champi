@@ -14,7 +14,7 @@ export async function PATCH(
 ) {
   try {
     // Check authentication
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
 
     if (!isAuthenticated) {

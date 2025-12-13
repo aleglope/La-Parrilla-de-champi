@@ -17,7 +17,7 @@ export async function PATCH(
 ) {
   try {
     // Check authentication using admin-auth cookie (same as admin panel)
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
 
     if (!isAuthenticated) {
@@ -74,8 +74,6 @@ export async function PATCH(
         { status: 404 }
       );
     }
-
-    // TODO: Send email notification if status is 'confirmed' or 'cancelled'
 
     return NextResponse.json({
       success: true,

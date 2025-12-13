@@ -2,7 +2,6 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import Link from "next/link";
 import ChampiLogoReveal from "./ChampiLogoReveal";
 import { VideoBlock } from "./VideoBlock";
 import { useLanguage } from "@/lib/i18n/LanguageContext";

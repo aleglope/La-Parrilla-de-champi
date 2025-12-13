@@ -23,7 +23,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   try {
     // Check authentication using admin-auth cookie (same as admin panel)
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
 
     if (!isAuthenticated) {
@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get("endDate");
     const status = searchParams.get("status");
     const source = searchParams.get("source");
-    const limit = parseInt(searchParams.get("limit") || "100");
-    const offset = parseInt(searchParams.get("offset") || "0");
+    const limit = Number.parseInt(searchParams.get("limit") || "100");
+    const offset = Number.parseInt(searchParams.get("offset") || "0");
 
     let query = supabase
       .from("reservations")

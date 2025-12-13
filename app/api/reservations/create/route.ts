@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     // availabilityCheck is an array with one result
     const availability = availabilityCheck?.[0];
 
-    if (!availability || !availability.available) {
+    if (availability?.available !== true) {
       return NextResponse.json(
         {
           error: "No availability for this date and time",

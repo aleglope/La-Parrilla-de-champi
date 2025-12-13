@@ -11,7 +11,7 @@ export default function NotFoundPage() {
     <div className="h-screen w-screen bg-charcoal flex items-center justify-center relative overflow-hidden">
       {/* Animated background embers */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
+        {Array.from({ length: 15 }).map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-2 h-2 bg-fire-red rounded-full opacity-60"

@@ -1,22 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { translations } from "@/lib/i18n/translations";
 import type { DayAvailability } from "@/lib/types/reservations";
 import DatePicker from "@/components/ui/DatePicker";
 
 interface ManualReservationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly onSuccess: () => void;
 }
 
 export default function ManualReservationModal({
   isOpen,
   onClose,
   onSuccess,
-}: ManualReservationModalProps) {
+}: Readonly<ManualReservationModalProps>) {
   const { language } = useLanguage();
   const t = translations[language].reservations;
 
@@ -38,35 +38,8 @@ export default function ManualReservationModal({
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [closedDays, setClosedDays] = useState<string[]>([]);
 
-  // Initialize with today's date
-  useEffect(() => {
-    if (isOpen) {
-      const today = new Date().toISOString().split("T")[0];
-      setReservationDate(today);
-      fetchClosedDays();
-    }
-  }, [isOpen]);
-
-  // Fetch available slots when date changes
-  useEffect(() => {
-    if (reservationDate) {
-      fetchAvailableSlots(reservationDate);
-    }
-  }, [reservationDate]);
-
-  // Auto-select first available slot
-  useEffect(() => {
-    if (availableSlots?.timeSlots && !timeSlot) {
-      const firstAvailable = availableSlots.timeSlots.find(
-        (slot) => slot.available
-      );
-      if (firstAvailable) {
-        setTimeSlot(firstAvailable.time);
-      }
-    }
-  }, [availableSlots, timeSlot]);
-
-  const fetchClosedDays = async () => {
+  // Fetch functions defined before useEffect hooks to avoid hoisting issues
+  const fetchClosedDays = useCallback(async () => {
     try {
       const response = await fetch(
         "/api/reservations/availability/closed-days"
@@ -78,9 +51,9 @@ export default function ManualReservationModal({
     } catch (error) {
       console.error("Error fetching closed days:", error);
     }
-  };
+  }, []);
 
-  const fetchAvailableSlots = async (date: string) => {
+  const fetchAvailableSlots = useCallback(async (date: string) => {
     setIsLoadingSlots(true);
     try {
       const response = await fetch(
@@ -98,7 +71,35 @@ export default function ManualReservationModal({
     } finally {
       setIsLoadingSlots(false);
     }
-  };
+  }, []);
+
+  // Initialize with today's date
+  useEffect(() => {
+    if (isOpen) {
+      const today = new Date().toISOString().split("T")[0];
+      setReservationDate(today);
+      fetchClosedDays();
+    }
+  }, [isOpen, fetchClosedDays]);
+
+  // Fetch available slots when date changes
+  useEffect(() => {
+    if (reservationDate) {
+      fetchAvailableSlots(reservationDate);
+    }
+  }, [reservationDate, fetchAvailableSlots]);
+
+  // Auto-select first available slot
+  useEffect(() => {
+    if (availableSlots?.timeSlots && !timeSlot) {
+      const firstAvailable = availableSlots.timeSlots.find(
+        (slot) => slot.available
+      );
+      if (firstAvailable) {
+        setTimeSlot(firstAvailable.time);
+      }
+    }
+  }, [availableSlots, timeSlot]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -134,6 +135,52 @@ export default function ManualReservationModal({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Helper function to render time slot selector based on loading and availability states
+  const renderTimeSlotSelector = () => {
+    if (isLoadingSlots) {
+      return (
+        <div className="px-4 py-3 bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white rounded-xl text-sm text-center animate-pulse">
+          {t.availability.loading}
+        </div>
+      );
+    }
+
+    if (!availableSlots?.isOpen) {
+      return (
+        <div className="px-4 py-3 bg-gradient-to-r from-ash-500 to-ash-400 text-white rounded-xl text-sm text-center">
+          {t.availability.closed}
+        </div>
+      );
+    }
+
+    if (availableSlots.timeSlots.length === 0) {
+      return (
+        <div className="px-4 py-3 bg-gradient-to-r from-fire-red to-fire-red-dark text-white rounded-xl text-sm text-center">
+          {t.availability.noSlots}
+        </div>
+      );
+    }
+
+    return (
+      <select
+        value={timeSlot}
+        onChange={(e) => setTimeSlot(e.target.value)}
+        className={`w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl transition-all duration-300 outline-none cursor-pointer ${
+          errors.timeSlot
+            ? "border-fire-red"
+            : "border-flame-blue/30 hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
+        }`}
+      >
+        <option value="">{t.form.timePlaceholder}</option>
+        {availableSlots.timeSlots.map((slot) => (
+          <option key={slot.time} value={slot.time} disabled={!slot.available}>
+            {slot.time} {!slot.available && `- ${t.availability.full}`}
+          </option>
+        ))}
+      </select>
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -178,12 +225,10 @@ export default function ManualReservationModal({
         // Notify parent and close
         onSuccess();
         onClose();
+      } else if (response.status === 409) {
+        setErrors({ general: t.errors.noAvailability });
       } else {
-        if (response.status === 409) {
-          setErrors({ general: t.errors.noAvailability });
-        } else {
-          setErrors({ general: data.error || t.errors.serverError });
-        }
+        setErrors({ general: data.error || t.errors.serverError });
       }
     } catch (error) {
       console.error("Error creating reservation:", error);
@@ -308,7 +353,7 @@ export default function ManualReservationModal({
               </label>
               <select
                 value={guestsCount}
-                onChange={(e) => setGuestsCount(parseInt(e.target.value))}
+                onChange={(e) => setGuestsCount(Number.parseInt(e.target.value))}
                 className="w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 border-flame-blue/30 rounded-xl transition-all duration-300 outline-none cursor-pointer hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
               >
                 {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
@@ -344,41 +389,7 @@ export default function ManualReservationModal({
               <label className="font-semibold text-sm text-ash-200">
                 {t.form.time}
               </label>
-              {isLoadingSlots ? (
-                <div className="px-4 py-3 bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white rounded-xl text-sm text-center animate-pulse">
-                  {t.availability.loading}
-                </div>
-              ) : !availableSlots?.isOpen ? (
-                <div className="px-4 py-3 bg-gradient-to-r from-ash-500 to-ash-400 text-white rounded-xl text-sm text-center">
-                  {t.availability.closed}
-                </div>
-              ) : availableSlots.timeSlots.length === 0 ? (
-                <div className="px-4 py-3 bg-gradient-to-r from-fire-red to-fire-red-dark text-white rounded-xl text-sm text-center">
-                  {t.availability.noSlots}
-                </div>
-              ) : (
-                <select
-                  value={timeSlot}
-                  onChange={(e) => setTimeSlot(e.target.value)}
-                  className={`w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl transition-all duration-300 outline-none cursor-pointer ${
-                    errors.timeSlot
-                      ? "border-fire-red"
-                      : "border-flame-blue/30 hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
-                  }`}
-                >
-                  <option value="">{t.form.timePlaceholder}</option>
-                  {availableSlots.timeSlots.map((slot) => (
-                    <option
-                      key={slot.time}
-                      value={slot.time}
-                      disabled={!slot.available}
-                    >
-                      {slot.time}{" "}
-                      {!slot.available && `- ${t.availability.full}`}
-                    </option>
-                  ))}
-                </select>
-              )}
+              {renderTimeSlotSelector()}
               {errors.timeSlot && (
                 <span className="text-fire-red text-sm">{errors.timeSlot}</span>
               )}

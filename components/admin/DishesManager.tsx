@@ -24,10 +24,11 @@ import Image from "next/image";
 const DEFAULT_DISH_IMAGE = "/images/default-dish.svg";
 
 interface DishesManagerProps {
-  dishes: Dish[];
-  categories: Category[];
-  onUpdate: () => void;
-  onRevalidate: () => void;
+  readonly dishes: Dish[];
+  readonly categories: Category[];
+  readonly onUpdate: () => void;
+  readonly onRevalidate: () => void;
+  readonly onUpdateDishes: (updater: (prev: Dish[]) => Dish[]) => void;
 }
 
 export function DishesManager({
@@ -35,6 +36,7 @@ export function DishesManager({
   categories,
   onUpdate,
   onRevalidate,
+  onUpdateDishes,
 }: DishesManagerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDish, setEditingDish] = useState<Dish | null>(null);
@@ -70,7 +72,11 @@ export function DishesManager({
       }
 
       await deleteDish(dish.id);
-      await onRevalidate();
+
+      // Actualización optimista: eliminar del estado inmediatamente
+      onUpdateDishes((prev) => prev.filter((d) => d.id !== dish.id));
+
+      onRevalidate();
       onUpdate();
     } catch (error) {
       console.error("Error deleting dish:", error);
@@ -84,7 +90,15 @@ export function DishesManager({
     setIsLoading(true);
     try {
       await toggleDishAvailability(dish.id, !dish.is_available);
-      await onRevalidate();
+
+      // Actualización optimista: cambiar disponibilidad inmediatamente
+      onUpdateDishes((prev) =>
+        prev.map((d) =>
+          d.id === dish.id ? { ...d, is_available: !d.is_available } : d
+        )
+      );
+
+      onRevalidate();
       onUpdate();
     } catch (error) {
       console.error("Error toggling availability:", error);
@@ -110,6 +124,13 @@ export function DishesManager({
       if (editingDish) {
         // Modo edición - la imagen ya fue manejada en DishModal
         await updateDish(editingDish.id, dishData);
+
+        // Actualización optimista: actualizar el plato en el estado
+        onUpdateDishes((prev) =>
+          prev.map((d) =>
+            d.id === editingDish.id ? ({ ...d, ...dishData } as Dish) : d
+          )
+        );
       } else {
         // Modo creación
         // 1. Primero crear el plato sin imagen
@@ -133,11 +154,19 @@ export function DishesManager({
             alert(
               `Plato creado pero hubo un error con la imagen: ${uploadResult.error}`
             );
+          } else if (newDish) {
+            // Actualizar con la URL de la imagen
+            newDish.image_url = uploadResult.imageUrl || null;
           }
+        }
+
+        // Actualización optimista: agregar el nuevo plato al estado
+        if (newDish) {
+          onUpdateDishes((prev) => [...prev, newDish]);
         }
       }
 
-      await onRevalidate();
+      onRevalidate();
       onUpdate();
       setIsModalOpen(false);
     } catch (error) {

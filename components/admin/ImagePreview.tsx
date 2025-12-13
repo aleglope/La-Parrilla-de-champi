@@ -36,12 +36,23 @@ export function ImagePreview({
   onRemove,
   canRemove = true,
   dimensions,
-}: ImagePreviewProps) {
+}: Readonly<ImagePreviewProps>) {
   // Calcular ratio de compresión
   const compressionRatio =
     originalSizeKb && compressedSizeKb
       ? Math.round(((originalSizeKb - compressedSizeKb) / originalSizeKb) * 100)
       : null;
+
+  // Determinar el color de la barra de progreso basado en el tamaño
+  const getProgressBarColor = (sizeKb: number): string => {
+    if (sizeKb <= 100) {
+      return "bg-emerald-500";
+    }
+    if (sizeKb <= 150) {
+      return "bg-flame-blue-bright";
+    }
+    return "bg-fire-red";
+  };
 
   if (!imageUrl && !isLoading) {
     return null;
@@ -57,7 +68,7 @@ export function ImagePreview({
       >
         {/* Contenedor de imagen con aspect ratio fijo */}
         <div className="relative aspect-[4/3] w-full bg-charcoal">
-          {isLoading ? (
+          {isLoading && (
             // Estado de carga
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex flex-col items-center gap-3">
@@ -67,7 +78,9 @@ export function ImagePreview({
                 </span>
               </div>
             </div>
-          ) : imageUrl ? (
+          )}
+
+          {!isLoading && imageUrl && (
             // Imagen
             <Image
               src={imageUrl}
@@ -77,7 +90,7 @@ export function ImagePreview({
               sizes="(max-width: 768px) 100vw, 400px"
               unoptimized // Evitar costos de Vercel Image Optimization
             />
-          ) : null}
+          )}
 
           {/* Overlay con gradiente */}
           {imageUrl && !isLoading && (
@@ -204,13 +217,9 @@ export function ImagePreview({
                         )}%`,
                       }}
                       transition={{ duration: 0.5, ease: "easeOut" }}
-                      className={`h-full rounded-full ${
-                        compressedSizeKb <= 100
-                          ? "bg-emerald-500"
-                          : compressedSizeKb <= 150
-                          ? "bg-flame-blue-bright"
-                          : "bg-fire-red"
-                      }`}
+                      className={`h-full rounded-full ${getProgressBarColor(
+                        compressedSizeKb
+                      )}`}
                     />
                   </div>
                   <p className="text-[10px] text-gray-500 mt-1">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface TimeSlot {
   id: string;
@@ -11,7 +10,6 @@ interface TimeSlot {
 }
 
 export default function CapacityManager() {
-  const { language } = useLanguage();
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
@@ -58,8 +56,8 @@ export default function CapacityManager() {
   };
 
   const handleCapacityChange = (id: string, value: string) => {
-    const capacity = parseInt(value);
-    if (!isNaN(capacity) && capacity > 0 && capacity <= 200) {
+    const capacity = Number.parseInt(value);
+    if (!Number.isNaN(capacity) && capacity > 0 && capacity <= 200) {
       updateTimeSlot(id, { maxCapacity: capacity });
     }
   };
@@ -77,12 +75,12 @@ export default function CapacityManager() {
   }
 
   const lunchSlots = timeSlots.filter((slot) => {
-    const hour = parseInt(slot.time.split(":")[0]);
+    const hour = Number.parseInt(slot.time.split(":")[0]);
     return hour >= 12 && hour < 17;
   });
 
   const dinnerSlots = timeSlots.filter((slot) => {
-    const hour = parseInt(slot.time.split(":")[0]);
+    const hour = Number.parseInt(slot.time.split(":")[0]);
     return hour >= 19;
   });
 
@@ -108,9 +106,9 @@ export default function CapacityManager() {
             <div
               key={slot.id}
               className={`glass-card bg-gradient-to-br from-charcoal-light to-charcoal p-6 rounded-2xl border-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
-                !slot.isActive
-                  ? "opacity-60 bg-gradient-to-br from-ash-500 to-ash-400"
-                  : "border-flame-blue/30 hover:border-flame-blue-bright hover:shadow-flame-blue-bright/20"
+                slot.isActive
+                  ? "border-flame-blue/30 hover:border-flame-blue-bright hover:shadow-flame-blue-bright/20"
+                  : "opacity-60 bg-gradient-to-br from-ash-500 to-ash-400"
               }`}
             >
               {/* Card Header */}
@@ -133,11 +131,15 @@ export default function CapacityManager() {
 
               {/* Capacity Control */}
               <div className="flex flex-col gap-3">
-                <label className="text-xs font-semibold text-ash-300 uppercase tracking-wider font-body">
+                <label
+                  htmlFor={`capacity-lunch-${slot.id}`}
+                  className="text-xs font-semibold text-ash-300 uppercase tracking-wider font-body"
+                >
                   Capacidad máxima:
                 </label>
                 <div className="flex items-center gap-3">
                   <input
+                    id={`capacity-lunch-${slot.id}`}
                     type="number"
                     min="1"
                     max="200"
@@ -175,9 +177,9 @@ export default function CapacityManager() {
             <div
               key={slot.id}
               className={`glass-card bg-gradient-to-br from-charcoal-light to-charcoal p-6 rounded-2xl border-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
-                !slot.isActive
-                  ? "opacity-60 bg-gradient-to-br from-ash-500 to-ash-400"
-                  : "border-flame-blue/30 hover:border-flame-blue-bright hover:shadow-flame-blue-bright/20"
+                slot.isActive
+                  ? "border-flame-blue/30 hover:border-flame-blue-bright hover:shadow-flame-blue-bright/20"
+                  : "opacity-60 bg-gradient-to-br from-ash-500 to-ash-400"
               }`}
             >
               {/* Card Header */}
@@ -200,11 +202,15 @@ export default function CapacityManager() {
 
               {/* Capacity Control */}
               <div className="flex flex-col gap-3">
-                <label className="text-xs font-semibold text-ash-300 uppercase tracking-wider font-body">
+                <label
+                  htmlFor={`capacity-dinner-${slot.id}`}
+                  className="text-xs font-semibold text-ash-300 uppercase tracking-wider font-body"
+                >
                   Capacidad máxima:
                 </label>
                 <div className="flex items-center gap-3">
                   <input
+                    id={`capacity-dinner-${slot.id}`}
                     type="number"
                     min="1"
                     max="200"

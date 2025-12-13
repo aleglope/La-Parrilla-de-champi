@@ -21,7 +21,9 @@ export function AdminDashboard({
 }: AdminDashboardProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"dishes" | "categories">("dishes");
-  const [categories] = useState(initialCategories);
+
+  // Estado mutable para actualizaciones optimistas
+  const [categories, setCategories] = useState(initialCategories);
   const [dishes, setDishes] = useState(initialDishes);
 
   const handleLogout = async () => {
@@ -40,6 +42,15 @@ export function AdminDashboard({
 
   const refreshData = () => {
     router.refresh();
+  };
+
+  // Callbacks para actualización optimista
+  const updateDishes = (updater: (prev: Dish[]) => Dish[]) => {
+    setDishes(updater);
+  };
+
+  const updateCategories = (updater: (prev: Category[]) => Category[]) => {
+    setCategories(updater);
   };
 
   return (
@@ -130,12 +141,14 @@ export function AdminDashboard({
               categories={categories}
               onUpdate={refreshData}
               onRevalidate={revalidateMenu}
+              onUpdateDishes={updateDishes}
             />
           ) : (
             <CategoriesManager
               categories={categories}
               onUpdate={refreshData}
               onRevalidate={revalidateMenu}
+              onUpdateCategories={updateCategories}
             />
           )}
         </motion.div>

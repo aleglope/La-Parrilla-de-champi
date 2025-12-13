@@ -17,6 +17,7 @@ interface DatePickerProps {
   error?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  id?: string;
 }
 
 export default function DatePicker({
@@ -29,6 +30,7 @@ export default function DatePicker({
   error = false,
   disabled = false,
   placeholder = "Selecciona una fecha",
+  id,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -141,6 +143,7 @@ export default function DatePicker({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
+        id={id}
         className={`w-full flex items-center justify-between px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl font-body transition-all duration-300 outline-none
           ${
             error

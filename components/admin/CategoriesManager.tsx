@@ -1,18 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { createCategory, updateCategory, deleteCategory } from '@/lib/supabase/menu-service';
-import { CategoryModal } from './CategoryModal';
-import type { Category } from '@/lib/types';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from "@/lib/supabase/menu-service";
+import { CategoryModal } from "./CategoryModal";
+import type { Category } from "@/lib/types";
 
 interface CategoriesManagerProps {
   categories: Category[];
   onUpdate: () => void;
   onRevalidate: () => void;
+  onUpdateCategories: (updater: (prev: Category[]) => Category[]) => void;
 }
 
-export function CategoriesManager({ categories, onUpdate, onRevalidate }: CategoriesManagerProps) {
+export function CategoriesManager({
+  categories,
+  onUpdate,
+  onRevalidate,
+  onUpdateCategories,
+}: Readonly<CategoriesManagerProps>) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,35 +38,62 @@ export function CategoriesManager({ categories, onUpdate, onRevalidate }: Catego
   };
 
   const handleDelete = async (category: Category) => {
-    if (!confirm(`¿Eliminar la categoría "${category.name}"? Esto eliminará también todos sus platos.`)) return;
+    if (
+      !confirm(
+        `¿Eliminar la categoría "${category.name}"? Esto eliminará también todos sus platos.`
+      )
+    )
+      return;
 
     setIsLoading(true);
     try {
       await deleteCategory(category.id);
-      await onRevalidate();
+
+      // Actualización optimista: eliminar del estado inmediatamente
+      onUpdateCategories((prev) => prev.filter((c) => c.id !== category.id));
+
+      onRevalidate();
       onUpdate();
     } catch (error) {
-      console.error('Error deleting category:', error);
-      alert('Error al eliminar la categoría');
+      console.error("Error deleting category:", error);
+      alert("Error al eliminar la categoría");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSave = async (name: string, nameGl: string, orderIndex: number) => {
+  const handleSave = async (
+    name: string,
+    nameGl: string,
+    orderIndex: number
+  ) => {
     setIsLoading(true);
     try {
       if (editingCategory) {
         await updateCategory(editingCategory.id, name, nameGl, orderIndex);
+
+        // Actualización optimista: actualizar la categoría en el estado
+        onUpdateCategories((prev) =>
+          prev.map((c) =>
+            c.id === editingCategory.id
+              ? { ...c, name, name_gl: nameGl, order_index: orderIndex }
+              : c
+          )
+        );
       } else {
-        await createCategory(name, nameGl, orderIndex);
+        const newCategory = await createCategory(name, nameGl, orderIndex);
+
+        // Actualización optimista: agregar la nueva categoría al estado
+        if (newCategory) {
+          onUpdateCategories((prev) => [...prev, newCategory]);
+        }
       }
-      await onRevalidate();
+      onRevalidate();
       onUpdate();
       setIsModalOpen(false);
     } catch (error) {
-      console.error('Error saving category:', error);
-      alert('Error al guardar la categoría');
+      console.error("Error saving category:", error);
+      alert("Error al guardar la categoría");
     } finally {
       setIsLoading(false);
     }
@@ -67,8 +104,12 @@ export function CategoriesManager({ categories, onUpdate, onRevalidate }: Catego
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2">Gestión de Categorías</h2>
-          <p className="text-gray-400">{categories.length} categorías en total</p>
+          <h2 className="text-3xl font-bold text-white mb-2">
+            Gestión de Categorías
+          </h2>
+          <p className="text-gray-400">
+            {categories.length} categorías en total
+          </p>
         </div>
         <button onClick={handleCreate} className="btn-fire">
           + Crear Categoría
@@ -79,7 +120,7 @@ export function CategoriesManager({ categories, onUpdate, onRevalidate }: Catego
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <AnimatePresence mode="popLayout">
           {categories
-            .sort((a, b) => a.order_index - b.order_index)
+            .toSorted((a, b) => a.order_index - b.order_index)
             .map((category) => (
               <motion.div
                 key={category.id}
@@ -90,7 +131,9 @@ export function CategoriesManager({ categories, onUpdate, onRevalidate }: Catego
                 className="glass-card p-5 hover:border-flame-blue-bright/50 transition-colors"
               >
                 <div className="mb-4">
-                  <h3 className="font-bold text-white text-xl mb-1">{category.name}</h3>
+                  <h3 className="font-bold text-white text-xl mb-1">
+                    {category.name}
+                  </h3>
                   <p className="text-sm text-gray-400">
                     Orden: {category.order_index}
                   </p>
@@ -129,4 +172,3 @@ export function CategoriesManager({ categories, onUpdate, onRevalidate }: Catego
     </div>
   );
 }
-

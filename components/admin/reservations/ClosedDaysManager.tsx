@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BrandButton from "@/components/ui/BrandButton";
 import DatePicker from "@/components/ui/DatePicker";
 
@@ -15,6 +15,33 @@ export default function ClosedDaysManager() {
   const [newDate, setNewDate] = useState("");
   const [newNotes, setNewNotes] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Fetch existing closed days on mount
+  useEffect(() => {
+    const fetchClosedDays = async () => {
+      try {
+        const response = await fetch("/api/admin/availability");
+        if (response.ok) {
+          const data = await response.json();
+          // Filter only closed days from the settings array
+          const closed = (data.settings || []).filter(
+            (day: any) => !day.isOpen
+          );
+          setClosedDays(
+            closed.map((day: any) => ({
+              id: day.id,
+              date: day.date,
+              notes: day.notes || "Cerrado",
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error loading closed days:", error);
+      }
+    };
+
+    fetchClosedDays();
+  }, []);
 
   const addClosedDay = async () => {
     if (!newDate) {
@@ -110,13 +137,18 @@ export default function ClosedDaysManager() {
 
         <div className="space-y-6">
           <div className="flex flex-col gap-2">
-            <label className="font-semibold text-sm text-ash-200 font-body tracking-wide">
+            <label
+              htmlFor="closed-day-date"
+              className="font-semibold text-sm text-ash-200 font-body tracking-wide"
+            >
               Fecha:
             </label>
             <DatePicker
+              id="closed-day-date"
               value={newDate}
               onChange={setNewDate}
               minDate={today}
+              disabledDates={closedDays.map((day) => day.date)}
               disabled={loading}
               className="w-full"
               placeholder="Selecciona una fecha"
@@ -124,10 +156,14 @@ export default function ClosedDaysManager() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="font-semibold text-sm text-ash-200 font-body tracking-wide">
+            <label
+              htmlFor="closed-day-notes"
+              className="font-semibold text-sm text-ash-200 font-body tracking-wide"
+            >
               Motivo (opcional):
             </label>
             <input
+              id="closed-day-notes"
               type="text"
               value={newNotes}
               onChange={(e) => setNewNotes(e.target.value)}
@@ -166,7 +202,7 @@ export default function ClosedDaysManager() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {closedDays
-              .sort((a, b) => a.date.localeCompare(b.date))
+              .toSorted((a, b) => a.date.localeCompare(b.date))
               .map((day) => (
                 <div
                   key={day.date}

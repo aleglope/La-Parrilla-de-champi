@@ -13,25 +13,31 @@ export function MenuSkeleton() {
 
       {/* Tabs skeleton */}
       <div className="flex gap-3 mb-8">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-12 w-24 bg-charcoal-light rounded-lg animate-pulse" />
-        ))}
+        {Array.from({ length: 4 }, (_, i) => `tab-${crypto.randomUUID()}`).map(
+          (id) => (
+            <div
+              key={id}
+              className="h-12 w-24 bg-charcoal-light rounded-lg animate-pulse"
+            />
+          )
+        )}
       </div>
 
       {/* Cards skeleton */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="glass-card overflow-hidden">
-            <div className="h-48 bg-charcoal-light animate-pulse" />
-            <div className="p-5 space-y-3">
-              <div className="h-6 bg-charcoal-light rounded animate-pulse" />
-              <div className="h-4 bg-charcoal-light rounded w-3/4 animate-pulse" />
-              <div className="h-4 bg-charcoal-light rounded w-1/2 animate-pulse" />
+        {Array.from({ length: 6 }, (_, i) => `card-${crypto.randomUUID()}`).map(
+          (id) => (
+            <div key={id} className="glass-card overflow-hidden">
+              <div className="h-48 bg-charcoal-light animate-pulse" />
+              <div className="p-5 space-y-3">
+                <div className="h-6 bg-charcoal-light rounded animate-pulse" />
+                <div className="h-4 bg-charcoal-light rounded w-3/4 animate-pulse" />
+                <div className="h-4 bg-charcoal-light rounded w-1/2 animate-pulse" />
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   );
 }
-

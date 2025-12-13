@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import type { Category } from '@/lib/types';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import type { Category } from "@/lib/types";
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -12,19 +12,25 @@ interface CategoryModalProps {
   isLoading: boolean;
 }
 
-export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: CategoryModalProps) {
-  const [name, setName] = useState('');
-  const [nameGl, setNameGl] = useState('');
+export function CategoryModal({
+  isOpen,
+  category,
+  onClose,
+  onSave,
+  isLoading,
+}: Readonly<CategoryModalProps>) {
+  const [name, setName] = useState("");
+  const [nameGl, setNameGl] = useState("");
   const [orderIndex, setOrderIndex] = useState(0);
 
   useEffect(() => {
     if (category) {
       setName(category.name);
-      setNameGl(category.name_gl || '');
+      setNameGl(category.name_gl || "");
       setOrderIndex(category.order_index);
     } else {
-      setName('');
-      setNameGl('');
+      setName("");
+      setNameGl("");
       setOrderIndex(0);
     }
   }, [category, isOpen]);
@@ -55,16 +61,20 @@ export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: 
             className="relative glass-card p-6 max-w-md w-full"
           >
             <h2 className="text-2xl font-bold text-white mb-6">
-              {category ? 'Editar Categoría' : 'Crear Categoría'}
+              {category ? "Editar Categoría" : "Crear Categoría"}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Nombre Castellano */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="category-name"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Nombre (Castellano) *
                 </label>
                 <input
+                  id="category-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -76,10 +86,14 @@ export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: 
 
               {/* Nombre Gallego */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="category-name-gl"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Nombre (Gallego)
                 </label>
                 <input
+                  id="category-name-gl"
                   type="text"
                   value={nameGl}
                   onChange={(e) => setNameGl(e.target.value)}
@@ -90,13 +104,19 @@ export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: 
 
               {/* Orden */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="category-order"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Orden de aparición
                 </label>
                 <input
+                  id="category-order"
                   type="number"
                   value={orderIndex}
-                  onChange={(e) => setOrderIndex(parseInt(e.target.value))}
+                  onChange={(e) =>
+                    setOrderIndex(Number.parseInt(e.target.value))
+                  }
                   className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors"
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -119,7 +139,7 @@ export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: 
                   disabled={isLoading}
                   className="flex-1 btn-fire disabled:opacity-50"
                 >
-                  {isLoading ? 'Guardando...' : 'Guardar'}
+                  {isLoading ? "Guardando..." : "Guardar"}
                 </button>
               </div>
             </form>
@@ -129,4 +149,3 @@ export function CategoryModal({ isOpen, category, onClose, onSave, isLoading }: 
     </AnimatePresence>
   );
 }
-

@@ -43,6 +43,17 @@ const getTapHint = (language: Language) =>
     gl: "Toca para voltar",
   });
 
+/**
+ * Obtiene el contenido localizado del plato
+ */
+const getLocalizedDishContent = (dish: Dish, language: Language) => ({
+  name: language === "gl" && dish.name_gl ? dish.name_gl : dish.name,
+  description:
+    language === "gl" && dish.description_gl
+      ? dish.description_gl
+      : dish.description,
+});
+
 interface DishCardProps {
   dish: Dish;
   index: number;
@@ -51,52 +62,118 @@ interface DishCardProps {
 }
 
 /**
+ * Hook para detectar dispositivos táctiles
+ */
+const useTouchDevice = () => {
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    const win = globalThis.window;
+    if (!win) return;
+
+    const mediaQuery = win.matchMedia("(hover: none), (pointer: coarse)");
+    const updateState = () => setIsTouchDevice(mediaQuery.matches);
+
+    updateState();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updateState);
+      return () => mediaQuery.removeEventListener("change", updateState);
+    }
+
+    return undefined;
+  }, []);
+
+  return isTouchDevice;
+};
+
+/**
+ * Hook para manejar click fuera del elemento
+ */
+const useClickOutside = (
+  ref: React.ForwardedRef<HTMLButtonElement>,
+  isActive: boolean,
+  callback: () => void
+) => {
+  useEffect(() => {
+    if (!isActive) return;
+
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const isOutside =
+        ref &&
+        "current" in ref &&
+        ref.current &&
+        !ref.current.contains(event.target as Node);
+
+      if (isOutside) {
+        callback();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isActive, ref, callback]);
+};
+
+/**
+ * Genera las clases CSS para el contenedor de la card
+ */
+const getContainerClasses = (canRevealImage: boolean): string => {
+  const baseClasses = [
+    "relative",
+    "min-h-[320px]",
+    "w-full",
+    "p-[3px]",
+    "rounded-3xl",
+    "text-left",
+    "border",
+    "border-white/5",
+    "bg-transparent",
+    "transition-shadow",
+    "duration-300",
+    "focus:outline-none",
+    "focus-visible:ring-2",
+    "focus-visible:ring-fire-red/60",
+    "group",
+  ];
+
+  const interactionClasses = canRevealImage
+    ? ["cursor-pointer", "hover:shadow-[0_25px_70px_rgba(192,31,25,0.25)]"]
+    : ["cursor-default"];
+
+  const allClasses = [...baseClasses, ...interactionClasses];
+  const baseClassName = allClasses.join(" ");
+  const modifierClass = canRevealImage ? " dish-card--flippable" : "";
+
+  return `${baseClassName} dish-card${modifierClass}`;
+};
+
+/**
  * Card individual de plato con efecto flip
  * Mantiene datos actuales y muestra la foto al hover (desktop) o tap (móvil)
  */
 export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
   ({ dish, index, priority = false }, ref) => {
     const { language } = useLanguage();
-    const [isTouchDevice, setIsTouchDevice] = useState(false);
+    const isTouchDevice = useTouchDevice();
     const [isMobileFlipped, setIsMobileFlipped] = useState(false);
     const [imageError, setImageError] = useState(false);
 
-    const name = language === "gl" && dish.name_gl ? dish.name_gl : dish.name;
-    const description =
-      language === "gl" && dish.description_gl
-        ? dish.description_gl
-        : dish.description;
+    const { name, description } = getLocalizedDishContent(dish, language);
 
     const availabilityLabel = getAvailabilityLabel(language, dish.is_available);
-    const infoLabel = getInfoLabel(language);
     const tapHint = getTapHint(language);
     const badgeText = "Selección Champi";
 
     // Determinar qué imagen mostrar
-    // Si hay imagen personalizada válida, usarla; si no, usar la imagen por defecto
     const hasCustomImage = Boolean(dish.image_url) && !imageError;
     const imageToShow = hasCustomImage ? dish.image_url! : DEFAULT_DISH_IMAGE;
-
-    // Siempre permitir el flip ya que ahora siempre hay una imagen (personalizada o por defecto)
     const canRevealImage = !imageError;
-
-    // Detectar dispositivo táctil
-    useEffect(() => {
-      const win = globalThis.window;
-      if (!win) return;
-
-      const mediaQuery = win.matchMedia("(hover: none), (pointer: coarse)");
-      const updateState = () => setIsTouchDevice(mediaQuery.matches);
-
-      updateState();
-
-      if (mediaQuery.addEventListener) {
-        mediaQuery.addEventListener("change", updateState);
-        return () => mediaQuery.removeEventListener("change", updateState);
-      }
-
-      return undefined;
-    }, []);
 
     // Resetear flip cuando cambia el tipo de dispositivo
     useEffect(() => {
@@ -111,37 +188,20 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
     }, [dish.image_url]);
 
     const handleToggle = () => {
-      if (!isTouchDevice || !canRevealImage) return;
-      setIsMobileFlipped((prev) => !prev);
+      const shouldToggle = isTouchDevice && canRevealImage;
+      if (shouldToggle) {
+        setIsMobileFlipped((prev) => !prev);
+      }
     };
 
-    // Cerrar al hacer click fuera
-    useEffect(() => {
-      if (!isMobileFlipped || !isTouchDevice) return;
-
-      const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-        if (
-          ref &&
-          "current" in ref &&
-          ref.current &&
-          !ref.current.contains(event.target as Node)
-        ) {
-          setIsMobileFlipped(false);
-        }
-      };
-
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("touchstart", handleClickOutside);
-
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-        document.removeEventListener("touchstart", handleClickOutside);
-      };
-    }, [isMobileFlipped, isTouchDevice, ref]);
+    const closeFlip = () => setIsMobileFlipped(false);
+    useClickOutside(ref, isMobileFlipped && isTouchDevice, closeFlip);
 
     const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-      if (!canRevealImage || !isTouchDevice) return;
-      if (event.key === "Enter" || event.key === " ") {
+      const isActivationKey = event.key === "Enter" || event.key === " ";
+      const shouldHandle = canRevealImage && isTouchDevice && isActivationKey;
+
+      if (shouldHandle) {
         event.preventDefault();
         handleToggle();
       }
@@ -152,43 +212,12 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
       setImageError(true);
     };
 
-    const containerClasses = [
-      "relative",
-      "min-h-[320px]",
-      "w-full",
-      "p-[3px]",
-      "rounded-3xl",
-      "text-left",
-      "border",
-      "border-white/5",
-      "bg-transparent",
-      "transition-shadow",
-      "duration-300",
-      "focus:outline-none",
-      "focus-visible:ring-2",
-      "focus-visible:ring-fire-red/60",
-      "group",
-    ];
-
-    if (canRevealImage) {
-      containerClasses.push(
-        "cursor-pointer",
-        "hover:shadow-[0_25px_70px_rgba(192,31,25,0.25)]"
-      );
-    } else {
-      containerClasses.push("cursor-default");
-    }
-
-    const cardClassName = `${containerClasses.join(" ")} dish-card${
-      canRevealImage ? " dish-card--flippable" : ""
-    }`;
-
+    const cardClassName = getContainerClasses(canRevealImage);
     const cardPerspective: CSSProperties | undefined = canRevealImage
       ? { perspective: "1400px" }
       : undefined;
 
     // Determinar loading strategy basado en prioridad
-    // Las primeras 6 imágenes (above-the-fold) se cargan con prioridad
     const shouldPrioritize = priority || index < 6;
 
     return (
