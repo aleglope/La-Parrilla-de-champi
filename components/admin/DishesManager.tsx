@@ -165,7 +165,7 @@ export function DishesManager({
 
       {/* Filtros */}
       <div className="glass-card p-4 mb-6">
-        <div className="flex gap-3 overflow-x-auto hide-scrollbar">
+        <div className="flex gap-3 overflow-x-auto md:flex-wrap md:overflow-visible pb-2 md:pb-0 custom-scrollbar">
           <button
             onClick={() => setFilterCategory(null)}
             className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
