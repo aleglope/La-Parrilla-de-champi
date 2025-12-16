@@ -13,6 +13,7 @@ interface DatePickerProps {
   readonly minDate?: string;
   readonly maxDate?: string;
   readonly disabledDates?: string[];
+  readonly disabledDatesReasons?: Record<string, string>;
   readonly className?: string;
   readonly error?: boolean;
   readonly disabled?: boolean;
@@ -26,6 +27,7 @@ export default function DatePicker({
   minDate,
   maxDate,
   disabledDates = [],
+  disabledDatesReasons = {},
   className = "",
   error = false,
   disabled = false,
@@ -39,6 +41,9 @@ export default function DatePicker({
     left: 0,
     width: 0,
   });
+  const [closureWarning, setClosureWarning] = React.useState<string | null>(
+    null
+  );
 
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -62,23 +67,53 @@ export default function DatePicker({
     [maxDate]
   );
 
-  // Calculate date range for dropdowns (react-day-picker v9 uses startMonth/endMonth)
+  // Calculate date range for dropdowns
   const currentYear = new Date().getFullYear();
   const startMonth = minDateObj || new Date(currentYear - 100, 0);
   const endMonth = maxDateObj || new Date(currentYear + 10, 11);
 
+  // Only disable past/future dates, NOT closed days
   const disabledDays = React.useMemo(
     () => [
       ...(minDateObj ? [{ before: minDateObj }] : []),
       ...(maxDateObj ? [{ after: maxDateObj }] : []),
-      ...disabledDates.map((d) => parse(d, "yyyy-MM-dd", new Date())),
     ],
-    [minDateObj, maxDateObj, disabledDates]
+    [minDateObj, maxDateObj]
   );
+
+  // Closed days as a modifier (so they're clickeable but styled differently)
+  const closedDaysModifier = React.useMemo(
+    () => disabledDates.map((d) => parse(d, "yyyy-MM-dd", new Date())),
+    [disabledDates]
+  );
+
+  // Map of dates to their closure reasons
+  const disabledReasonsMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    Object.entries(disabledDatesReasons).forEach(([dateStr, reason]) => {
+      map.set(dateStr, reason);
+    });
+    return map;
+  }, [disabledDatesReasons]);
 
   const handleDaySelect = (day: Date | undefined) => {
     if (day) {
-      onChange(format(day, "yyyy-MM-dd"));
+      const dateStr = format(day, "yyyy-MM-dd");
+
+      // Check if this day is closed
+      const closureReason = disabledReasonsMap.get(dateStr);
+
+      if (closureReason) {
+        // Show warning for closed day
+        setClosureWarning(closureReason);
+        // Close the calendar so user can see the warning message clearly
+        setIsOpen(false);
+        return;
+      }
+
+      // Not a closed day - proceed with selection
+      setClosureWarning(null);
+      onChange(dateStr);
       setIsOpen(false);
     }
   };
@@ -136,7 +171,15 @@ export default function DatePicker({
         ref={buttonRef}
         type="button"
         id={id}
-        onClick={() => !disabled && setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!disabled) {
+            setIsOpen(!isOpen);
+            // Clear warning when opening calendar
+            if (!isOpen) {
+              setClosureWarning(null);
+            }
+          }
+        }}
         disabled={disabled}
         className={`
           flex w-full items-center justify-between rounded-xl border-2 px-4 py-3 text-left bg-charcoal-light font-body transition-all duration-300 outline-none
@@ -164,6 +207,29 @@ export default function DatePicker({
         />
       </button>
 
+      {/* Closure Warning Message */}
+      {closureWarning && (
+        <div className="bg-gradient-to-r from-fire-red/20 to-fire-red-dark/20 border-l-4 border-fire-red px-4 py-3 rounded-lg animate-[slideDown_0.3s_ease-out]">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">🔒</span>
+            <div className="flex-1">
+              <p className="font-semibold text-fire-red mb-1">Día Cerrado</p>
+              <p className="text-ash-300 text-sm">{closureWarning}</p>
+              <p className="text-ash-400 text-xs mt-2">
+                Por favor, selecciona otra fecha disponible.
+              </p>
+            </div>
+            <button
+              onClick={() => setClosureWarning(null)}
+              className="text-ash-400 hover:text-ash-100 transition-colors"
+              type="button"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {mounted &&
         isOpen &&
         !disabled &&
@@ -187,6 +253,9 @@ export default function DatePicker({
               captionLayout="dropdown"
               startMonth={startMonth}
               endMonth={endMonth}
+              modifiers={{
+                closed: closedDaysModifier,
+              }}
               classNames={{
                 root: "m-0 p-0 text-ash-100",
                 caption:
@@ -222,6 +291,10 @@ export default function DatePicker({
                 disabled:
                   "text-ash-500 opacity-40 cursor-not-allowed line-through bg-ash-500/10 hover:bg-ash-500/10 hover:transform-none hover:border-transparent",
                 hidden: "invisible",
+              }}
+              modifiersClassNames={{
+                closed:
+                  "!cursor-pointer !opacity-50 !line-through !bg-fire-red/10 hover:!bg-fire-red/20",
               }}
             />
           </div>,

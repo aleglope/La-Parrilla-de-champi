@@ -172,6 +172,9 @@ export default function ReservationsDashboard() {
                 {t.table.phone}
               </th>
               <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
+                📝 Notas
+              </th>
+              <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
                 {t.table.source}
               </th>
               <th className="px-4 py-3 text-left font-heading font-bold text-ash-200 text-sm uppercase tracking-wider">
@@ -202,6 +205,32 @@ export default function ReservationsDashboard() {
                 </td>
                 <td className="px-4 py-4 font-body text-ash-100">
                   {reservation.guestPhone}
+                </td>
+                <td className="px-4 py-4">
+                  {reservation.specialRequests ? (
+                    <div className="group relative">
+                      <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/40 text-amber-200 rounded-lg text-sm cursor-help">
+                        <span className="text-base">💬</span>
+                        <span className="max-w-[120px] truncate">
+                          {reservation.specialRequests}
+                        </span>
+                      </span>
+                      {/* Tooltip on hover */}
+                      <div className="absolute z-50 bottom-full left-0 mb-2 hidden group-hover:block min-w-[280px] max-w-[400px]">
+                        <div className="bg-charcoal-dark border border-amber-500/40 rounded-xl p-4 shadow-2xl shadow-black/50">
+                          <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">
+                            📝 Solicitud Especial
+                          </p>
+                          <p className="text-sm text-ash-100 font-body whitespace-pre-wrap">
+                            {reservation.specialRequests}
+                          </p>
+                        </div>
+                        <div className="absolute left-4 -bottom-1 w-3 h-3 bg-charcoal-dark border-r border-b border-amber-500/40 transform rotate-45"></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-ash-500 text-sm">—</span>
+                  )}
                 </td>
                 <td className="px-4 py-4">
                   <span className={getSourceBadgeClass(reservation.source)}>

@@ -40,6 +40,9 @@ export default function ReservationForm() {
     guests: number;
   } | null>(null);
   const [closedDays, setClosedDays] = useState<string[]>([]);
+  const [closedDaysReasons, setClosedDaysReasons] = useState<
+    Record<string, string>
+  >({});
   const [reservationsEnabled, setReservationsEnabled] = useState<boolean>(true);
   const [checkingStatus, setCheckingStatus] = useState<boolean>(true);
 
@@ -72,6 +75,7 @@ export default function ReservationForm() {
       if (response.ok) {
         const data = await response.json();
         setClosedDays(data.closedDays || []);
+        setClosedDaysReasons(data.closedDaysReasons || {});
       }
     } catch (error) {
       console.error("Error fetching closed days:", error);
@@ -599,6 +603,7 @@ export default function ReservationForm() {
             }
             minDate={today}
             disabledDates={closedDays}
+            disabledDatesReasons={closedDaysReasons}
             error={!!errors.reservationDate}
             className="w-full"
             placeholder={t.form.datePlaceholder}
