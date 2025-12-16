@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import * as React from "react";
 import { createPortal } from "react-dom";
 import { DayPicker } from "react-day-picker";
-import { format, parse } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import { es } from "date-fns/locale";
 import "react-day-picker/dist/style.css";
 
 interface DatePickerProps {
-  readonly value: string; // YYYY-MM-DD
+  readonly value: string;
   readonly onChange: (date: string) => void;
   readonly minDate?: string;
   readonly maxDate?: string;
@@ -32,91 +32,87 @@ export default function DatePicker({
   placeholder = "Selecciona una fecha",
   id,
 }: DatePickerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+  const [dropdownPosition, setDropdownPosition] = React.useState({
     top: 0,
     left: 0,
     width: 0,
   });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Parse value to Date or undefined
-  const selectedDate = value
-    ? parse(value, "yyyy-MM-dd", new Date())
-    : undefined;
+  const selectedDate = React.useMemo(() => {
+    const d = value ? parse(value, "yyyy-MM-dd", new Date()) : undefined;
+    return isValid(d) ? d : undefined;
+  }, [value]);
 
-  // Parse min and max dates
-  const minDateObj = minDate
-    ? parse(minDate, "yyyy-MM-dd", new Date())
-    : undefined;
-  const maxDateObj = maxDate
-    ? parse(maxDate, "yyyy-MM-dd", new Date())
-    : undefined;
-
-  // Parse disabled dates
-  const disabledDatesObjs = disabledDates.map((dateStr) =>
-    parse(dateStr, "yyyy-MM-dd", new Date())
+  const minDateObj = React.useMemo(
+    () => (minDate ? parse(minDate, "yyyy-MM-dd", new Date()) : undefined),
+    [minDate]
   );
 
-  // Matcher for disabled days
-  const disabledDays = [
-    ...(minDateObj ? [{ before: minDateObj }] : []),
-    ...(maxDateObj ? [{ after: maxDateObj }] : []),
-    ...disabledDatesObjs,
-  ];
+  const maxDateObj = React.useMemo(
+    () => (maxDate ? parse(maxDate, "yyyy-MM-dd", new Date()) : undefined),
+    [maxDate]
+  );
 
-  // Handle day selection
-  const handleDayClick = (day: Date | undefined) => {
+  // Calculate date range for dropdowns (react-day-picker v9 uses startMonth/endMonth)
+  const currentYear = new Date().getFullYear();
+  const startMonth = minDateObj || new Date(currentYear - 100, 0);
+  const endMonth = maxDateObj || new Date(currentYear + 10, 11);
+
+  const disabledDays = React.useMemo(
+    () => [
+      ...(minDateObj ? [{ before: minDateObj }] : []),
+      ...(maxDateObj ? [{ after: maxDateObj }] : []),
+      ...disabledDates.map((d) => parse(d, "yyyy-MM-dd", new Date())),
+    ],
+    [minDateObj, maxDateObj, disabledDates]
+  );
+
+  const handleDaySelect = (day: Date | undefined) => {
     if (day) {
-      const formattedDate = format(day, "yyyy-MM-dd");
-      onChange(formattedDate);
+      onChange(format(day, "yyyy-MM-dd"));
       setIsOpen(false);
     }
   };
 
-  // Calculate dropdown position
-  const updateDropdownPosition = () => {
+  const updateDropdownPosition = React.useCallback(() => {
     if (!buttonRef.current) return;
-
     const rect = buttonRef.current.getBoundingClientRect();
     setDropdownPosition({
       top: rect.bottom + window.scrollY + 8,
       left: rect.left + window.scrollX,
       width: rect.width,
     });
-  };
+  }, []);
 
-  // Update position when opening or on scroll/resize
-  useEffect(() => {
+  React.useEffect(() => {
     if (isOpen) {
       updateDropdownPosition();
-
-      const handleScroll = () => updateDropdownPosition();
-      const handleResize = () => updateDropdownPosition();
-
-      // Capture phase to catch all scrolls
-      window.addEventListener("scroll", handleScroll, true);
-      window.addEventListener("resize", handleResize);
+      window.addEventListener("scroll", updateDropdownPosition, true);
+      window.addEventListener("resize", updateDropdownPosition);
 
       return () => {
-        window.removeEventListener("scroll", handleScroll, true);
-        window.removeEventListener("resize", handleResize);
+        window.removeEventListener("scroll", updateDropdownPosition, true);
+        window.removeEventListener("resize", updateDropdownPosition);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, updateDropdownPosition]);
 
-  // Close calendar when clicking outside
-  useEffect(() => {
+  React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
+        !containerRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -130,100 +126,92 @@ export default function DatePicker({
     }
   }, [isOpen]);
 
-  // Format display value
   const displayValue = selectedDate
     ? format(selectedDate, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })
     : placeholder;
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
-      {/* Input Button */}
+    <div className={`relative flex flex-col gap-3 ${className}`}>
       <button
         ref={buttonRef}
         type="button"
+        id={id}
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        id={id}
-        className={`w-full flex items-center justify-between px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl font-body transition-all duration-300 outline-none
+        className={`
+          flex w-full items-center justify-between rounded-xl border-2 px-4 py-3 text-left bg-charcoal-light font-body transition-all duration-300 outline-none
           ${
             error
-              ? "border-fire-red"
-              : "border-flame-blue/30 hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
+              ? "border-fire-red text-fire-red"
+              : "border-flame-blue/30 text-ash-100 hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
           }
           ${
             disabled
-              ? "bg-charcoal-dark cursor-not-allowed opacity-60"
+              ? "cursor-not-allowed opacity-50 bg-charcoal-dark"
               : "cursor-pointer"
           }
         `}
       >
         <span
-          className={selectedDate ? "text-ash-100 font-medium" : "text-ash-400"}
+          className={selectedDate ? "font-medium" : "text-ash-400 font-normal"}
         >
           {displayValue}
         </span>
-        <svg
-          className="w-5 h-5 flex-shrink-0 text-flame-blue-bright transition-transform duration-200 hover:scale-110"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect
-            x="3"
-            y="6"
-            width="18"
-            height="15"
-            rx="2"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <path
-            d="M3 10h18M8 3v4M16 3v4"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
+        <ChevronDownIcon
+          className={`h-5 w-5 opacity-50 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
-      {/* Calendar Dropdown - Rendered as Portal with absolute positioning */}
       {mounted &&
         isOpen &&
         !disabled &&
         createPortal(
           <div
             ref={containerRef}
-            className="absolute bg-charcoal-light border-2 border-flame-blue/30 rounded-2xl p-4 shadow-2xl shadow-black/50 backdrop-blur-lg animate-[fadeInScale_0.2s_ease-out]"
+            className="absolute z-[99999] p-4 bg-charcoal-light border-2 border-flame-blue/30 rounded-2xl shadow-2xl shadow-black/50 backdrop-blur-lg animate-[fadeInScale_0.2s_ease-out]"
             style={{
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
-              minWidth: `${dropdownPosition.width}px`,
-              zIndex: 99999,
             }}
           >
             <DayPicker
               mode="single"
               selected={selectedDate}
-              onSelect={handleDayClick}
+              onSelect={handleDaySelect}
               disabled={disabledDays}
               locale={es}
               showOutsideDays
               fixedWeeks
+              captionLayout="dropdown"
+              startMonth={startMonth}
+              endMonth={endMonth}
               classNames={{
                 root: "m-0 p-0 text-ash-100",
-                caption: "flex justify-center items-center mb-4 relative p-2",
-                caption_label:
-                  "text-lg font-bold bg-gradient-to-r from-fire-red via-flame-blue-bright to-fire-red bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-shift",
-                nav: "space-x-1 flex items-center",
+                caption:
+                  "flex items-center justify-between w-full px-2 py-2 mb-2",
+                caption_label: "hidden",
+                caption_dropdowns: "flex gap-2 items-center",
+
+                dropdown:
+                  "bg-charcoal-dark text-ash-100 text-sm font-medium border border-flame-blue/30 rounded-md py-1 px-2 focus:outline-none focus:border-flame-blue-bright transition-colors cursor-pointer hover:bg-ocean-deep",
+                dropdown_month: "relative inline-flex items-center",
+                dropdown_year: "relative inline-flex items-center",
+                dropdown_icon: "hidden",
+
+                nav: "flex items-center gap-1",
+
                 button_previous:
-                  "absolute left-2 w-8 h-8 rounded-lg bg-transparent border-none text-ash-300 cursor-pointer transition-all duration-200 hover:bg-flame-blue hover:text-ash-50 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center",
+                  "w-8 h-8 rounded-lg bg-charcoal-dark/50 backdrop-blur-sm border border-flame-blue/30 text-ash-300 cursor-pointer transition-all duration-200 hover:bg-flame-blue hover:text-ash-50 hover:scale-110 flex items-center justify-center",
                 button_next:
-                  "absolute right-2 w-8 h-8 rounded-lg bg-transparent border-none text-ash-300 cursor-pointer transition-all duration-200 hover:bg-flame-blue hover:text-ash-50 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center",
-                month_grid: "w-full border-collapse",
-                weekdays: "flex",
+                  "w-8 h-8 rounded-lg bg-charcoal-dark/50 backdrop-blur-sm border border-flame-blue/30 text-ash-300 cursor-pointer transition-all duration-200 hover:bg-flame-blue hover:text-ash-50 hover:scale-110 flex items-center justify-center",
+
+                month_grid: "w-full border-collapse mt-2",
+                weekdays: "flex w-full justify-between mb-2",
                 weekday:
-                  "text-ash-400 font-semibold text-sm uppercase py-2 w-10 flex justify-center",
-                week: "flex w-full mt-2",
+                  "text-ash-400 font-semibold text-sm uppercase p-0 w-10 flex justify-center",
+                week: "flex w-full justify-between mt-1",
                 day: "p-[2px] text-center text-sm relative focus-within:relative focus-within:z-20",
                 day_button:
                   "w-10 h-10 p-0 font-medium aria-selected:opacity-100 hover:bg-flame-blue-bright/20 hover:text-ash-100 hover:border-flame-blue-bright hover:scale-105 transition-all duration-200 rounded-lg flex items-center justify-center border-2 border-transparent text-ash-300",
@@ -240,5 +228,24 @@ export default function DatePicker({
           document.body
         )}
     </div>
+  );
+}
+
+function ChevronDownIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }
