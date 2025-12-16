@@ -151,10 +151,6 @@ export const translations = {
         source: {
           web: "Web",
           phone: "Teléfono",
-          source: {
-            web: "Web",
-            phone: "Teléfono",
-          },
         },
         actions: {
           confirm: "Confirmar",
