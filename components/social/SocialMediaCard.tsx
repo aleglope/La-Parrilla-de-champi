@@ -132,7 +132,7 @@ export function SocialMediaCard() {
         onClick={handleCardClick}
         onMouseEnter={() => !isMobile && setIsHovered(true)}
         onMouseLeave={() => !isMobile && setIsHovered(false)}
-        whileHover={!isMobile ? { scale: 1.02 } : {}}
+        whileHover={isMobile ? {} : { scale: 1.02 }}
         transition={{ duration: 0.3 }}
       >
         {/* Fondo con gradiente animado */}

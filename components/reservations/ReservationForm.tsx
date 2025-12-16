@@ -145,14 +145,14 @@ export default function ReservationForm() {
       newErrors.guestPhone = t.validation.phoneRequired;
     }
 
-    if (!formData.reservationDate) {
-      newErrors.reservationDate = t.validation.dateRequired;
-    } else {
+    if (formData.reservationDate) {
       // Check if selected date is closed
       if (closedDays.includes(formData.reservationDate)) {
         newErrors.reservationDate =
           "El restaurante está cerrado en esta fecha. Por favor selecciona otro día.";
       }
+    } else {
+      newErrors.reservationDate = t.validation.dateRequired;
     }
 
     if (!formData.timeSlot) {
@@ -223,12 +223,10 @@ export default function ReservationForm() {
           specialRequests: "",
           consent: false,
         });
+      } else if (response.status === 409) {
+        setErrors({ general: t.errors.noAvailability });
       } else {
-        if (response.status === 409) {
-          setErrors({ general: t.errors.noAvailability });
-        } else {
-          setErrors({ general: data.error || t.errors.serverError });
-        }
+        setErrors({ general: data.error || t.errors.serverError });
       }
     } catch (error) {
       console.error("Error creating reservation:", error);
@@ -251,7 +249,7 @@ export default function ReservationForm() {
     if (type === "checkbox") {
       transformedValue = checked;
     } else if (name === "guestsCount") {
-      transformedValue = parseInt(value) || 0;
+      transformedValue = Number.parseInt(value) || 0;
     } else {
       transformedValue = value;
     }
@@ -314,7 +312,7 @@ export default function ReservationForm() {
         name="timeSlot"
         value={formData.timeSlot}
         onChange={handleInputChange}
-        className={`w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl font-body transition-all duration-300 outline-none cursor-pointer appearance-none bg-[url('data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'12\\' height=\\'12\\' viewBox=\\'0 0 12 12\\'%3E%3Cpath fill=\\'%23B8B3AB\\' d=\\'M6 9L1 4h10z\\'/%3E%3C/svg%3E')] bg-no-repeat bg-[right_1rem_center] pr-10 ${
+        className={String.raw`w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl font-body transition-all duration-300 outline-none cursor-pointer appearance-none bg-[url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'%23B8B3AB\' d=\'M6 9L1 4h10z\'/%3E%3C/svg%3E')] bg-no-repeat bg-[right_1rem_center] pr-10 ${
           errors.timeSlot
             ? "border-fire-red"
             : "border-flame-blue/30 hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"
@@ -364,7 +362,7 @@ export default function ReservationForm() {
 
         {/* Back Button */}
         <BrandButton
-          onClick={() => (window.location.href = "/")}
+          onClick={() => (globalThis.location.href = "/")}
           withGlow={false}
         >
           Volver al Inicio
@@ -438,7 +436,7 @@ export default function ReservationForm() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <BrandButton
-            onClick={() => (window.location.href = "/")}
+            onClick={() => (globalThis.location.href = "/")}
             withGlow={false}
             className="flex-1 sm:flex-initial"
           >
@@ -567,7 +565,7 @@ export default function ReservationForm() {
             name="guestsCount"
             value={formData.guestsCount}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl font-body transition-all duration-300 outline-none cursor-pointer appearance-none bg-[url('data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'12\\' height=\\'12\\' viewBox=\\'0 0 12 12\\'%3E%3Cpath fill=\\'%23B8B3AB\\' d=\\'M6 9L1 4h10z\\'/%3E%3C/svg%3E')] bg-no-repeat bg-[right_1rem_center] pr-10 ${
+            className={String.raw`w-full px-4 py-3 bg-charcoal-light text-ash-100 border-2 rounded-xl font-body transition-all duration-300 outline-none cursor-pointer appearance-none bg-[url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'%23B8B3AB\' d=\'M6 9L1 4h10z\'/%3E%3C/svg%3E')] bg-no-repeat bg-[right_1rem_center] pr-10 ${
               errors.guestsCount
                 ? "border-fire-red"
                 : "border-flame-blue/30 hover:border-flame-blue/50 focus:border-flame-blue-bright focus:ring-2 focus:ring-flame-blue-bright/20"

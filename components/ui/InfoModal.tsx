@@ -1,15 +1,14 @@
 "use client";
 
-import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface InfoModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  message: string;
-  icon?: string;
-  buttonText?: string;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly title: string;
+  readonly message: string;
+  readonly icon?: string;
+  readonly buttonText?: string;
 }
 
 /**
@@ -28,17 +27,17 @@ export default function InfoModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
-          onClick={onClose}
-        >
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
           {/* Overlay */}
-          <motion.div
+          <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 w-full h-full bg-black/70 backdrop-blur-sm border-none cursor-default"
+            onClick={onClose}
+            type="button"
+            aria-label="Cerrar modal"
           />
 
           {/* Modal */}
@@ -47,7 +46,6 @@ export default function InfoModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            onClick={(e) => e.stopPropagation()}
             className="relative glass-card p-8 rounded-2xl max-w-md w-full mx-4 border-2 border-flame-blue/30 shadow-2xl"
           >
             {/* Icon */}

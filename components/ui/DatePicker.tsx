@@ -8,16 +8,16 @@ import { es } from "date-fns/locale";
 import "react-day-picker/dist/style.css";
 
 interface DatePickerProps {
-  value: string; // YYYY-MM-DD
-  onChange: (date: string) => void;
-  minDate?: string;
-  maxDate?: string;
-  disabledDates?: string[];
-  className?: string;
-  error?: boolean;
-  disabled?: boolean;
-  placeholder?: string;
-  id?: string;
+  readonly value: string; // YYYY-MM-DD
+  readonly onChange: (date: string) => void;
+  readonly minDate?: string;
+  readonly maxDate?: string;
+  readonly disabledDates?: string[];
+  readonly className?: string;
+  readonly error?: boolean;
+  readonly disabled?: boolean;
+  readonly placeholder?: string;
+  readonly id?: string;
 }
 
 export default function DatePicker({
@@ -201,144 +201,6 @@ export default function DatePicker({
               zIndex: 99999,
             }}
           >
-            <style jsx global>{`
-              /* DayPicker Tailwind overrides */
-              .rdp {
-                --rdp-cell-size: 40px;
-                margin: 0;
-                color: #ebe8e3;
-              }
-
-              .rdp-caption {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin-bottom: 1rem;
-              }
-
-              .rdp-caption_label {
-                font-size: 1.125rem;
-                font-weight: 700;
-                background: linear-gradient(
-                  to right,
-                  #c01f19,
-                  #1789c0,
-                  #c01f19
-                );
-                background-size: 200% auto;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-                animation: gradient-shift 4s ease infinite;
-              }
-
-              @keyframes gradient-shift {
-                0%,
-                100% {
-                  background-position: 0% center;
-                }
-                50% {
-                  background-position: 100% center;
-                }
-              }
-
-              .rdp-nav_button {
-                width: 32px;
-                height: 32px;
-                border-radius: 0.5rem;
-                background: transparent;
-                border: none;
-                color: #b8b3ab;
-                cursor: pointer;
-                transition: all 0.2s ease;
-              }
-
-              .rdp-nav_button:hover:not(:disabled) {
-                background: #314a78;
-                color: #f5f3f0;
-                transform: scale(1.1);
-              }
-
-              .rdp-nav_button:disabled {
-                opacity: 0.3;
-                cursor: not-allowed;
-              }
-
-              .rdp-head_cell {
-                color: #9a948b;
-                font-weight: 600;
-                font-size: 0.875rem;
-                text-transform: uppercase;
-                padding: 0.5rem 0;
-              }
-
-              .rdp-cell {
-                padding: 2px;
-              }
-
-              .rdp-button {
-                width: 100%;
-                height: 100%;
-                border-radius: 0.5rem;
-                border: 2px solid transparent;
-                background: transparent;
-                color: #b8b3ab;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.2s ease;
-              }
-
-              .rdp-button:hover:not(.rdp-day_disabled):not(.day-selected) {
-                background: rgba(23, 137, 192, 0.2);
-                color: #ebe8e3;
-                border-color: #1789c0;
-                transform: scale(1.05);
-              }
-
-              .rdp-day_today:not(.day-selected) {
-                font-weight: 700;
-                color: #1789c0;
-              }
-
-              .day-selected {
-                background: linear-gradient(
-                  135deg,
-                  #1789c0,
-                  #314a78
-                ) !important;
-                color: white !important;
-                font-weight: 700;
-                border-color: #2699d0;
-                box-shadow: 0 4px 12px rgba(23, 137, 192, 0.4);
-              }
-
-              .day-selected:hover {
-                background: linear-gradient(
-                  135deg,
-                  #2699d0,
-                  #1789c0
-                ) !important;
-                transform: scale(1.05);
-              }
-
-              .day-disabled {
-                color: #7c766d !important;
-                opacity: 0.4;
-                cursor: not-allowed !important;
-                text-decoration: line-through;
-                background: rgba(124, 118, 109, 0.1) !important;
-              }
-
-              .day-disabled:hover {
-                background: rgba(124, 118, 109, 0.1) !important;
-                transform: none !important;
-                border-color: transparent !important;
-              }
-
-              .rdp-day_outside {
-                opacity: 0.5;
-              }
-            `}</style>
             <DayPicker
               mode="single"
               selected={selectedDate}
@@ -347,10 +209,31 @@ export default function DatePicker({
               locale={es}
               showOutsideDays
               fixedWeeks
-              modifiersClassNames={{
-                selected: "day-selected",
-                disabled: "day-disabled",
-                today: "day-today",
+              classNames={{
+                root: "m-0 p-0 text-ash-100",
+                caption: "flex justify-center items-center mb-4 relative p-2",
+                caption_label:
+                  "text-lg font-bold bg-gradient-to-r from-fire-red via-flame-blue-bright to-fire-red bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-shift",
+                nav: "space-x-1 flex items-center",
+                button_previous:
+                  "absolute left-2 w-8 h-8 rounded-lg bg-transparent border-none text-ash-300 cursor-pointer transition-all duration-200 hover:bg-flame-blue hover:text-ash-50 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center",
+                button_next:
+                  "absolute right-2 w-8 h-8 rounded-lg bg-transparent border-none text-ash-300 cursor-pointer transition-all duration-200 hover:bg-flame-blue hover:text-ash-50 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center",
+                month_grid: "w-full border-collapse",
+                weekdays: "flex",
+                weekday:
+                  "text-ash-400 font-semibold text-sm uppercase py-2 w-10 flex justify-center",
+                week: "flex w-full mt-2",
+                day: "p-[2px] text-center text-sm relative focus-within:relative focus-within:z-20",
+                day_button:
+                  "w-10 h-10 p-0 font-medium aria-selected:opacity-100 hover:bg-flame-blue-bright/20 hover:text-ash-100 hover:border-flame-blue-bright hover:scale-105 transition-all duration-200 rounded-lg flex items-center justify-center border-2 border-transparent text-ash-300",
+                today: "font-bold text-flame-blue-bright",
+                selected:
+                  "bg-gradient-to-br from-flame-blue-bright to-flame-blue text-white font-bold border-flame-blue-glow shadow-lg shadow-flame-blue-bright/40 hover:from-flame-blue-glow hover:to-flame-blue-bright hover:scale-105",
+                outside: "opacity-50 text-ash-500",
+                disabled:
+                  "text-ash-500 opacity-40 cursor-not-allowed line-through bg-ash-500/10 hover:bg-ash-500/10 hover:transform-none hover:border-transparent",
+                hidden: "invisible",
               }}
             />
           </div>,

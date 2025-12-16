@@ -67,7 +67,7 @@ export function StorySection() {
       <div className="space-y-32">
         {storyBlocks.map((block, index) => (
           <StoryBlock
-            key={index}
+            key={block.title}
             title={block.title}
             content={block.content}
             iconImage={block.iconImage}
