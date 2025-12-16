@@ -315,7 +315,7 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
               {/* Imagen usando img estándar para máxima compatibilidad */}
               <img
                 src={imageToShow}
-                alt={`Imagen de ${name}`}
+                alt={`${name} - La Parrilla de Champi, Noia`}
                 className="absolute inset-0 w-full h-full object-cover rounded-3xl"
                 loading={shouldPrioritize ? "eager" : "lazy"}
                 onError={handleImageError}

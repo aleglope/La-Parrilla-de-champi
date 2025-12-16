@@ -10,6 +10,7 @@ interface StoryBlockProps {
   readonly content: string;
   readonly icon?: string; // Optional emoji icon (deprecated, use iconImage instead)
   readonly iconImage?: string; // Optional image path for icon
+  readonly imageAlt?: string; // Descriptive alt text for SEO
   readonly imageClassName?: string; // Optional custom classes for the image
   readonly gradient: string;
   readonly index: number;
@@ -23,6 +24,7 @@ export function StoryBlock({
   content,
   icon,
   iconImage,
+  imageAlt,
   imageClassName,
   gradient,
   index,
@@ -72,7 +74,7 @@ export function StoryBlock({
             {iconImage ? (
               <Image
                 src={iconImage}
-                alt={title}
+                alt={imageAlt || title}
                 width={128}
                 height={128}
                 className={`w-20 h-20 md:w-32 md:h-32 object-contain ${

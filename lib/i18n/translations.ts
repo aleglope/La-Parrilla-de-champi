@@ -7,20 +7,20 @@ export const translations = {
       story: "Historia",
       menu: "Ver Carta",
       reservations: "Reservar",
-      subtitle: "Carne a la Brasa",
+      subtitle: "Asador en Noia | Carne a la Brasa",
     },
     hero: {
       title: "El Auténtico Sabor",
       subtitle: "de la Parrilla",
       description:
-        "Disfruta de las mejores carnes a la brasa en un ambiente acogedor y familiar.",
+        "Descubre auténticas carnes a la brasa gallegas en Noia. Parrilladas, churrasco y secreto ibérico en un ambiente único. ¡Reserva tu mesa hoy!",
       cta: "Ver Menú Completo",
       video: "Ver Video",
     },
     story: {
       title: "Nuestra Historia",
-      subtitle: "Un Sueño Cumplido",
-      p1: "La Parrilla de Champi es el nuevo proyecto de un referente que lidera la escena gallega. Tras conquistar las redes, cumple ahora otro de sus grandes sueños: abrir su propia parrilla para compartir su pasión por la buena mesa y el fuego. MASIVO SUUUUIIII!!!",
+      subtitle: "Pasión por el Fuego en Galicia",
+      p1: "La Parrilla de Champi es el nuevo proyecto de un referente que lidera la escena gallega. Tras conquistar las redes, cumple ahora otro de sus grandes sueños: abrir su propia parrilla en Noia para compartir su pasión por la buena mesa y el fuego. MASIVO SUUUUIIII!!!",
       p2: "Nuestra pasión por la calidad y el servicio nos impulsa cada día. Seleccionamos las mejores carnes y productos locales para ofrecer una experiencia inolvidable a nuestros comensales.",
       p3: "Seleccionamos cuidadosamente cada pieza de carbón de encina. El secreto está en la brasa perfecta: no muy fuerte para quemar, no muy suave para cocinar. El punto justo que hace brillar cada corte.",
       p4: "Trabajamos con los mejores proveedores locales para ofrecerte cortes de primera calidad. Cada pieza es seleccionada por nuestro maestro parrillero con más de dos décadas de experiencia.",
@@ -28,7 +28,7 @@ export const translations = {
     },
     cta: {
       title: "¿Listo para disfrutar?",
-      subtitle: "Haz tu reserva hoy mismo",
+      subtitle: "El mejor asador de Noia te espera",
       button: "Llamar para Reservar",
       location: "Visítanos en nuestra ubicación principal",
     },
@@ -47,7 +47,7 @@ export const translations = {
     },
     menu: {
       title: "Nuestra Carta",
-      subtitle: "Sabores únicos",
+      subtitle: "Sabores de Galicia",
       loading: "Cargando menú...",
       empty: "No hay platos disponibles en esta categoría.",
       price: "Precio",
@@ -64,7 +64,7 @@ export const translations = {
     },
     reservations: {
       title: "Reservas",
-      subtitle: "Reserva tu mesa",
+      subtitle: "Reserva tu mesa en Noia",
       description:
         "Completa el formulario y te confirmaremos tu reserva por email",
       phoneAlternative: "¿Prefieres llamarnos? Llama al",
@@ -151,6 +151,10 @@ export const translations = {
         source: {
           web: "Web",
           phone: "Teléfono",
+          source: {
+            web: "Web",
+            phone: "Teléfono",
+          },
         },
         actions: {
           confirm: "Confirmar",
@@ -207,13 +211,13 @@ export const translations = {
       story: "Historia",
       menu: "Ver Carta",
       reservations: "Reservar",
-      subtitle: "Carne á Brasa",
+      subtitle: "Asador en Noia | Carne á Brasa",
     },
     hero: {
       title: "O Auténtico Sabor",
       subtitle: "da Parrilla",
       description:
-        "Desfruta das mellores carnes á brasa nun ambiente acolledor e familiar.",
+        "Descobre auténticas carnes á brasa galegas en Noia. Parrilladas, churrasco e secreto ibérico nun ambiente único. Reserva a túa mesa hoxe!",
       cta: "Ver Menú Completo",
       video: "Ver Video",
     },

@@ -1,8 +1,13 @@
-import { Suspense } from 'react';
-import { MenuContent } from '@/components/menu/MenuContent';
-import { MenuSkeleton } from '@/components/menu/MenuSkeleton';
-import { MenuHeader } from '@/components/menu/MenuHeader';
-import { getCategories, getDishes } from '@/lib/supabase/menu-service';
+import { Suspense } from "react";
+import { MenuContent } from "@/components/menu/MenuContent";
+import { MenuSkeleton } from "@/components/menu/MenuSkeleton";
+import { MenuHeader } from "@/components/menu/MenuHeader";
+import { getCategories, getDishes } from "@/lib/supabase/menu-service";
+import {
+  generateMenuSchema,
+  generateBreadcrumbSchema,
+} from "@/lib/seo/schemas";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 /**
  * Página del Menú Digital
@@ -11,13 +16,25 @@ import { getCategories, getDishes } from '@/lib/supabase/menu-service';
  */
 export const revalidate = 60; // ISR: Revalida cada 60 segundos
 
-export default async function MenuPage() {
+export default async function MenuPage({
+  params,
+}: {
+  params: { lang: string };
+}) {
   // Fetch de datos en el servidor para SSG
   const categories = await getCategories();
   const dishes = await getDishes();
 
+  const menuSchema = generateMenuSchema(categories, dishes);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Inicio", item: `/${params.lang}` },
+    { name: "Carta", item: `/${params.lang}/menu` },
+  ]);
+
   return (
     <main className="min-h-screen bg-charcoal pb-20">
+      <JsonLd data={menuSchema} />
+      <JsonLd data={breadcrumbSchema} />
       {/* Header con selector de idioma */}
       <MenuHeader />
 
@@ -37,4 +54,3 @@ export default async function MenuPage() {
     </main>
   );
 }
-

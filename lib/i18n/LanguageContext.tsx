@@ -1,14 +1,9 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useMemo,
-} from "react";
+import React, { createContext, useContext, ReactNode } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { translations, Language } from "./translations";
+import { i18n } from "../../i18n-config";
 
 interface LanguageContextType {
   language: Language;
@@ -20,36 +15,41 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
   undefined
 );
 
+interface LanguageProviderProps {
+  children: ReactNode;
+  initialLang: Language;
+}
+
 export function LanguageProvider({
   children,
-}: Readonly<{ children: ReactNode }>) {
-  const [language, setLanguage] = useState<Language>("es"); // Default to Spanish
+  initialLang,
+}: Readonly<LanguageProviderProps>) {
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Load saved language from local storage on mount
-  useEffect(() => {
-    const savedLang = localStorage.getItem("language") as Language;
-    if (savedLang && (savedLang === "es" || savedLang === "gl")) {
-      setLanguage(savedLang);
-    } else {
-      // If no saved language, set default to Spanish
-      setLanguage("es");
-      localStorage.setItem("language", "es");
-    }
-  }, []);
+  // The language is now derived primarily from the URL (initialLang)
+  // We don't need local state for 'language' because the URL is the source of truth.
+  // When the URL changes, the Page component re-renders and passes the new initialLang.
+  const language = initialLang;
 
-  const handleSetLanguage = (lang: Language) => {
-    setLanguage(lang);
-    localStorage.setItem("language", lang);
+  const handleSetLanguage = (newLang: Language) => {
+    if (newLang === language) return;
+
+    // Redirect to the new language URL
+    // We assume the current path starts with /es/ or /gl/
+    // We replace the first segment with the new language
+    const segments = pathname.split("/");
+    segments[1] = newLang; // Replace 'es' or 'gl' with newLang
+    const newPath = segments.join("/");
+
+    router.push(newPath);
   };
 
-  const value = useMemo(
-    () => ({
-      language,
-      setLanguage: handleSetLanguage,
-      t: translations[language],
-    }),
-    [language]
-  );
+  const value = {
+    language,
+    setLanguage: handleSetLanguage,
+    t: translations[language], // We are still using the bundled translations on the client for interactivity
+  };
 
   return (
     <LanguageContext.Provider value={value}>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import ReservationForm from "@/components/reservations/ReservationForm";
+import { generateBreadcrumbSchema } from "@/lib/seo/schemas";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: "Reservas | La Parrilla de Champi",
@@ -7,9 +9,19 @@ export const metadata: Metadata = {
     "Reserva tu mesa en La Parrilla de Champi. Disfruta de las mejores carnes a la brasa en un ambiente acogedor.",
 };
 
-export default function ReservationsPage() {
+export default function ReservationsPage({
+  params,
+}: {
+  params: { lang: string };
+}) {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Inicio", item: `/${params.lang}` },
+    { name: "Reservas", item: `/${params.lang}/reservas` },
+  ]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-charcoal via-charcoal-dark to-charcoal">
+      <JsonLd data={breadcrumbSchema} />
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 px-8 text-center bg-gradient-to-br from-fire-red via-fire-red-dark to-fire-red overflow-hidden">
         {/* Background Pattern */}

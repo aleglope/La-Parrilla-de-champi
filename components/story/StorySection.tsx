@@ -21,18 +21,22 @@ export function StorySection() {
       title: "El Fuego que nos une",
       content: t.story.p1,
       iconImage: "/images/llama-de-historia.webp",
+      imageAlt:
+        "Llama de fuego real en parrilla de carbón - La Parrilla de Champi",
       gradient: "from-fire-red/20 to-transparent",
     },
     {
       title: "El Alma del Mar",
       content: t.story.p2,
       iconImage: "/images/ola-del-mar.svg",
+      imageAlt: "Ingredientes frescos del mar de Galicia y Noia",
       gradient: "from-flame-blue/20 to-transparent",
     },
     {
       title: "Carbón de Calidad",
       content: t.story.p3,
       iconImage: "/images/parrilla.svg",
+      imageAlt: "Parrilla con carbón de encina de alta calidad",
       imageClassName: "rounded-full border-2 border-white/10",
       gradient: "from-charcoal-dark/60 to-charcoal/30",
     },
@@ -40,6 +44,7 @@ export function StorySection() {
       title: "Carne Premium",
       content: t.story.p4,
       iconImage: "/images/parrilla-carne.svg",
+      imageAlt: "Mejores cortes de ternera gallega a la brasa",
       imageClassName: "rounded-full border-2 border-white/10",
       gradient: "from-fire-red/30 to-fire-red-dark/10",
     },
@@ -71,6 +76,7 @@ export function StorySection() {
             title={block.title}
             content={block.content}
             iconImage={block.iconImage}
+            imageAlt={block.imageAlt}
             imageClassName={block.imageClassName}
             gradient={block.gradient}
             index={index}
