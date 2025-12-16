@@ -5,25 +5,25 @@ import * as THREE from "three";
 
 // Props para el componente LiquidEther
 export interface LiquidEtherProps {
-  mouseForce?: number;
-  cursorSize?: number;
-  isViscous?: boolean;
-  viscous?: number;
-  iterationsViscous?: number;
-  iterationsPoisson?: number;
-  dt?: number;
-  BFECC?: boolean;
-  resolution?: number;
-  isBounce?: boolean;
-  colors?: string[];
-  style?: React.CSSProperties;
-  className?: string;
-  autoDemo?: boolean;
-  autoSpeed?: number;
-  autoIntensity?: number;
-  takeoverDuration?: number;
-  autoResumeDelay?: number;
-  autoRampDuration?: number;
+  readonly mouseForce?: number;
+  readonly cursorSize?: number;
+  readonly isViscous?: boolean;
+  readonly viscous?: number;
+  readonly iterationsViscous?: number;
+  readonly iterationsPoisson?: number;
+  readonly dt?: number;
+  readonly BFECC?: boolean;
+  readonly resolution?: number;
+  readonly isBounce?: boolean;
+  readonly colors?: string[];
+  readonly style?: React.CSSProperties;
+  readonly className?: string;
+  readonly autoDemo?: boolean;
+  readonly autoSpeed?: number;
+  readonly autoIntensity?: number;
+  readonly takeoverDuration?: number;
+  readonly autoResumeDelay?: number;
+  readonly autoRampDuration?: number;
 }
 
 // Interfaces internas
@@ -247,12 +247,15 @@ function LiquidEther({
       takeoverFrom = new THREE.Vector2();
       takeoverTo = new THREE.Vector2();
       onInteract: (() => void) | null = null;
+      isScrolling = false;
+      scrollTimer: number | null = null;
 
       private _onMouseMove = this.onDocumentMouseMove.bind(this);
       private _onTouchStart = this.onDocumentTouchStart.bind(this);
       private _onTouchMove = this.onDocumentTouchMove.bind(this);
       private _onTouchEnd = this.onTouchEnd.bind(this);
       private _onDocumentLeave = this.onDocumentLeave.bind(this);
+      private _onScroll = this.onScroll.bind(this);
 
       init(container: HTMLElement) {
         this.container = container;
@@ -271,6 +274,8 @@ function LiquidEther({
         });
         this.listenerTarget.addEventListener("touchend", this._onTouchEnd);
         this.docTarget?.addEventListener("mouseleave", this._onDocumentLeave);
+        // Detectar scroll para pausar interacciones en móvil
+        this.listenerTarget.addEventListener("scroll", this._onScroll, true);
       }
 
       dispose() {
@@ -288,6 +293,11 @@ function LiquidEther({
             this._onTouchMove
           );
           this.listenerTarget.removeEventListener("touchend", this._onTouchEnd);
+          this.listenerTarget.removeEventListener(
+            "scroll",
+            this._onScroll,
+            true
+          );
         }
         if (this.docTarget) {
           this.docTarget.removeEventListener(
@@ -360,6 +370,8 @@ function LiquidEther({
         if (event.touches.length !== 1) return;
         const t = event.touches[0];
         if (!this.updateHoverState(t.clientX, t.clientY)) return;
+        // No interferir si estamos scrolleando
+        if (this.isScrolling) return;
         if (this.onInteract) this.onInteract();
         this.setCoords(t.clientX, t.clientY);
         this.hasUserControl = true;
@@ -368,6 +380,8 @@ function LiquidEther({
       onDocumentTouchMove(event: TouchEvent) {
         if (event.touches.length !== 1) return;
         const t = event.touches[0];
+        // No interferir si estamos scrolleando - esto es crítico en móvil
+        if (this.isScrolling) return;
         if (!this.updateHoverState(t.clientX, t.clientY)) return;
         if (this.onInteract) this.onInteract();
         this.setCoords(t.clientX, t.clientY);
@@ -379,6 +393,21 @@ function LiquidEther({
 
       onDocumentLeave() {
         this.isHoverInside = false;
+      }
+
+      onScroll() {
+        // Marcar que estamos scrolleando
+        this.isScrolling = true;
+
+        // Limpiar timer anterior
+        if (this.scrollTimer) {
+          window.clearTimeout(this.scrollTimer);
+        }
+
+        // Después de 150ms sin scroll, permitir interacciones nuevamente
+        this.scrollTimer = window.setTimeout(() => {
+          this.isScrolling = false;
+        }, 150);
       }
 
       update() {
@@ -1337,8 +1366,28 @@ function LiquidEther({
     io.observe(container);
     intersectionObserverRef.current = io;
 
+    // Track dimensions to prevent resize on minor changes
+    let lastWidth = container.clientWidth;
+    let lastHeight = container.clientHeight;
+
     const ro = new ResizeObserver(() => {
-      if (!webglRef.current) return;
+      if (!webglRef.current || !mountRef.current) return;
+
+      const newWidth = mountRef.current.clientWidth;
+      const newHeight = mountRef.current.clientHeight;
+
+      // Only resize if change is significant (>50px in any dimension)
+      // This prevents resets from animation-induced layout shifts
+      const widthDiff = Math.abs(newWidth - lastWidth);
+      const heightDiff = Math.abs(newHeight - lastHeight);
+
+      if (widthDiff < 50 && heightDiff < 50) {
+        return; // Ignore minor changes from CSS animations
+      }
+
+      lastWidth = newWidth;
+      lastHeight = newHeight;
+
       if (resizeRafRef.current) cancelAnimationFrame(resizeRafRef.current);
       resizeRafRef.current = requestAnimationFrame(() => {
         if (!webglRef.current) return;

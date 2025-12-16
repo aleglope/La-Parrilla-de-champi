@@ -38,10 +38,10 @@ export function StoryBlock({
     offset: ["start end", "end start"],
   });
 
-  // Animaciones de parallax
-  const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+  // Animaciones de parallax - Reducidas para evitar conflictos con el fondo
+  const y = useTransform(scrollYProgress, [0, 1], [30, -30]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   // Alternar dirección según el índice (izquierda/derecha)
   const isEven = index % 2 === 0;
@@ -57,9 +57,13 @@ export function StoryBlock({
       >
         {/* Icono decorativo */}
         <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={inView ? { scale: 1, rotate: 0 } : {}}
-          transition={{ duration: 0.8, type: "spring" }}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={inView ? { scale: 1, opacity: 1 } : {}}
+          transition={{
+            duration: 0.6,
+            ease: [0.16, 1, 0.3, 1], // Easing suave personalizado
+            delay: 0.1,
+          }}
           className="flex-shrink-0"
         >
           <div
