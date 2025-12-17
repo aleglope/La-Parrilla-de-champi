@@ -28,12 +28,12 @@ export const restaurantSchema: WithContext<Restaurant> = {
   ],
   "@id": "https://www.laparrilladechampi.es",
   url: "https://www.laparrilladechampi.es",
-  telephone: "+34 600 000 000", // Placeholder, should be updated with real phone if known or added to translations
-  priceRange: "€€",
-  servesCuisine: ["Barbecue", "Galician", "Spanish"],
+  telephone: "+34711248086",
+  priceRange: "€€-€€€",
+  servesCuisine: ["Asador", "Carnes", "Cocina Gallega"],
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Dirección principal", // Placeholder
+    streetAddress: "Rúa Galicia, 25",
     addressLocality: "Noia",
     addressRegion: "A Coruña",
     postalCode: "15200",
@@ -41,28 +41,32 @@ export const restaurantSchema: WithContext<Restaurant> = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 42.785, // Placeholder for Noia center
-    longitude: -8.889,
+    latitude: 42.7857,
+    longitude: -8.8878,
   },
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday", "Sunday"],
       opens: "13:00",
       closes: "16:00",
+      validFrom: "2024-01-01",
+      validThrough: "2025-12-31",
     },
     {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       opens: "20:00",
-      closes: "23:00",
+      closes: "23:30",
+      validFrom: "2024-01-01",
+      validThrough: "2025-12-31",
     },
   ],
   menu: "https://www.laparrilladechampi.es/menu",
   acceptsReservations: "True",
   sameAs: [
-    "https://www.instagram.com/laparrilladechampi", // Placeholder
-    "https://www.facebook.com/laparrilladechampi", // Placeholder
+    "https://www.instagram.com/laparrilladechampi",
+    "https://tiktok.com/@champimuros",
   ],
 };
 

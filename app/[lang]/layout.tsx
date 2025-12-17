@@ -51,7 +51,9 @@ export async function generateMetadata({
     },
     description: dictionary.hero.description,
     keywords:
-      "parrilla, carne a la brasa, restaurante, champi, asador, barbacoa, galicia, noia",
+      params.lang === "gl"
+        ? "parrilla, carne á brasa, restaurante, champi, asador, barbacoa, galicia, noia"
+        : "parrilla, carne a la brasa, restaurante, champi, asador, barbacoa, galicia, noia",
     authors: [{ name: "La Parrilla de Champi" }],
     openGraph: {
       title: "La Parrilla de Champi",
@@ -60,12 +62,7 @@ export async function generateMetadata({
       locale: params.lang === "gl" ? "gl_ES" : "es_ES",
       siteName: "La Parrilla de Champi",
     },
-    alternates: {
-      languages: {
-        es: "/es",
-        gl: "/gl",
-      },
-    },
+    // alternates: removed to be handled per-page for correct sub-path targeting
   };
 }
 

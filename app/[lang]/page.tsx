@@ -6,15 +6,24 @@ import { Navigation } from "@/components/navigation/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { SocialMediaCard } from "@/components/social/SocialMediaCard";
 
+export const metadata = {
+  alternates: {
+    languages: {
+      es: "/es",
+      gl: "/gl",
+    },
+  },
+};
+
 export default function HomePage() {
   return (
     <main className="relative min-h-screen">
       {/* Sistema de partículas de fondo */}
       <ParticleSystem />
-      
+
       {/* Navegación */}
       <Navigation />
-      
+
       {/* Hero Section con Bento Box */}
       <section id="hero" className="relative z-10">
         <HeroBentoBox />
@@ -42,4 +51,3 @@ export default function HomePage() {
     </main>
   );
 }
-

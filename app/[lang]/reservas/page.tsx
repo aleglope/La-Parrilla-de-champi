@@ -1,13 +1,27 @@
 import type { Metadata } from "next";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 import ReservationForm from "@/components/reservations/ReservationForm";
 import { generateBreadcrumbSchema } from "@/lib/seo/schemas";
 import { JsonLd } from "@/components/seo/JsonLd";
 
-export const metadata: Metadata = {
-  title: "Reservas | La Parrilla de Champi",
-  description:
-    "Reserva tu mesa en La Parrilla de Champi. Disfruta de las mejores carnes a la brasa en un ambiente acogedor.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: { lang: string };
+}): Promise<Metadata> {
+  const dictionary = await getDictionary(params.lang as "es" | "gl");
+
+  return {
+    title: `${dictionary.reservations.title} | La Parrilla de Champi`,
+    description: dictionary.reservations.subtitle,
+    alternates: {
+      languages: {
+        es: "/es/reservas",
+        gl: "/gl/reservas",
+      },
+    },
+  };
+}
 
 export default function ReservationsPage({
   params,

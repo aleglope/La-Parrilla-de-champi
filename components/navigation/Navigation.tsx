@@ -5,7 +5,6 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import { translations } from "@/lib/i18n/translations";
 import BubbleMenu from "./BubbleMenu";
 import BrandButton from "@/components/ui/BrandButton";
 import InfoModal from "@/components/ui/InfoModal";
@@ -227,10 +226,10 @@ export function Navigation() {
       <InfoModal
         isOpen={showClosedModal}
         onClose={() => setShowClosedModal(false)}
-        title={translations[language].reservations.closed.title}
-        message={translations[language].reservations.closed.message}
+        title={t.reservations.closed.title}
+        message={t.reservations.closed.message}
         icon="🔒"
-        buttonText={translations[language].reservations.closed.button}
+        buttonText={t.reservations.closed.button}
       />
     </>
   );

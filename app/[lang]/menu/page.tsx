@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import { Metadata } from "next";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { MenuContent } from "@/components/menu/MenuContent";
 import { MenuSkeleton } from "@/components/menu/MenuSkeleton";
 import { MenuHeader } from "@/components/menu/MenuHeader";
@@ -15,6 +17,25 @@ import { JsonLd } from "@/components/seo/JsonLd";
  * Revalidación cada 60 segundos para reflejar cambios del admin
  */
 export const revalidate = 60; // ISR: Revalida cada 60 segundos
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { lang: string };
+}): Promise<Metadata> {
+  const dictionary = await getDictionary(params.lang as "es" | "gl");
+
+  return {
+    title: dictionary.menu.title,
+    description: dictionary.menu.subtitle,
+    alternates: {
+      languages: {
+        es: "/es/menu",
+        gl: "/gl/menu",
+      },
+    },
+  };
+}
 
 export default async function MenuPage({
   params,
