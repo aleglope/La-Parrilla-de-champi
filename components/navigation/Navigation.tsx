@@ -183,7 +183,7 @@ export function Navigation() {
             </div>
 
             {/* Mobile Language Switcher (Visible when Bubble Menu is closed or as part of header) */}
-            <div className="flex items-center md:hidden space-x-3 mr-[4.5rem]">
+            <div className="flex items-center md:hidden space-x-3">
               <BrandButton
                 onClick={toggleLanguage}
                 style={{ minWidth: "auto", padding: "0 1rem", height: "2.5em" }}
@@ -208,37 +208,20 @@ export function Navigation() {
                   </span>
                 </span>
               </BrandButton>
+
+              <BubbleMenu
+                logo="/images/logo.svg"
+                items={bubbleMenuItems}
+                menuBg="#ffffff"
+                menuContentColor="#111111"
+                useFixedPosition={true}
+                className="!relative !top-auto !right-auto !left-auto !p-0 !w-auto"
+                isHidden={isHidden}
+              />
             </div>
           </div>
         </div>
       </motion.nav>
-
-      {/* Bubble Menu for Mobile - Now with motion animation and proper overflow handling */}
-      <motion.div
-        initial={{ y: -100, opacity: 0 }}
-        animate={{
-          y: isHidden ? "-200%" : 0,
-          opacity: isHidden ? 0 : 1,
-        }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="md:hidden fixed top-4 right-4 z-[1002]"
-        style={{
-          overflow: "hidden",
-          pointerEvents: isHidden ? "none" : "auto",
-          visibility: isHidden ? "hidden" : "visible",
-        }}
-      >
-        <BubbleMenu
-          logo="/images/logo.svg"
-          items={bubbleMenuItems}
-          menuBg="#ffffff"
-          menuContentColor="#111111"
-          useFixedPosition={true}
-          className="!top-0 !right-0 !left-auto !p-0"
-          style={{ position: "relative" }}
-          isHidden={isHidden}
-        />
-      </motion.div>
 
       {/* Info Modal for closed reservations */}
       <InfoModal
