@@ -86,9 +86,9 @@ export default function RootLayout({
     <html
       lang={params.lang}
       suppressHydrationWarning={true}
-      className={`dark ${bebasNeue.variable} ${barlowCondensed.variable} ${inter.variable}`}
+      className={`dark ${bebasNeue.variable} ${barlowCondensed.variable} ${inter.variable} overflow-x-hidden`}
     >
-      <body className="overflow-x-hidden">
+      <body className="overflow-x-hidden w-full max-w-full">
         <JsonLd data={restaurantSchema} />
         <DeviceDetector />
         <ClientProviders lang={params.lang}>{children}</ClientProviders>
