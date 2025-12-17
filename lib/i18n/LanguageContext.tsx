@@ -48,7 +48,7 @@ export function LanguageProvider({
   const value = {
     language,
     setLanguage: handleSetLanguage,
-    t: translations[language], // We are still using the bundled translations on the client for interactivity
+    t: translations[language] || translations["es"], // We are still using the bundled translations on the client for interactivity
   };
 
   return (

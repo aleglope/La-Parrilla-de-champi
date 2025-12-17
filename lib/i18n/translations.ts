@@ -20,7 +20,7 @@ export const translations = {
     story: {
       title: "Nuestra Historia",
       subtitle: "Pasión por el Fuego en Galicia",
-      p1: "La Parrilla de Champi es el nuevo proyecto de un referente que lidera la escena gallega. Tras conquistar las redes, cumple ahora otro de sus grandes sueños: abrir su propia parrilla en Noia para compartir su pasión por la buena mesa y el fuego. MASIVO SUUUUIIII!!!",
+      p1: "La Parrilla de Champi es el nuevo proyecto de Champimuros, un referente que lidera la escena gallega. Tras conquistar las redes, cumple ahora otro de sus grandes sueños: abrir su propia parrilla en Noia para compartir su pasión por la buena mesa y el fuego. MASIVO SUUUUIIII!!!",
       p2: "Nuestra pasión por la calidad y el servicio nos impulsa cada día. Seleccionamos las mejores carnes y productos locales para ofrecer una experiencia inolvidable a nuestros comensales.",
       p3: "Seleccionamos cuidadosamente cada pieza de carbón de encina. El secreto está en la brasa perfecta: no muy fuerte para quemar, no muy suave para cocinar. El punto justo que hace brillar cada corte.",
       p4: "Trabajamos con los mejores proveedores locales para ofrecerte cortes de primera calidad. Cada pieza es seleccionada por nuestro maestro parrillero con más de dos décadas de experiencia.",
