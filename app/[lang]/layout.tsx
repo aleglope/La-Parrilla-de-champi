@@ -3,6 +3,7 @@ import "./../globals.css"; // Adjusted path
 import { ClientProviders } from "@/components/providers/ClientProviders";
 import { DeviceDetector } from "@/components/utils/DeviceDetector";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Bebas_Neue, Barlow_Condensed, Inter } from "next/font/google";
 import { i18n, type Locale } from "@/i18n-config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
@@ -93,6 +94,7 @@ export default function RootLayout({
         <DeviceDetector />
         <ClientProviders lang={params.lang}>{children}</ClientProviders>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
