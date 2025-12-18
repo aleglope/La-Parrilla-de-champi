@@ -3,13 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-    overflow-x: hidden;
-    width: 100%;
-    max-width: 100%;
-  }
-
   body {
     @apply bg-charcoal text-ash-300 font-body antialiased;
     background-image: radial-gradient(
@@ -22,10 +15,10 @@
         rgba(23, 137, 192, 0.05) 0%,
         transparent 50%
       );
-    overflow-x: hidden;
-    width: 100%;
-    max-width: 100%;
-    position: relative;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   /* Aplicar fuentes a elementos específicos */
