@@ -45,7 +45,7 @@ export function HeroBentoBox() {
           {/* Fondo con gradiente animado */}
           <div className="absolute inset-0 bg-gradient-ocean-fire opacity-20" />
 
-          <div className="container-custom w-full h-full flex items-start md:items-center py-10 pt-24 md:pt-10">
+          <div className="container-custom w-full h-full flex items-start md:items-center py-10 pt-24 md:pt-10 overflow-x-visible">
             {/* Layout Bento Box */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 w-full max-h-[800px]">
               {/* Bloque 1: Texto e Intro (Izquierda) */}

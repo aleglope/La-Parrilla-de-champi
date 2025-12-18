@@ -85,6 +85,7 @@
   /* Contenedor principal responsive */
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    overflow-x: hidden;
   }
 
   /* Estilos base para las cards del menú */
