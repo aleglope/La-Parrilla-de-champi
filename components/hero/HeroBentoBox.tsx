@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionTemplate } from "framer-motion";
 import { useRef } from "react";
 import ChampiLogoReveal from "./ChampiLogoReveal";
 import { VideoBlock } from "./VideoBlock";
@@ -25,8 +25,17 @@ export function HeroBentoBox() {
 
   // 1. El bloque central crece (scale) y se vuelve completamente opaco
   const centerScale = useTransform(scrollYProgress, [0, 0.4], [1, 1.8]);
-  // Opcional: Desplazamiento Y para centrarlo aún más si es necesario
-  const centerY = useTransform(scrollYProgress, [0, 0.4], [0, -50]);
+  // Desplazamiento Y original para centrarlo (tweak visual)
+  const scrollOffsetY = useTransform(scrollYProgress, [0, 0.4], [0, -50]);
+  
+  // Cálculo para mover el logo (compensación de posición): Progreso 0->1
+  const moveProgress = useTransform(scrollYProgress, [0, 0.4], [0, 1]);
+  
+  // X: En desktop se mueve a la derecha (col 1 -> col 2)
+  const centerX = useMotionTemplate`calc(${moveProgress} * var(--hero-x-offset, 0px))`;
+  
+  // Y: En móvil se mueve abajo (fila 1 -> fila 2), sumado al tweak original
+  const centerY = useMotionTemplate`calc(${scrollOffsetY}px + ${moveProgress} * var(--hero-y-offset, 0px))`;
 
   // 2. Los bloques laterales se desvanecen y se desplazan hacia afuera para dar espacio
   const sideOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
@@ -48,7 +57,18 @@ export function HeroBentoBox() {
           <div className="container-custom w-full h-full flex items-start md:items-center py-10 pt-24 md:pt-10 overflow-x-visible">
             {/* Layout Bento Box */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 w-full max-h-[800px]">
-              {/* Bloque 1: Texto e Intro (Izquierda) */}
+              {/* Bloque 1: Logo Animado (Izquierda - Eje Central) - ESTE ES EL QUE CRECE */}
+              <motion.div
+                style={{ scale: centerScale, y: centerY, x: centerX, zIndex: 10 }}
+                className="md:col-span-4 md:row-span-2 glass-card p-0 flex flex-col justify-center items-center relative overflow-hidden min-h-[250px] md:min-h-[600px] [--hero-x-offset:0px] md:[--hero-x-offset:calc(100%+24px)] [--hero-y-offset:calc(100%+16px)] md:[--hero-y-offset:0px]"
+              >
+                {/* ChampiLogoReveal como contenido principal */}
+                <div className="absolute inset-0 w-full h-full">
+                  <ChampiLogoReveal />
+                </div>
+              </motion.div>
+
+              {/* Bloque 2: Texto e Intro (Centro) */}
               <motion.div
                 style={{ opacity: sideOpacity, scale: sideScale, x: leftX }}
                 className="md:col-span-4 md:row-span-2 glass-card p-6 md:p-10 flex flex-col justify-center relative overflow-hidden min-h-[250px] md:min-h-[600px]"
@@ -89,17 +109,6 @@ export function HeroBentoBox() {
                       ¡Que pasa gentuza! 🔥
                     </p>
                   </motion.div>
-                </div>
-              </motion.div>
-
-              {/* Bloque 2: Logo Animado (Centro - Eje Central) - ESTE ES EL QUE CRECE */}
-              <motion.div
-                style={{ scale: centerScale, y: centerY, zIndex: 10 }}
-                className="md:col-span-4 md:row-span-2 glass-card p-0 flex flex-col justify-center items-center relative overflow-hidden min-h-[250px] md:min-h-[600px]"
-              >
-                {/* ChampiLogoReveal como contenido principal */}
-                <div className="absolute inset-0 w-full h-full">
-                  <ChampiLogoReveal />
                 </div>
               </motion.div>
 

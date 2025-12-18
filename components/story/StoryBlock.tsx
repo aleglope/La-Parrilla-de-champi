@@ -92,12 +92,16 @@ export function StoryBlock({
           initial={{ opacity: 0, x: isEven ? -50 : 50 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className={`flex-1 ${isEven ? "md:text-left" : "md:text-right"}`}
+          className={`flex-1 ${
+            isEven
+              ? "md:text-left"
+              : "md:text-right md:flex md:flex-col md:items-end"
+          }`}
         >
           <h3 className="text-4xl md:text-5xl font-heading font-bold text-ash-100 mb-6">
             {title}
           </h3>
-          <p className="text-xl text-ash-300 font-body leading-relaxed max-w-2xl">
+          <p className="text-xl text-ash-300 font-body leading-relaxed max-w-2xl md:ml-auto md:max-w-[48ch] lg:md:max-w-[52ch] xl:md:max-w-[56ch]">
             {content}
           </p>
 
