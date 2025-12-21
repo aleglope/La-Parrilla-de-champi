@@ -139,7 +139,7 @@ function generateConfirmationEmailHTML(data: ReservationEmailData): string {
     <div style="text-align: center; margin: 30px 0;">
       <p style="color: #7f8c8d; font-size: 14px; margin: 5px 0;">📍 Dirección del Restaurante</p>
       <p style="color: #2c3e50; font-weight: 600; margin: 5px 0;">La Parrilla de Champi</p>
-      <p style="color: #7f8c8d; font-size: 14px; margin: 5px 0;">📞 Teléfono: +34 600 000 000</p>
+      <p style="color: #7f8c8d; font-size: 14px; margin: 5px 0;">📞 Teléfono: 711 224 328</p>
     </div>
     
     <hr style="border: none; border-top: 1px solid #ecf0f1; margin: 30px 0;">

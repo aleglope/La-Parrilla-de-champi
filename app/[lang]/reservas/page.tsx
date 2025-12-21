@@ -75,7 +75,7 @@ export default function ReservationsPage({
           </p>
 
           <a
-            href="tel:+34711248086"
+            href="tel:711224328"
             className="inline-flex items-center gap-3 px-12 py-5 bg-gradient-to-r from-ash-50 to-white text-charcoal-dark rounded-full text-2xl font-heading font-bold transition-all duration-300 shadow-lg shadow-flame-blue-bright/20 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-flame-blue-bright/30 mb-4"
           >
             <svg
@@ -92,7 +92,7 @@ export default function ReservationsPage({
                 strokeLinejoin="round"
               />
             </svg>
-            711 24 80 86
+            711 22 43 28
           </a>
 
           <p className="text-sm text-ash-400 italic font-body">

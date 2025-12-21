@@ -56,7 +56,7 @@ export default function LegalNoticePage() {
               <div className="space-y-2">
                 <h3 className="text-lg font-bold text-ash-100">Contacto</h3>
                 <p>Email: contacto@laparrilladechampi.com</p>
-                <p>Teléfono: +34 912 345 678</p>
+                <p>Teléfono: 711 224 328</p>
               </div>
             </div>
 

@@ -23,12 +23,12 @@ export const restaurantSchema: WithContext<Restaurant> = {
   "@type": "Restaurant",
   name: "La Parrilla de Champi",
   image: [
-    "https://www.laparrilladechampi.es/images/parrilla.svg",
-    "https://www.laparrilladechampi.es/Champi Logo.png",
+    "https://www.laparrilladechampi.es/Logo-Bento-Hero.svg",
+    "https://www.laparrilladechampi.es/LOGO-CHAMPI-PNG-SOLO.png",
   ],
   "@id": "https://www.laparrilladechampi.es",
   url: "https://www.laparrilladechampi.es",
-  telephone: "+34711248086",
+  telephone: "+34711224328",
   priceRange: "€€-€€€",
   servesCuisine: ["Asador", "Carnes", "Cocina Gallega"],
   address: {
