@@ -59,7 +59,7 @@ export function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           required
           className="w-full px-4 py-3 bg-charcoal-dark border border-flame-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fire-red transition-colors"
-          placeholder="admin@laparrilla.com"
+          placeholder=""
         />
       </div>
 
