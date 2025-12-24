@@ -64,10 +64,38 @@ export function DeviceDetector() {
 
         let cleanedUp = false;
         let fallbackTimer = 0;
+        let toastTimer = 0;
+
+        const toast = document.createElement("div");
+        toast.style.position = "absolute";
+        toast.style.left = "12px";
+        toast.style.right = "12px";
+        toast.style.bottom = "12px";
+        toast.style.margin = "0 auto";
+        toast.style.maxWidth = "520px";
+        toast.style.padding = "10px 12px";
+        toast.style.borderRadius = "12px";
+        toast.style.background = "rgba(0, 0, 0, 0.38)";
+        toast.style.color = "#ffffff";
+        toast.style.font =
+          "500 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+        toast.style.letterSpacing = "0.2px";
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 200ms ease";
+        toast.textContent = "";
+        overlay.appendChild(toast);
 
         const onMessage = (event: MessageEvent) => {
           const data = event.data as any;
-          if (data && data.type === "christmas:done") hide();
+          if (!data || !data.type) return;
+          if (data.type === "christmas:done") hide();
+          if (data.type === "christmas:error") {
+            toast.textContent =
+              "La animación navideña no está disponible en este momento.";
+            toast.style.opacity = "1";
+            win.clearTimeout(toastTimer);
+            toastTimer = win.setTimeout(hide, 1200);
+          }
         };
 
         const cleanup = () => {
@@ -75,6 +103,7 @@ export function DeviceDetector() {
           cleanedUp = true;
           win.removeEventListener("message", onMessage);
           win.clearTimeout(fallbackTimer);
+          win.clearTimeout(toastTimer);
           overlay.remove();
         };
 
