@@ -11,8 +11,7 @@ import { useEffect } from "react";
 export function DeviceDetector() {
   useEffect(() => {
     const startChristmasOverlay = () => {
-      const win = globalThis.window;
-      if (!win) return;
+      const win = window;
 
       const isMobileViewport = win.matchMedia("(max-width: 768px)").matches;
       const isCoarsePointer = win.matchMedia(
@@ -90,8 +89,12 @@ export function DeviceDetector() {
         fallbackTimer = win.setTimeout(hide, 16000);
       };
 
-      if ("requestIdleCallback" in win) {
-        (win as any).requestIdleCallback(mount, { timeout: 2000 });
+      const requestIdleCallback = (win as any).requestIdleCallback as
+        | ((cb: () => void, options?: { timeout?: number }) => number)
+        | undefined;
+
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(mount, { timeout: 2000 });
         return;
       }
 

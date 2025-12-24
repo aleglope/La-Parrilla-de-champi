@@ -36,6 +36,6 @@ export async function GET(
     headers.set("Cache-Control", "public, max-age=31536000, immutable");
   }
 
-  return new NextResponse(content, { status: 200, headers });
+  const body = new Uint8Array(content);
+  return new NextResponse(body, { status: 200, headers });
 }
-
