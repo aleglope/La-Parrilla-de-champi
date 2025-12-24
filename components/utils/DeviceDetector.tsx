@@ -10,6 +10,94 @@ import { useEffect } from "react";
  */
 export function DeviceDetector() {
   useEffect(() => {
+    const startChristmasOverlay = () => {
+      const win = globalThis.window;
+      if (!win) return;
+
+      const isMobileViewport = win.matchMedia("(max-width: 768px)").matches;
+      const isCoarsePointer = win.matchMedia(
+        "(hover: none) and (pointer: coarse)"
+      ).matches;
+      const uaMobile =
+        /Android|iPhone|iPod/i.test(navigator.userAgent) ||
+        (/iPad/i.test(navigator.userAgent) && isCoarsePointer);
+      const isMobile = (isMobileViewport && isCoarsePointer) || uaMobile;
+      if (!isMobile) return;
+
+      const sessionKey = "christmasTreePlayed:v1";
+      try {
+        if (win.sessionStorage.getItem(sessionKey) === "1") return;
+      } catch {
+        return;
+      }
+      if (document.getElementById("__christmas_tree_overlay")) return;
+
+      const mount = () => {
+        if (document.getElementById("__christmas_tree_overlay")) return;
+        try {
+          win.sessionStorage.setItem(sessionKey, "1");
+        } catch {
+          return;
+        }
+
+        const overlay = document.createElement("div");
+        overlay.id = "__christmas_tree_overlay";
+        overlay.style.position = "fixed";
+        overlay.style.inset = "0";
+        overlay.style.zIndex = "2147483647";
+        overlay.style.pointerEvents = "none";
+        overlay.style.opacity = "1";
+        overlay.style.transition = "opacity 320ms ease";
+
+        const iframe = document.createElement("iframe");
+        iframe.src = "/christmas/index.html";
+        iframe.tabIndex = -1;
+        iframe.setAttribute("aria-hidden", "true");
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.style.border = "0";
+        iframe.style.display = "block";
+        iframe.style.background = "transparent";
+        iframe.loading = "lazy";
+
+        overlay.appendChild(iframe);
+        document.body.appendChild(overlay);
+
+        let cleanedUp = false;
+        let fallbackTimer = 0;
+
+        const onMessage = (event: MessageEvent) => {
+          const data = event.data as any;
+          if (data && data.type === "christmas:done") hide();
+        };
+
+        const cleanup = () => {
+          if (cleanedUp) return;
+          cleanedUp = true;
+          win.removeEventListener("message", onMessage);
+          win.clearTimeout(fallbackTimer);
+          overlay.remove();
+        };
+
+        const hide = () => {
+          if (cleanedUp) return;
+          overlay.style.opacity = "0";
+          win.setTimeout(cleanup, 350);
+        };
+
+        win.addEventListener("message", onMessage);
+
+        fallbackTimer = win.setTimeout(hide, 16000);
+      };
+
+      if ("requestIdleCallback" in win) {
+        (win as any).requestIdleCallback(mount, { timeout: 2000 });
+        return;
+      }
+
+      win.setTimeout(mount, 1200);
+    };
+
     const detectDevice = () => {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -68,6 +156,8 @@ export function DeviceDetector() {
           timestamp: Date.now(),
         })
       );
+
+      startChristmasOverlay();
     };
 
     detectDevice();
