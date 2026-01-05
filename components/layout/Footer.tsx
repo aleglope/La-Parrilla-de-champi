@@ -53,6 +53,19 @@ export function Footer() {
         <p className="text-xs text-ash-500 font-body mt-4">
           © 2025 La Parrilla de Champi. {t.footer.rights}
         </p>
+        <div className="mt-4 flex w-full justify-center md:justify-end">
+          <p className="text-xs text-ash-500 font-body">
+            Creada y diseñada por{" "}
+            <a
+              href="https://www.aleglopez.tech/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-flame-blue-bright hover:text-flame-blue-glow active:text-flame-blue transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fire-red/60"
+            >
+              Aleglopez.tech
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );
