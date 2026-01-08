@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./../globals.css"; // Adjusted path
 import { ClientProviders } from "@/components/providers/ClientProviders";
 import { DeviceDetector } from "@/components/utils/DeviceDetector";
-import { SnowfallOverlay } from "@/components/christmas/SnowfallOverlay";
+
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Bebas_Neue, Barlow_Condensed, Inter } from "next/font/google";
@@ -90,7 +90,7 @@ export default function RootLayout({
       <body className="overflow-x-hidden">
         <JsonLd data={restaurantSchema} />
         <DeviceDetector />
-        <SnowfallOverlay />
+
         <ClientProviders lang={params.lang}>{children}</ClientProviders>
         <Analytics />
         <SpeedInsights />
