@@ -57,12 +57,12 @@ export function Footer() {
           <p className="text-xs text-ash-500 font-body">
             Creada y diseñada por{" "}
             <a
-              href="https://www.aleglopez.tech/"
+              href="https://www.aglwences.dev"
               target="_blank"
               rel="noopener noreferrer"
               className="text-flame-blue-bright hover:text-flame-blue-glow active:text-flame-blue transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fire-red/60"
             >
-              Aleglopez.tech
+              aglwences.dev
             </a>
           </p>
         </div>
