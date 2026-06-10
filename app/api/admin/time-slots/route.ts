@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { verifySession } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -10,12 +11,11 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   try {
-    // Check authentication
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
+    // Check authentication using the signed admin-session cookie
+    const token = cookies().get("admin-session")?.value;
 
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!(await verifySession(token))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const supabase = createRouteHandlerClient({ cookies });

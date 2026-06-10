@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
+import { verifySession } from "@/lib/auth/session";
 
 /**
  * GET /api/reservations/settings
@@ -49,10 +50,9 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   try {
     // Verificar autenticación de admin
-    const cookieStore = cookies();
-    const isAdmin = cookieStore.get("admin-auth")?.value === "true";
+    const token = cookies().get("admin-session")?.value;
 
-    if (!isAdmin) {
+    if (!(await verifySession(token))) {
       return NextResponse.json(
         { error: "No autorizado. Se requiere autenticación de administrador." },
         { status: 401 }
