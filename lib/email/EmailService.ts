@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { escapeHtml } from "./escapeHtml";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -67,7 +68,9 @@ export async function sendAdminNotification(data: ReservationEmailData) {
 /**
  * Generate HTML for guest confirmation email
  */
-function generateConfirmationEmailHTML(data: ReservationEmailData): string {
+export function generateConfirmationEmailHTML(
+  data: ReservationEmailData
+): string {
   return `
 <!DOCTYPE html>
 <html lang="es">
@@ -83,9 +86,7 @@ function generateConfirmationEmailHTML(data: ReservationEmailData): string {
   </div>
   
   <div style="background: white; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-    <p style="font-size: 18px; color: #2c3e50; margin-top: 0;">Hola ${
-      data.guestName
-    },</p>
+    <p style="font-size: 18px; color: #2c3e50; margin-top: 0;">Hola ${escapeHtml(data.guestName)},</p>
     
     <p style="font-size: 16px; color: #555;">Tu reserva ha sido confirmada. ¡Te esperamos!</p>
     
@@ -122,7 +123,7 @@ function generateConfirmationEmailHTML(data: ReservationEmailData): string {
             ? `
         <tr>
           <td style="padding: 12px 0; color: #7f8c8d; font-weight: 600; vertical-align: top;">Solicitudes Especiales:</td>
-          <td style="padding: 12px 0; color: #2c3e50; text-align: right;">${data.specialRequests}</td>
+          <td style="padding: 12px 0; color: #2c3e50; text-align: right;">${escapeHtml(data.specialRequests)}</td>
         </tr>
         `
             : ""
@@ -157,7 +158,9 @@ function generateConfirmationEmailHTML(data: ReservationEmailData): string {
 /**
  * Generate HTML for admin notification email
  */
-function generateAdminNotificationHTML(data: ReservationEmailData): string {
+export function generateAdminNotificationHTML(
+  data: ReservationEmailData
+): string {
   return `
 <!DOCTYPE html>
 <html lang="es">
@@ -181,11 +184,11 @@ function generateAdminNotificationHTML(data: ReservationEmailData): string {
       </tr>
       <tr>
         <td style="padding: 10px 0; font-weight: bold;">Cliente:</td>
-        <td style="padding: 10px 0;">${data.guestName}</td>
+        <td style="padding: 10px 0;">${escapeHtml(data.guestName)}</td>
       </tr>
       <tr>
         <td style="padding: 10px 0; font-weight: bold;">Email:</td>
-        <td style="padding: 10px 0;">${data.guestEmail}</td>
+        <td style="padding: 10px 0;">${escapeHtml(data.guestEmail)}</td>
       </tr>
       <tr>
         <td style="padding: 10px 0; font-weight: bold;">Fecha:</td>
@@ -210,7 +213,7 @@ function generateAdminNotificationHTML(data: ReservationEmailData): string {
           ? `
       <tr>
         <td style="padding: 10px 0; font-weight: bold; vertical-align: top;">Solicitudes:</td>
-        <td style="padding: 10px 0;">${data.specialRequests}</td>
+        <td style="padding: 10px 0;">${escapeHtml(data.specialRequests)}</td>
       </tr>
       `
           : ""
