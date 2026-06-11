@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth/session";
@@ -18,7 +18,10 @@ export async function GET() {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createClient();
+    // service_role: el GET admin lista TODOS los slots (incl. inactivos);
+    // tras el endurecimiento RLS el SELECT público solo ve is_active=true.
+    // Gateado por verifySession.
+    const supabase = getSupabaseAdmin();
 
     const { data: timeSlots, error } = await supabase
       .from("time_slots")

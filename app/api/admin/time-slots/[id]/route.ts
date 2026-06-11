@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth/session";
@@ -25,7 +25,9 @@ export async function PATCH(
     const body = await request.json();
     const { maxCapacity, isActive } = body;
 
-    const supabase = createClient();
+    // service_role: UPDATE de infra restringido tras el endurecimiento RLS.
+    // Gateado por verifySession.
+    const supabase = getSupabaseAdmin();
 
     // Build update object
     const updates: any = {};

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth/session";
@@ -23,7 +23,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createClient();
+    // service_role: verbo admin gateado por verifySession; las escrituras de
+    // infra quedan restringidas a service_role tras el endurecimiento RLS.
+    const supabase = getSupabaseAdmin();
 
     const searchParams = request.nextUrl.searchParams;
     const startDate = searchParams.get("startDate");
@@ -87,7 +89,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createClient();
+    // service_role: verbo admin gateado por verifySession; las escrituras de
+    // infra quedan restringidas a service_role tras el endurecimiento RLS.
+    const supabase = getSupabaseAdmin();
 
     const body = await request.json();
     const { date, isOpen, maxCapacity, notes } = body;
@@ -169,7 +173,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createClient();
+    // service_role: verbo admin gateado por verifySession; las escrituras de
+    // infra quedan restringidas a service_role tras el endurecimiento RLS.
+    const supabase = getSupabaseAdmin();
 
     const searchParams = request.nextUrl.searchParams;
     const date = searchParams.get("date");
