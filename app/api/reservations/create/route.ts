@@ -9,7 +9,8 @@ import {
   sendReservationConfirmation,
   sendAdminNotification,
 } from "@/lib/email/EmailService";
-import { checkRateLimit } from "@/lib/ratelimit";
+import { ipAddress } from "@vercel/functions";
+import { checkRateLimit, rateLimitKey } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -88,15 +89,15 @@ export async function POST(request: NextRequest) {
     const supabase = createRouteHandlerClient({ cookies });
 
     // Rate limit por IP (SEC-04): 5 req/60s sobre store distribuido en Postgres.
-    // IP del primer valor de x-forwarded-for (la propiedad ip del request fue
-    // eliminada en Next 15 y su soporte era inconsistente).
-    const ip =
-      (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() ||
-      request.headers.get("x-real-ip") ||
-      "127.0.0.1";
+    // IP de plataforma vía @vercel/functions (x-real-ip, fijada por Vercel desde
+    // la conexión) — el primer valor de x-forwarded-for lo controla el cliente
+    // y permitiría evadir el límite con un header falsificado.
+    // Sin IP (local/desconocida): rateLimitKey genera una clave efímera, nunca
+    // un literal compartido que agrupe a todos los clientes en un mismo bucket.
+    const ip = ipAddress(request);
 
     if (
-      !(await checkRateLimit(supabase, "reservation:" + ip, {
+      !(await checkRateLimit(supabase, rateLimitKey("reservation", ip), {
         max: 5,
         windowSeconds: 60,
       }))
