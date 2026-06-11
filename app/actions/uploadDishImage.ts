@@ -6,7 +6,7 @@
  */
 
 import { revalidatePath } from 'next/cache';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { checkRateLimit } from '@/lib/ratelimit';
 import { IMAGE_CONFIG, ERROR_MESSAGES } from '@/utils/imageHelpers';
 
@@ -111,7 +111,7 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
   try {
     // 1. Rate limiting distribuido (SEC-04): 10 req/60s, key global por panel
     // admin (la auth admin es una sola cuenta). Fail-open si el RPC no existe.
-    if (!(await checkRateLimit(supabaseAdmin, 'upload:admin', { max: 10, windowSeconds: 60 }))) {
+    if (!(await checkRateLimit(getSupabaseAdmin(), 'upload:admin', { max: 10, windowSeconds: 60 }))) {
       return {
         success: false,
         error: 'Demasiados uploads. Espera un minuto e intenta de nuevo.',
@@ -150,7 +150,7 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
     const fileBuffer = Buffer.from(base64Data, 'base64');
     
     // 7. Subir a Supabase Storage
-    const { error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await getSupabaseAdmin().storage
       .from(IMAGE_CONFIG.BUCKET_NAME)
       .upload(filePath, fileBuffer, {
         contentType: 'image/webp',
@@ -168,14 +168,14 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
     }
     
     // 8. Obtener URL pública
-    const { data: urlData } = supabaseAdmin.storage
+    const { data: urlData } = getSupabaseAdmin().storage
       .from(IMAGE_CONFIG.BUCKET_NAME)
       .getPublicUrl(filePath);
     
     const imageUrl = urlData.publicUrl;
     
     // 9. Actualizar registro en la base de datos (transacción atómica)
-    const { error: dbError } = await supabaseAdmin
+    const { error: dbError } = await getSupabaseAdmin()
       .from('dishes')
       .update({
         image_url: imageUrl,
@@ -189,7 +189,7 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
       console.error('[Upload] Error actualizando DB:', dbError);
       
       // ROLLBACK: Eliminar imagen de Storage si falla la DB
-      await supabaseAdmin.storage
+      await getSupabaseAdmin().storage
         .from(IMAGE_CONFIG.BUCKET_NAME)
         .remove([filePath]);
       
@@ -219,7 +219,7 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
     // Intentar cleanup si hay archivo subido
     if (uploadedFilePath) {
       try {
-        await supabaseAdmin.storage
+        await getSupabaseAdmin().storage
           .from(IMAGE_CONFIG.BUCKET_NAME)
           .remove([uploadedFilePath]);
         console.log('[Upload] Cleanup: Imagen eliminada tras error');

@@ -1,7 +1,18 @@
 import { Resend } from "resend";
 import { escapeHtml } from "./escapeHtml";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy init: el constructor de Resend lanza si falta la API key, así que
+// instanciarlo a nivel de módulo rompe `next build` sin env vars (la fase
+// "Collecting page data" evalúa los módulos de las rutas que lo importan).
+// Los callers ya comprueban RESEND_API_KEY antes de enviar.
+let resendClient: Resend | null = null;
+
+function getResend(): Resend {
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
 interface ReservationEmailData {
   guestName: string;
@@ -18,7 +29,7 @@ interface ReservationEmailData {
  */
 export async function sendReservationConfirmation(data: ReservationEmailData) {
   try {
-    const { data: emailData, error } = await resend.emails.send({
+    const { data: emailData, error } = await getResend().emails.send({
       from: "La Parrilla de Champi <reservas@reservas.laparrilladechampi.es>",
       to: [data.guestEmail],
       subject: `Confirmación de Reserva - ${data.reservationDate} a las ${data.timeSlot}`,
@@ -45,7 +56,7 @@ export async function sendAdminNotification(data: ReservationEmailData) {
   try {
     const adminEmail = process.env.ADMIN_EMAIL || "admin@laparrilla.com";
 
-    const { data: emailData, error } = await resend.emails.send({
+    const { data: emailData, error } = await getResend().emails.send({
       from: "Sistema de Reservas <sistema@reservas.laparrilladechampi.es>",
       to: [adminEmail],
       subject: `Nueva Reserva - ${data.reservationDate} a las ${data.timeSlot}`,
