@@ -33,7 +33,9 @@
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [Instalación](#-instalación)
 - [Variables de Entorno](#-variables-de-entorno)
+- [Base de Datos (Supabase)](#base-de-datos-supabase)
 - [Uso](#-uso)
+- [Despliegue](#despliegue)
 - [Contribución](#-contribución)
 - [Licencia](#-licencia)
 - [Contacto](#-contacto)
@@ -50,7 +52,7 @@
 - Gestión dinámica de platos y categorías
 - Imágenes optimizadas con **Sharp**
 - Filtrado por categorías con tabs animados
-- Soporte multiidioma (ES / EN)
+- Soporte multiidioma (es / gl — español / gallego)
 
 </td>
 <td width="50%">
@@ -76,7 +78,7 @@
 <td width="50%">
 
 ### 🔐 Panel de Administración
-- Autenticación segura con **Supabase Auth**
+- Autenticación con cookie de sesión **JWT firmada (HMAC)** con expiración
 - CRUD completo de platos y categorías
 - Dashboard de reservas con filtros
 - Subida y compresión de imágenes
@@ -106,7 +108,6 @@ graph TB
 
     subgraph Backend["🗄️ Backend (Supabase)"]
         I[(PostgreSQL DB)]
-        J[Auth Service]
         K[Storage Bucket]
     end
 
@@ -157,7 +158,7 @@ sequenceDiagram
 | Categoría | Tecnologías |
 |:-:|:-:|
 | **Frontend** | ![Next.js](https://img.shields.io/badge/Next.js-000?logo=nextdotjs&logoColor=fff&style=flat-square) ![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=000&style=flat-square) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff&style=flat-square) |
-| **Estilos** | ![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?logo=tailwindcss&logoColor=fff&style=flat-square) ![Styled Components](https://img.shields.io/badge/Styled_Components-DB7093?logo=styledcomponents&logoColor=fff&style=flat-square) |
+| **Estilos** | ![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?logo=tailwindcss&logoColor=fff&style=flat-square) |
 | **Animaciones** | ![Framer](https://img.shields.io/badge/Framer_Motion-0055FF?logo=framer&logoColor=fff&style=flat-square) ![GSAP](https://img.shields.io/badge/GSAP-88CE02?logo=greensock&logoColor=000&style=flat-square) ![Three.js](https://img.shields.io/badge/Three.js-000?logo=threedotjs&logoColor=fff&style=flat-square) |
 | **Backend** | ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=flat-square) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=fff&style=flat-square) |
 | **Email** | ![Resend](https://img.shields.io/badge/Resend-000?logo=resend&logoColor=fff&style=flat-square) |
@@ -173,7 +174,7 @@ sequenceDiagram
 ```
 la-parrilla-de-champi/
 ├── 📂 app/
-│   └── 📂 [lang]/                # Rutas internacionalizadas (es/en)
+│   └── 📂 [lang]/                # Rutas internacionalizadas (es/gl)
 │       ├── 📄 page.tsx           # Página principal
 │       ├── 📂 menu/              # Carta digital
 │       ├── 📂 reservas/          # Sistema de reservas
@@ -207,8 +208,10 @@ la-parrilla-de-champi/
 
 ### Prerrequisitos
 
-- ![Node.js](https://img.shields.io/badge/Node.js-≥18-339933?logo=nodedotjs&logoColor=fff&style=flat-square)
-- ![npm](https://img.shields.io/badge/npm-≥9-CB3837?logo=npm&logoColor=fff&style=flat-square) o ![yarn](https://img.shields.io/badge/yarn-≥1.22-2C8EBB?logo=yarn&logoColor=fff&style=flat-square)
+- ![Node.js](https://img.shields.io/badge/Node.js-≥20-339933?logo=nodedotjs&logoColor=fff&style=flat-square)
+- ![pnpm](https://img.shields.io/badge/pnpm-≥10-F69220?logo=pnpm&logoColor=fff&style=flat-square)
+- Un proyecto de [Supabase](https://supabase.com) (plan gratuito suficiente)
+- Una cuenta de [Resend](https://resend.com) para el email transaccional (opcional en local)
 
 ### Pasos
 
@@ -220,13 +223,16 @@ git clone https://github.com/aleglope/la-parrilla-de-champi.git
 cd la-parrilla-de-champi
 
 # 3. Instalar dependencias
-npm install
+pnpm install
 
 # 4. Configurar variables de entorno
 cp .env.example .env.local
+# Edita .env.local con tus credenciales (ver "Variables de Entorno")
 
-# 5. Ejecutar en desarrollo
-npm run dev
+# 5. Aplicar las migraciones de base de datos (ver "Base de Datos (Supabase)")
+
+# 6. Ejecutar en desarrollo
+pnpm dev
 ```
 
 > La aplicación estará disponible en `http://localhost:3000`
@@ -235,17 +241,37 @@ npm run dev
 
 ## 🔑 Variables de Entorno
 
-Crea un archivo `.env.local` en la raíz del proyecto:
+La plantilla [`.env.example`](.env.example) documenta **todas** las variables con instrucciones para obtener cada valor. Cópiala y rellénala:
 
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anonima
-SUPABASE_SERVICE_ROLE_KEY=tu_clave_de_servicio
-
-# Resend (Email)
-RESEND_API_KEY=tu_clave_de_resend
+```bash
+cp .env.example .env.local
 ```
+
+| Categoría | Variables | Para qué |
+|-----------|-----------|----------|
+| **Supabase** | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | Base de datos y Storage |
+| **Resend** | `RESEND_API_KEY` | Emails de confirmación de reservas |
+| **Admin** | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_JWT_SECRET`, `REVALIDATE_SECRET` | Login del panel y firma de la cookie de sesión |
+| **Sentry** (opcional) | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`, `SENTRY_AUTH_TOKEN` | Observabilidad; si se omiten, Sentry queda desactivado |
+
+> Los secretos (`ADMIN_JWT_SECRET`, `REVALIDATE_SECRET`) se generan con `openssl rand -base64 32`. Los valores reales viven solo en `.env.local` (gitignoreado) y en Vercel.
+
+---
+
+## Base de Datos (Supabase)
+
+El esquema completo (carta, reservas, RLS y datos iniciales) se versiona como migraciones SQL en [`supabase/migrations/`](supabase/migrations/). Para montar la base de datos en un proyecto de Supabase:
+
+**Opción A — Supabase CLI (recomendada):**
+
+```bash
+supabase link --project-ref tu-project-ref
+supabase db push
+```
+
+**Opción B — SQL Editor:** pega y ejecuta cada archivo de `supabase/migrations/` **en orden** (están numerados) en el SQL Editor del dashboard de Supabase.
+
+Al terminar deberías ver las tablas `categories`, `dishes`, `reservations`, `time_slots` y `availability_settings`, con RLS habilitado.
 
 ---
 
@@ -253,10 +279,26 @@ RESEND_API_KEY=tu_clave_de_resend
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run dev` | 🔧 Servidor de desarrollo con hot-reload |
-| `npm run build` | 📦 Build de producción optimizado |
-| `npm run start` | 🚀 Servidor de producción |
-| `npm run lint` | 🔍 Análisis estático con ESLint |
+| `pnpm dev` | 🔧 Servidor de desarrollo con hot-reload |
+| `pnpm build` | 📦 Build de producción optimizado |
+| `pnpm start` | 🚀 Servidor de producción |
+| `pnpm lint` | 🔍 Análisis estático con ESLint |
+| `pnpm typecheck` | Comprobación de tipos con TypeScript |
+| `pnpm test` | Tests con Vitest en modo watch |
+| `pnpm test:ci` | Tests en modo CI (una pasada) |
+
+---
+
+## Despliegue
+
+El proyecto está pensado para [Vercel](https://vercel.com):
+
+1. Sube el repositorio a GitHub e impórtalo en [vercel.com/new](https://vercel.com/new) (Vercel detecta Next.js y pnpm automáticamente).
+2. En **Settings → Environment Variables**, añade las mismas variables de `.env.local` (ver [Variables de Entorno](#-variables-de-entorno)); usa valores de producción para `ADMIN_PASSWORD` y los secretos.
+3. Aplica las migraciones de `supabase/migrations/` en tu proyecto de Supabase de producción (si no lo hiciste ya).
+4. Haz clic en **Deploy**. Cada push a la rama principal despliega automáticamente.
+
+> Guía paso a paso (dominio propio, QR del menú, checklist post-deploy): [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
 
 ---
 

@@ -21,14 +21,14 @@
 
 ```bash
 # 1. Instalar
-npm install
+pnpm install
 
 # 2. Configurar (lee QUICKSTART.md primero)
 cp .env.example .env.local
 # Edita .env.local con tus credenciales
 
 # 3. Ejecutar
-npm run dev
+pnpm dev
 
 # 4. Abrir: http://localhost:3000
 ```
@@ -104,16 +104,16 @@ WEB-RESTAURAMTE-CHAMPI/
 
 ```bash
 # Desarrollo
-npm run dev         # Iniciar servidor (localhost:3000)
-npm run build       # Compilar para producción
-npm start           # Ejecutar build de producción
+pnpm dev            # Iniciar servidor (localhost:3000)
+pnpm build          # Compilar para producción
+pnpm start          # Ejecutar build de producción
 
 # Deploy
 vercel              # Preview deploy
 vercel --prod       # Production deploy
 
 # Útiles
-npm run lint        # Verificar código
+pnpm lint           # Verificar código
 ```
 
 ---
@@ -133,9 +133,9 @@ npm run lint        # Verificar código
 
 ### Hoy (15 minutos)
 1. ✅ Lee `QUICKSTART.md`
-2. ✅ Ejecuta `npm install`
+2. ✅ Ejecuta `pnpm install`
 3. ✅ Configura `.env.local` con Supabase
-4. ✅ Ejecuta `npm run dev`
+4. ✅ Ejecuta `pnpm dev`
 5. ✅ Explora la web en `localhost:3000`
 
 ### Esta Semana
@@ -212,8 +212,8 @@ Password: admin123
 
 ❓ **"Module not found"**
 ```bash
-rm -rf node_modules package-lock.json
-npm install
+rm -rf node_modules
+pnpm install
 ```
 
 ❓ **"El menú está vacío"**
@@ -275,10 +275,10 @@ Tienes una web profesional, rápida y escalable lista para usar.
 
 ```bash
 # Instalar y ejecutar en 5 minutos:
-npm install
+pnpm install
 cp .env.example .env.local
 # (Edita .env.local con tus claves de Supabase)
-npm run dev
+pnpm dev
 # Abre: http://localhost:3000
 ```
 

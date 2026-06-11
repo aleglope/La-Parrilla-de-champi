@@ -10,7 +10,7 @@ Si solo quieres ver cómo se ve sin configurar base de datos:
 
 ```bash
 # 1. Instalar dependencias
-npm install
+pnpm install
 
 # 2. Crear archivo de entorno (temporal sin Supabase)
 echo "NEXT_PUBLIC_SUPABASE_URL=https://demo.supabase.co
@@ -20,7 +20,7 @@ ADMIN_EMAIL=admin@laparrilla.com
 ADMIN_PASSWORD=admin123" > .env.local
 
 # 3. Ejecutar
-npm run dev
+pnpm dev
 
 # 4. Abrir navegador
 # http://localhost:3000
@@ -35,7 +35,7 @@ npm run dev
 ### 1️⃣ Instalar Dependencias (30 segundos)
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 2️⃣ Configurar Supabase (2 minutos)
@@ -68,7 +68,7 @@ ADMIN_PASSWORD=admin123
 ### 4️⃣ Ejecutar en Local (10 segundos)
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ### 5️⃣ Verificar (1 minuto)
@@ -86,7 +86,7 @@ npm run dev
 
 ```bash
 # Opción 1: CLI
-npm i -g vercel
+pnpm add -g vercel
 vercel login
 vercel --prod
 
@@ -197,12 +197,12 @@ title: "Tu Restaurante | Carne a la Brasa",
 
 ```bash
 # Desarrollo
-npm run dev           # Inicia servidor en localhost:3000
+pnpm dev           # Inicia servidor en localhost:3000
 
 # Producción
-npm run build         # Compila para producción
-npm start             # Ejecuta build de producción
-npm run lint          # Verifica errores de código
+pnpm build            # Compila para producción
+pnpm start            # Ejecuta build de producción
+pnpm lint             # Verifica errores de código
 
 # Vercel
 vercel                # Deploy preview
@@ -216,8 +216,8 @@ vercel logs           # Ver logs en tiempo real
 
 ### "Module not found"
 ```bash
-rm -rf node_modules package-lock.json
-npm install
+rm -rf node_modules
+pnpm install
 ```
 
 ### "Error de Supabase"

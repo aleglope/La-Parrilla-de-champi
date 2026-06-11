@@ -8,7 +8,7 @@ Esta guía te llevará paso a paso para desplegar tu web en producción.
 
 - Cuenta en [Supabase](https://supabase.com) (gratis)
 - Cuenta en [Vercel](https://vercel.com) (gratis)
-- Node.js 18+ instalado localmente
+- Node.js 20+ y pnpm 10+ instalados localmente
 
 ---
 
@@ -45,7 +45,7 @@ Esta guía te llevará paso a paso para desplegar tu web en producción.
 
 1. Copia el archivo de ejemplo:
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
 2. Edita `.env.local` con tus credenciales de Supabase:
@@ -66,13 +66,13 @@ ADMIN_PASSWORD=TuPasswordSeguro123!
 ### Instalar dependencias
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Ejecutar en modo desarrollo
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ### Verificar funcionamiento
@@ -90,7 +90,7 @@ npm run dev
 
 ```bash
 # Instalar Vercel CLI
-npm i -g vercel
+pnpm add -g vercel
 
 # Login
 vercel login
@@ -180,7 +180,7 @@ https://tu-dominio.vercel.app/menu
 
 ```bash
 # Instalar Vercel Analytics
-npm install @vercel/analytics
+pnpm add @vercel/analytics
 ```
 
 Agrega en `app/layout.tsx`:

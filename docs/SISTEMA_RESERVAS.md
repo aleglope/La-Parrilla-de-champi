@@ -156,7 +156,7 @@ El sistema está preparado para enviar emails pero requiere configuración:
    ```
 4. Instalar dependencia:
    ```bash
-   npm install resend
+   pnpm add resend
    ```
 5. Descomentar código de email en `app/api/reservations/create/route.ts`
 
@@ -214,7 +214,7 @@ Modifica ahí para cambiar cualquier texto del sistema.
 ### "Estilos no se aplican"
 
 1. Verifica que los archivos `.module.css` existen
-2. Reinicia el servidor de desarrollo: `npm run dev`
+2. Reinicia el servidor de desarrollo: `pnpm dev`
 3. Limpia la caché: Ctrl+Shift+R
 
 ## 📊 API Endpoints
