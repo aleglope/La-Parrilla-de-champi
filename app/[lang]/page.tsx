@@ -1,5 +1,5 @@
 import { HeroBentoBox } from "@/components/hero/HeroBentoBox";
-import { ParticleSystem } from "@/components/particles/ParticleSystem";
+import { ParticleBackground } from "@/components/particles/ParticleBackground";
 import { StorySection } from "@/components/story/StorySection";
 import { CTASection } from "@/components/sections/CTASection";
 import { Navigation } from "@/components/navigation/Navigation";
@@ -19,7 +19,7 @@ export default function HomePage() {
   return (
     <main className="relative min-h-screen">
       {/* Sistema de partículas de fondo */}
-      <ParticleSystem />
+      <ParticleBackground />
 
       {/* Navegación */}
       <Navigation />
