@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import type { Reservation } from "@/lib/types/reservations";
@@ -30,7 +30,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createClient();
+    // service_role: bypasa RLS — este handler es admin (gateado por
+    // verifySession) y debe seguir leyendo cuando el endurecimiento RLS
+    // cierre el acceso anon a reservations.
+    const supabase = getSupabaseAdmin();
 
     const searchParams = request.nextUrl.searchParams;
     const date = searchParams.get("date");
