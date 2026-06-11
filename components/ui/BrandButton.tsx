@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import styled from "styled-components";
 import Link from "next/link";
 
 interface BrandButtonProps
@@ -10,6 +9,41 @@ interface BrandButtonProps
   href?: string;
   withGlow?: boolean;
 }
+
+// Base del botón: neumorphism en reposo, glow azul en hover, inset en active,
+// sliding line (::before) y máscara interior glass (::after).
+const brandBtnClasses = [
+  "brand-btn font-heading",
+  "relative z-[1] flex h-[3em] w-full min-w-[9em] cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap rounded-[30em] border border-white/10 bg-transparent px-[1.5em] py-0 text-[15px] font-bold text-white no-underline",
+  // Neumorphism para tema oscuro + transiciones
+  "[box-shadow:6px_6px_12px_#1a2324,-6px_-6px_12px_#364647]",
+  "[transition:box-shadow_0.3s_ease,transform_0.1s_ease]",
+  // Hover: glow azul #1789C0 + elevación
+  "hover:[box-shadow:0_0_20px_#1789c0,0_0_40px_rgba(23,137,192,0.4)]",
+  "hover:[transform:translateY(-2px)]",
+  // Active: sombras inset + scale
+  "active:[box-shadow:inset_4px_4px_12px_#1a2324,inset_-4px_-4px_12px_#364647]",
+  "active:[transform:scale(0.98)]",
+  // Sliding line background effect (::before)
+  "before:pointer-events-none before:absolute before:left-[-100%] before:top-0 before:z-[5] before:h-full before:w-full before:rounded-[30em] before:content-['']",
+  "before:[background:linear-gradient(120deg,transparent,rgba(23,137,192,0.4),transparent)]",
+  "before:[transition:all_0.6s_ease]",
+  "hover:before:left-full",
+  // Inner mask glass (::after) - ESTE ES EL FONDO
+  "after:pointer-events-none after:absolute after:inset-[2px] after:z-[-1] after:rounded-[30em] after:bg-[rgba(40,52,53,0.6)] after:content-['']",
+  "after:[backdrop-filter:blur(8px)]",
+].join(" ");
+
+// Borde de luz animado (withGlow): gradiente cónico rotando 3s (keyframe rotate
+// registrado en tailwind.config.ts, animación brand-rotate).
+const dotsBorderClasses = [
+  "dots_border",
+  "pointer-events-none absolute left-1/2 top-1/2 z-[-2] h-[calc(100%+4px)] w-[calc(100%+4px)] rounded-[30em] bg-transparent",
+  "[transform:translate(-50%,-50%)]",
+  "before:absolute before:left-1/2 before:top-1/2 before:z-[-1] before:h-[200%] before:w-[200%] before:animate-brand-rotate before:content-['']",
+  "before:[background:conic-gradient(from_0deg,transparent_0%,transparent_80%,rgba(255,255,255,0.8)_100%)]",
+  "before:[transform:translate(-50%,-50%)_rotate(0deg)]",
+].join(" ");
 
 const BrandButton = ({
   children,
@@ -20,159 +54,24 @@ const BrandButton = ({
 }: BrandButtonProps) => {
   if (href) {
     return (
-      <StyledWrapper className={className}>
+      <div className={`inline-block${className ? ` ${className}` : ""}`}>
         {/* Pasamos ...props al Link también, excepto href y className que ya se pasan */}
-        <Link
-          href={href}
-          className="brand-btn font-heading"
-          {...(props as any)}
-        >
-          {withGlow && <div className="dots_border" />}
-          <span className="btn-content">{children}</span>
+        <Link href={href} className={brandBtnClasses} {...(props as any)}>
+          {withGlow && <div className={dotsBorderClasses} />}
+          <span className="btn-content relative z-10">{children}</span>
         </Link>
-      </StyledWrapper>
+      </div>
     );
   }
 
   return (
-    <StyledWrapper className={className}>
-      <button {...props} className="brand-btn font-heading">
-        {withGlow && <div className="dots_border" />}
-        <span className="btn-content">{children}</span>
+    <div className={`inline-block${className ? ` ${className}` : ""}`}>
+      <button {...props} className={brandBtnClasses}>
+        {withGlow && <div className={dotsBorderClasses} />}
+        <span className="btn-content relative z-10">{children}</span>
       </button>
-    </StyledWrapper>
+    </div>
   );
 };
-
-const StyledWrapper = styled.div`
-  display: inline-block;
-
-  .brand-btn {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    background-color: transparent; /* Changed to transparent to let inner mask show */
-    min-width: 9em;
-    padding: 0 1.5em;
-    height: 3em;
-    border-radius: 30em;
-    font-weight: bold;
-    font-size: 15px;
-    font-family: inherit;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-    cursor: pointer;
-    text-decoration: none;
-    white-space: nowrap;
-
-    /* Neumorphism for dark theme applied to wrapper or handled by inner elements */
-    box-shadow: 6px 6px 12px #1a2324, -6px -6px 12px #364647;
-    transition: box-shadow 0.3s ease, transform 0.1s ease;
-  }
-
-  .btn-content {
-    position: relative;
-    z-index: 10;
-  }
-
-  .brand-btn:hover {
-    /* Blue hover glow using #1789C0 */
-    box-shadow: 0 0 20px #1789c0, 0 0 40px rgba(23, 137, 192, 0.4);
-    transform: translateY(-2px);
-  }
-
-  .brand-btn:active {
-    box-shadow: inset 4px 4px 12px #1a2324, inset -4px -4px 12px #364647;
-    transform: scale(0.98);
-  }
-
-  /* Sliding line background effect */
-  .brand-btn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    border-radius: 30em;
-
-    background: linear-gradient(
-      120deg,
-      transparent,
-      rgba(23, 137, 192, 0.4),
-      transparent
-    );
-
-    transition: all 0.6s ease;
-    z-index: 5; /* Increased z-index to be on top of mask but below content */
-    pointer-events: none;
-  }
-
-  .brand-btn:hover::before {
-    left: 100%;
-  }
-
-  /* Animated border light effect */
-  .dots_border {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
-    background-color: transparent;
-    border-radius: 30em;
-    z-index: -2;
-    pointer-events: none;
-  }
-
-  .dots_border::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(0deg);
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      transparent 80%,
-      rgba(255, 255, 255, 0.8) 100%
-    );
-    animation: rotate 3s linear infinite;
-    z-index: -1;
-  }
-
-  /* Inner mask - THIS IS THE BACKGROUND */
-  .brand-btn::after {
-    content: "";
-    position: absolute;
-    inset: 2px; /* A bit more inset to show the light border clearly */
-    background-color: rgba(
-      40,
-      52,
-      53,
-      0.6
-    ); /* Semi-transparent charcoal for subtle effect */
-    backdrop-filter: blur(8px); /* Blur effect for glass morphism */
-    border-radius: 30em;
-    z-index: -1; /* Behind content */
-    pointer-events: none;
-  }
-
-  @keyframes rotate {
-    from {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    to {
-      transform: translate(-50%, -50%) rotate(360deg);
-    }
-  }
-`;
 
 export default BrandButton;
