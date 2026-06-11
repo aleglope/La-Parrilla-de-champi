@@ -16,8 +16,8 @@ const supabaseMock = {
   from: vi.fn(),
 };
 
-vi.mock("@supabase/auth-helpers-nextjs", () => ({
-  createRouteHandlerClient: () => supabaseMock,
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: () => supabaseMock,
 }));
 
 function makeRequest(body: any) {
