@@ -42,7 +42,7 @@ npm install
 
 1. Ve a [supabase.com](https://supabase.com) → Crear cuenta
 2. Crea un proyecto nuevo
-3. Ve a **SQL Editor** → Pega el contenido de `supabase-setup.sql` → **Run**
+3. Aplica las migraciones de `supabase/migrations/` en orden: vía Supabase CLI (`supabase db push`) o pegando cada archivo en el **SQL Editor** → **Run**
 4. Ve a **Settings** → **API** → Copia las 3 claves
 
 ### 3️⃣ Variables de Entorno (30 segundos)

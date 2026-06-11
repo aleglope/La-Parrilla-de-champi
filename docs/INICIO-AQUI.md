@@ -218,7 +218,7 @@ npm install
 
 ❓ **"El menú está vacío"**
 - Verifica Supabase
-- Ejecuta `supabase-setup.sql`
+- Aplica las migraciones de `supabase/migrations/` (en orden, vía Supabase CLI `supabase db push` o pegando cada archivo en el SQL Editor)
 - Revisa variables de entorno
 
 ❓ **"Las partículas no se ven"**
