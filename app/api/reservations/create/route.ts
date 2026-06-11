@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import type {
   CreateReservationDto,
@@ -86,7 +85,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createClient();
 
     // Rate limit por IP (SEC-04): 5 req/60s sobre store distribuido en Postgres.
     // IP de plataforma vía @vercel/functions (x-real-ip, fijada por Vercel desde

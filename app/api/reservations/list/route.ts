@@ -1,4 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import type { Reservation } from "@/lib/types/reservations";
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createClient();
 
     const searchParams = request.nextUrl.searchParams;
     const date = searchParams.get("date");
