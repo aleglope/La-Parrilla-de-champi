@@ -9,6 +9,7 @@ import {
   sendReservationConfirmation,
   sendAdminNotification,
 } from "@/lib/email/EmailService";
+import { checkRateLimit } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,26 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createRouteHandlerClient({ cookies });
+
+    // Rate limit por IP (SEC-04): 5 req/60s sobre store distribuido en Postgres.
+    // IP del primer valor de x-forwarded-for (la propiedad ip del request fue
+    // eliminada en Next 15 y su soporte era inconsistente).
+    const ip =
+      (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() ||
+      request.headers.get("x-real-ip") ||
+      "127.0.0.1";
+
+    if (
+      !(await checkRateLimit(supabase, "reservation:" + ip, {
+        max: 5,
+        windowSeconds: 60,
+      }))
+    ) {
+      return NextResponse.json(
+        { error: "Demasiadas solicitudes" },
+        { status: 429 }
+      );
+    }
 
     // Check availability using the database function (use normalized time)
     const { data: availabilityCheck, error: availabilityError } =

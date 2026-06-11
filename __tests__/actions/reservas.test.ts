@@ -21,7 +21,12 @@ vi.mock("@supabase/auth-helpers-nextjs", () => ({
 }));
 
 function makeRequest(body: any) {
-  return { json: async () => body } as any;
+  return {
+    json: async () => body,
+    // El gate de rate limit (SEC-04) lee x-forwarded-for / x-real-ip;
+    // null fuerza el fallback "127.0.0.1" del handler.
+    headers: { get: () => null },
+  } as any;
 }
 
 describe("POST /api/reservations/create", () => {

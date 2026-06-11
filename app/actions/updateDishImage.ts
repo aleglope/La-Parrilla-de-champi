@@ -7,6 +7,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { checkRateLimit } from '@/lib/ratelimit';
 import { IMAGE_CONFIG, ERROR_MESSAGES } from '@/utils/imageHelpers';
 
 // ============ Tipos ============
@@ -24,29 +25,6 @@ interface UpdateDishImageParams {
   imageData: string; // Base64 encoded image
   imageSizeKb: number;
   oldImageUrl?: string | null; // URL de la imagen anterior para eliminar
-}
-
-// ============ Rate Limiting ============
-
-const updateAttempts = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT = 10;
-const RATE_WINDOW = 60 * 1000;
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now();
-  const userAttempts = updateAttempts.get(userId);
-  
-  if (!userAttempts || now > userAttempts.resetTime) {
-    updateAttempts.set(userId, { count: 1, resetTime: now + RATE_WINDOW });
-    return true;
-  }
-  
-  if (userAttempts.count >= RATE_LIMIT) {
-    return false;
-  }
-  
-  userAttempts.count++;
-  return true;
 }
 
 // ============ Funciones de Utilidad ============
@@ -128,9 +106,9 @@ export async function updateDishImage(params: UpdateDishImageParams): Promise<Up
   let oldFilePath: string | null = null;
   
   try {
-    // 1. Rate limiting
-    const userId = 'admin';
-    if (!checkRateLimit(userId)) {
+    // 1. Rate limiting distribuido (SEC-04): 10 req/60s, key global por panel
+    // admin (la auth admin es una sola cuenta). Fail-open si el RPC no existe.
+    if (!(await checkRateLimit(supabaseAdmin, 'upload:admin', { max: 10, windowSeconds: 60 }))) {
       return {
         success: false,
         error: 'Demasiados cambios. Espera un minuto e intenta de nuevo.',
