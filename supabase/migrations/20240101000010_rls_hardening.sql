@@ -35,15 +35,17 @@ DROP POLICY IF EXISTS "Authenticated users full access to reservations" ON reser
 DROP POLICY IF EXISTS "Public read access to reservations for availability" ON reservations;
 
 -- Se mantiene el INSERT público, pero con WITH CHECK más
--- estricto: el formulario web inserta siempre status='pending'
--- y source='web' (default de la columna), por lo que esto no
--- rompe /api/reservations/create y evita que anon inserte
--- reservas pre-confirmadas o con source falsificado.
+-- estricto: ambos flujos que usan /api/reservations/create con la
+-- anon key insertan status='pending' — el formulario web con
+-- source='web' (ReservationForm) y el alta manual del admin con
+-- source='phone' (ManualReservationModal). Restringir a esos dos
+-- valores evita que anon inserte reservas pre-confirmadas
+-- (status != 'pending') sin romper ninguno de los dos flujos.
 DROP POLICY IF EXISTS "Anyone can create reservations" ON reservations;
 CREATE POLICY "Anyone can create reservations"
   ON reservations FOR INSERT
   TO anon
-  WITH CHECK (status = 'pending' AND source = 'web');
+  WITH CHECK (status = 'pending' AND source IN ('web', 'phone'));
 
 -- =====================================================
 -- 2) FUNCIÓN: check_reservation_availability → SECURITY DEFINER
