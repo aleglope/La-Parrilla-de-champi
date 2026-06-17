@@ -19,7 +19,7 @@
 
 **Plataforma web completa para la gestión integral de un restaurante de parrilla: carta digital interactiva, sistema de reservas en tiempo real y panel de administración.**
 
-[🌐 Ver Demo](#) · [🐛 Reportar Bug](https://github.com/aleglope/la-parrilla-de-champi/issues) · [✨ Solicitar Feature](https://github.com/aleglope/la-parrilla-de-champi/issues)
+[🌐 Ver Demo](https://www.laparrilladechampi.es) · [🐛 Reportar Bug](https://github.com/aleglope/la-parrilla-de-champi/issues) · [✨ Solicitar Feature](https://github.com/aleglope/la-parrilla-de-champi/issues)
 
 </div>
 
@@ -266,12 +266,16 @@ El esquema completo (carta, reservas, RLS y datos iniciales) se versiona como mi
 
 ```bash
 supabase link --project-ref tu-project-ref
+# El rollback NO es una migración forward: sácalo antes del push
+mv supabase/migrations/20240101000010_rls_hardening.rollback.sql /tmp/
 supabase db push
 ```
 
-**Opción B — SQL Editor:** pega y ejecuta cada archivo de `supabase/migrations/` **en orden** (están numerados) en el SQL Editor del dashboard de Supabase.
+**Opción B — SQL Editor:** ejecuta los archivos de `supabase/migrations/` **en orden numérico** en el SQL Editor del dashboard. **No ejecutes** `20240101000010_rls_hardening.rollback.sql` — es el rollback del endurecimiento RLS, solo para revertirlo.
 
-Al terminar deberías ver las tablas `categories`, `dishes`, `reservations`, `time_slots` y `availability_settings`, con RLS habilitado.
+> ⚠️ El seed `20240101000007_seed_data.sql` es para una base de datos **nueva/vacía**. No lo ejecutes sobre una BD que ya tenga datos (duplicaría categorías y platos).
+
+Al terminar deberías ver las tablas `categories`, `dishes`, `reservations`, `reservation_settings`, `time_slots`, `availability_settings` y `rate_limits`, con RLS habilitado.
 
 ---
 
