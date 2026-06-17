@@ -59,6 +59,7 @@ const config: Config = {
         "fade-in-up": "fadeInUp 0.8s ease-out forwards",
         "liquid-morph": "liquidMorph 4s ease-in-out infinite",
         "gradient-shift": "gradientShift 4s ease infinite",
+        "brand-rotate": "rotate 3s linear infinite",
       },
       keyframes: {
         emberFloat: {
@@ -86,6 +87,10 @@ const config: Config = {
         gradientShift: {
           "0%, 100%": { backgroundPosition: "0% center" },
           "50%": { backgroundPosition: "100% center" },
+        },
+        rotate: {
+          from: { transform: "translate(-50%, -50%) rotate(0deg)" },
+          to: { transform: "translate(-50%, -50%) rotate(360deg)" },
         },
       },
     },

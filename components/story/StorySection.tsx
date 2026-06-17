@@ -94,7 +94,7 @@ export function StorySection() {
       >
         <div className="glass-card inline-block px-12 py-8">
           <p className="text-3xl md:text-4xl font-display text-ember mb-4">
-            "Donde el fuego encuentra al mar"
+            &ldquo;Donde el fuego encuentra al mar&rdquo;
           </p>
           <p className="text-ash-400 font-body text-lg">
             — La filosofía de La Parrilla de Champi

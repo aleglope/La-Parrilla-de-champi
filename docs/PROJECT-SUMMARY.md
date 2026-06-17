@@ -36,7 +36,7 @@ WEB-RESTAURAMTE-CHAMPI/
 │   ├── tsconfig.json             # TypeScript config
 │   ├── tailwind.config.ts        # Tema personalizado
 │   ├── next.config.mjs           # Next.js config
-│   └── supabase-setup.sql        # Setup base de datos
+│   └── supabase/migrations/      # Migraciones SQL de la base de datos
 │
 ├── 📱 Aplicación (app/)
 │   ├── layout.tsx                # Layout principal
@@ -413,7 +413,7 @@ Todos los componentes son **100% responsive** y testeados en:
 
 ### Inmediato (Día 1)
 1. ✅ Seguir `QUICKSTART.md` para setup local
-2. ✅ Ejecutar `supabase-setup.sql` en Supabase
+2. ✅ Aplicar las migraciones de `supabase/migrations/` en orden (Supabase CLI `supabase db push` o SQL Editor)
 3. ✅ Probar todas las funcionalidades localmente
 4. ✅ Personalizar textos según tu restaurante
 

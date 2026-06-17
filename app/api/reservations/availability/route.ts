@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import type { DayAvailability } from "@/lib/types/reservations";
 
@@ -34,9 +33,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createClient();
 
-    // Check if the day is open
+    // Check if the day is open (public SELECT on availability_settings)
     const { data: availabilitySetting } = await supabase
       .from("availability_settings")
       .select("is_open, max_capacity")
@@ -77,43 +76,44 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(response);
     }
 
-    // Get existing reservations for this date
-    const { data: reservations, error: reservationsError } = await supabase
-      .from("reservations")
-      .select("time_slot, guests_count")
-      .eq("reservation_date", date)
-      .in("status", ["pending", "confirmed"]);
+    // Calculate availability per slot via the check_reservation_availability
+    // RPC instead of reading reservations directly: the RPC already applies
+    // min(slot.max_capacity, day max_capacity) and the pending/confirmed
+    // filter internally, and keeps working when RLS closes the public
+    // SELECT on reservations. p_guests=1 probes for at least one free seat.
+    const slotChecks = await Promise.all(
+      timeSlots.map((slot) =>
+        supabase.rpc("check_reservation_availability", {
+          p_date: date,
+          // time_slots.time may come as HH:MM:SS from Postgres → HH:MM
+          p_time: slot.time.substring(0, 5),
+          p_guests: 1,
+        })
+      )
+    );
 
-    if (reservationsError) {
-      console.error("Error fetching reservations:", reservationsError);
-      return NextResponse.json(
-        { error: "Failed to fetch reservations" },
-        { status: 500 }
-      );
-    }
+    const availableTimeSlots = [];
+    for (let i = 0; i < timeSlots.length; i++) {
+      const { data: availabilityCheck, error: rpcError } = slotChecks[i];
 
-    // Calculate availability for each time slot
-    const dayMaxCapacity = availabilitySetting?.max_capacity;
+      if (rpcError) {
+        console.error("Error checking slot availability:", rpcError);
+        return NextResponse.json(
+          { error: "Failed to fetch reservations" },
+          { status: 500 }
+        );
+      }
 
-    const availableTimeSlots = timeSlots.map((slot) => {
-      const slotMaxCapacity = dayMaxCapacity
-        ? Math.min(slot.max_capacity, dayMaxCapacity)
-        : slot.max_capacity;
+      // The RPC returns an array with one row (snake_case fields)
+      const remainingCapacity =
+        availabilityCheck?.[0]?.remaining_capacity ?? 0;
 
-      // Sum up guests for this time slot
-      const bookedGuests =
-        reservations
-          ?.filter((r) => r.time_slot === slot.time)
-          .reduce((sum, r) => sum + r.guests_count, 0) || 0;
-
-      const remainingCapacity = slotMaxCapacity - bookedGuests;
-
-      return {
-        time: slot.time,
+      availableTimeSlots.push({
+        time: timeSlots[i].time,
         available: remainingCapacity > 0,
         remainingCapacity: Math.max(0, remainingCapacity),
-      };
-    });
+      });
+    }
 
     const response: DayAvailability = {
       date,

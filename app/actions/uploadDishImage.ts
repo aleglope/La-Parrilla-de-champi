@@ -6,7 +6,8 @@
  */
 
 import { revalidatePath } from 'next/cache';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
+import { checkRateLimit } from '@/lib/ratelimit';
 import { IMAGE_CONFIG, ERROR_MESSAGES } from '@/utils/imageHelpers';
 
 // ============ Tipos ============
@@ -23,29 +24,6 @@ interface UploadDishImageParams {
   dishName: string;
   imageData: string; // Base64 encoded image
   imageSizeKb: number;
-}
-
-// ============ Rate Limiting Simple ============
-
-const uploadAttempts = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT = 10; // máximo 10 uploads por minuto
-const RATE_WINDOW = 60 * 1000; // 1 minuto
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now();
-  const userAttempts = uploadAttempts.get(userId);
-  
-  if (!userAttempts || now > userAttempts.resetTime) {
-    uploadAttempts.set(userId, { count: 1, resetTime: now + RATE_WINDOW });
-    return true;
-  }
-  
-  if (userAttempts.count >= RATE_LIMIT) {
-    return false;
-  }
-  
-  userAttempts.count++;
-  return true;
 }
 
 // ============ Funciones de Validación Server-Side ============
@@ -131,18 +109,15 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
   let uploadedFilePath: string | null = null;
   
   try {
-    // 1. Verificar autenticación (usando service role para admin)
-    // En producción, aquí verificarías el token de sesión del admin
-    const userId = 'admin'; // Simplificado para este caso
-    
-    // 2. Rate limiting
-    if (!checkRateLimit(userId)) {
+    // 1. Rate limiting distribuido (SEC-04): 10 req/60s, key global por panel
+    // admin (la auth admin es una sola cuenta). Fail-open si el RPC no existe.
+    if (!(await checkRateLimit(getSupabaseAdmin(), 'upload:admin', { max: 10, windowSeconds: 60 }))) {
       return {
         success: false,
         error: 'Demasiados uploads. Espera un minuto e intenta de nuevo.',
       };
     }
-    
+
     // 3. Validar tipo MIME en servidor
     const mimeValidation = validateServerMimeType(imageData);
     if (!mimeValidation.isValid) {
@@ -175,7 +150,7 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
     const fileBuffer = Buffer.from(base64Data, 'base64');
     
     // 7. Subir a Supabase Storage
-    const { error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await getSupabaseAdmin().storage
       .from(IMAGE_CONFIG.BUCKET_NAME)
       .upload(filePath, fileBuffer, {
         contentType: 'image/webp',
@@ -193,14 +168,14 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
     }
     
     // 8. Obtener URL pública
-    const { data: urlData } = supabaseAdmin.storage
+    const { data: urlData } = getSupabaseAdmin().storage
       .from(IMAGE_CONFIG.BUCKET_NAME)
       .getPublicUrl(filePath);
     
     const imageUrl = urlData.publicUrl;
     
     // 9. Actualizar registro en la base de datos (transacción atómica)
-    const { error: dbError } = await supabaseAdmin
+    const { error: dbError } = await getSupabaseAdmin()
       .from('dishes')
       .update({
         image_url: imageUrl,
@@ -214,7 +189,7 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
       console.error('[Upload] Error actualizando DB:', dbError);
       
       // ROLLBACK: Eliminar imagen de Storage si falla la DB
-      await supabaseAdmin.storage
+      await getSupabaseAdmin().storage
         .from(IMAGE_CONFIG.BUCKET_NAME)
         .remove([filePath]);
       
@@ -244,7 +219,7 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
     // Intentar cleanup si hay archivo subido
     if (uploadedFilePath) {
       try {
-        await supabaseAdmin.storage
+        await getSupabaseAdmin().storage
           .from(IMAGE_CONFIG.BUCKET_NAME)
           .remove([uploadedFilePath]);
         console.log('[Upload] Cleanup: Imagen eliminada tras error');

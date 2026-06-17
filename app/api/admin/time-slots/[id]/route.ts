@@ -1,6 +1,7 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { verifySession } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -13,19 +14,20 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Check authentication
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
+    // Check authentication using the signed admin-session cookie
+    const token = cookies().get("admin-session")?.value;
 
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!(await verifySession(token))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const { id } = params;
     const body = await request.json();
     const { maxCapacity, isActive } = body;
 
-    const supabase = createRouteHandlerClient({ cookies });
+    // service_role: UPDATE de infra restringido tras el endurecimiento RLS.
+    // Gateado por verifySession.
+    const supabase = getSupabaseAdmin();
 
     // Build update object
     const updates: any = {};

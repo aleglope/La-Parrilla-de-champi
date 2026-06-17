@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CategoriesManager } from "./CategoriesManager";
 import { DishesManager } from "./DishesManager";
+import { revalidateMenu as revalidateMenuAction } from "@/app/actions/revalidateMenu";
 import type { Category, Dish } from "@/lib/types";
 
 interface AdminDashboardProps {
@@ -33,11 +34,8 @@ export function AdminDashboard({
   };
 
   const revalidateMenu = async () => {
-    await fetch("/api/revalidate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: "/menu" }),
-    });
+    // Revalidación server-side vía Server Action (sin fetch ni secretos en el browser)
+    await revalidateMenuAction();
   };
 
   const refreshData = () => {

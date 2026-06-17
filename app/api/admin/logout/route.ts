@@ -7,7 +7,8 @@ import { cookies } from "next/headers";
 export async function POST() {
   try {
     const cookieStore = cookies();
-    cookieStore.delete("admin-auth");
+    cookieStore.delete("admin-session");
+    cookieStore.delete("admin-auth"); // limpieza de la cookie legacy
 
     return NextResponse.json({ success: true });
   } catch (error) {

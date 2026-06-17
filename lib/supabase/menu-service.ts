@@ -1,4 +1,5 @@
-import { supabase } from './client';
+import { getSupabase } from './client';
+import { createPublicReadClient } from './public-read';
 import type { Category, Dish } from '../types';
 
 /**
@@ -10,7 +11,7 @@ import type { Category, Dish } from '../types';
 
 export async function getCategories(): Promise<Category[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await createPublicReadClient()
       .from('categories')
       .select('*')
       .order('order_index', { ascending: true });
@@ -29,7 +30,7 @@ export async function getCategories(): Promise<Category[]> {
 
 export async function getCategoryById(id: string): Promise<Category | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await createPublicReadClient()
       .from('categories')
       .select('*')
       .eq('id', id)
@@ -51,7 +52,7 @@ export async function getCategoryById(id: string): Promise<Category | null> {
 
 export async function getDishes(): Promise<Dish[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await createPublicReadClient()
       .from('dishes')
       .select('*')
       .order('order_index', { ascending: true });
@@ -70,7 +71,7 @@ export async function getDishes(): Promise<Dish[]> {
 
 export async function getDishesByCategory(categoryId: string): Promise<Dish[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await createPublicReadClient()
       .from('dishes')
       .select('*')
       .eq('category_id', categoryId)
@@ -91,7 +92,7 @@ export async function getDishesByCategory(categoryId: string): Promise<Dish[]> {
 
 export async function getDishById(id: string): Promise<Dish | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await createPublicReadClient()
       .from('dishes')
       .select('*')
       .eq('id', id)
@@ -112,7 +113,7 @@ export async function getDishById(id: string): Promise<Dish | null> {
 // ============ Operaciones CRUD (para Admin) ============
 
 export async function createCategory(name: string, nameGl: string = '', orderIndex: number = 0) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('categories')
     .insert([{ name, name_gl: nameGl, order_index: orderIndex }])
     .select()
@@ -123,7 +124,7 @@ export async function createCategory(name: string, nameGl: string = '', orderInd
 }
 
 export async function updateCategory(id: string, name: string, nameGl: string, orderIndex: number) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('categories')
     .update({ name, name_gl: nameGl, order_index: orderIndex })
     .eq('id', id)
@@ -135,7 +136,7 @@ export async function updateCategory(id: string, name: string, nameGl: string, o
 }
 
 export async function deleteCategory(id: string) {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('categories')
     .delete()
     .eq('id', id);
@@ -144,7 +145,7 @@ export async function deleteCategory(id: string) {
 }
 
 export async function createDish(dish: Partial<Dish>) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('dishes')
     .insert([{
       ...dish,
@@ -158,7 +159,7 @@ export async function createDish(dish: Partial<Dish>) {
 }
 
 export async function updateDish(id: string, dish: Partial<Dish>) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('dishes')
     .update({
       ...dish,
@@ -173,7 +174,7 @@ export async function updateDish(id: string, dish: Partial<Dish>) {
 }
 
 export async function deleteDish(id: string) {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('dishes')
     .delete()
     .eq('id', id);
@@ -182,7 +183,7 @@ export async function deleteDish(id: string) {
 }
 
 export async function toggleDishAvailability(id: string, isAvailable: boolean) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('dishes')
     .update({ 
       is_available: isAvailable,

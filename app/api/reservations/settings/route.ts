@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
+import { verifySession } from "@/lib/auth/session";
 
 /**
  * GET /api/reservations/settings
@@ -49,17 +51,19 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   try {
     // Verificar autenticación de admin
-    const cookieStore = cookies();
-    const isAdmin = cookieStore.get("admin-auth")?.value === "true";
+    const token = cookies().get("admin-session")?.value;
 
-    if (!isAdmin) {
+    if (!(await verifySession(token))) {
       return NextResponse.json(
         { error: "No autorizado. Se requiere autenticación de administrador." },
         { status: 401 }
       );
     }
 
-    const supabase = createClient();
+    // service_role: el PATCH admin escribe reservation_settings (restringido
+    // a service_role tras el endurecimiento RLS). El GET público de arriba
+    // sigue en createClient (anon) — ese SELECT público sobrevive.
+    const supabase = getSupabaseAdmin();
     const body = await request.json();
 
     const { reservationsEnabled, notes } = body;

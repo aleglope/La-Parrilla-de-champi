@@ -1,7 +1,8 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import type { Reservation } from "@/lib/types/reservations";
+import { verifySession } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -22,15 +23,17 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication using admin-auth cookie (same as admin panel)
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
+    // Check authentication using the signed admin-session cookie
+    const token = cookies().get("admin-session")?.value;
 
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!(await verifySession(token))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    // service_role: bypasa RLS — este handler es admin (gateado por
+    // verifySession) y debe seguir leyendo cuando el endurecimiento RLS
+    // cierre el acceso anon a reservations.
+    const supabase = getSupabaseAdmin();
 
     const searchParams = request.nextUrl.searchParams;
     const date = searchParams.get("date");

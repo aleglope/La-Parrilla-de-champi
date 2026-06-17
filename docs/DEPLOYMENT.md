@@ -8,7 +8,7 @@ Esta guía te llevará paso a paso para desplegar tu web en producción.
 
 - Cuenta en [Supabase](https://supabase.com) (gratis)
 - Cuenta en [Vercel](https://vercel.com) (gratis)
-- Node.js 18+ instalado localmente
+- Node.js 20+ y pnpm 10+ instalados localmente
 
 ---
 
@@ -22,12 +22,12 @@ Esta guía te llevará paso a paso para desplegar tu web en producción.
    - **Database Password**: Guarda esta contraseña de forma segura
    - **Region**: Elige la más cercana a tu ubicación
 
-### Ejecutar SQL de configuración
+### Aplicar las migraciones de base de datos
 
-1. En el panel de Supabase, ve a **SQL Editor**
-2. Copia y pega todo el contenido de `supabase-setup.sql`
-3. Haz clic en **Run** para ejecutar el script
-4. Verifica que se crearon las tablas `categories` y `dishes`
+1. Las migraciones viven en `supabase/migrations/` (numeradas, se aplican en orden)
+2. Opción A — Supabase CLI: vincula el proyecto (`supabase link`) y ejecuta `supabase db push`
+3. Opción B — SQL Editor: pega y ejecuta cada archivo de `supabase/migrations/` en orden, uno por uno
+4. Verifica que se crearon las tablas `categories`, `dishes`, `reservations` y `time_slots`
 
 ### Obtener credenciales
 
@@ -45,7 +45,7 @@ Esta guía te llevará paso a paso para desplegar tu web en producción.
 
 1. Copia el archivo de ejemplo:
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
 2. Edita `.env.local` con tus credenciales de Supabase:
@@ -66,13 +66,13 @@ ADMIN_PASSWORD=TuPasswordSeguro123!
 ### Instalar dependencias
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Ejecutar en modo desarrollo
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ### Verificar funcionamiento
@@ -90,7 +90,7 @@ npm run dev
 
 ```bash
 # Instalar Vercel CLI
-npm i -g vercel
+pnpm add -g vercel
 
 # Login
 vercel login
@@ -180,7 +180,7 @@ https://tu-dominio.vercel.app/menu
 
 ```bash
 # Instalar Vercel Analytics
-npm install @vercel/analytics
+pnpm add @vercel/analytics
 ```
 
 Agrega en `app/layout.tsx`:

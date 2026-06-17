@@ -25,7 +25,7 @@ Sistema completo de gestión de reservas para el restaurante, con formulario web
 
 ```
 ### Backend (Supabase)
-supabase-reservations-setup.sql    # Script de configuración de base de datos
+supabase/migrations/               # Migraciones SQL de la base de datos (incluye reservas)
 
 ### API Routes
 app/api/reservations/
@@ -63,13 +63,13 @@ lib/i18n/translations.ts          # Traducciones ES/GL (actualizado)
 
 ### 1. Configurar Base de Datos (Supabase)
 
-Ejecuta el script SQL en tu proyecto de Supabase:
+Aplica las migraciones de `supabase/migrations/` en tu proyecto de Supabase:
 
 ```bash
 # Opción 1: Desde el dashboard de Supabase
 # 1. Ve a SQL Editor
-# 2. Copia el contenido de supabase-reservations-setup.sql
-# 3. Ejecuta el script
+# 2. Pega cada archivo de supabase/migrations/ en orden
+# 3. Ejecuta cada script
 
 # Opción 2: Usando la CLI de Supabase (si la tienes instalada)
 supabase db push
@@ -103,7 +103,7 @@ El sistema viene configurado con:
 Para cambiar los horarios o capacidad, puedes:
 
 **Opción A: Modificar el SQL inicial**
-Edita `supabase-reservations-setup.sql` antes de ejecutarlo.
+Edita la migración correspondiente de `supabase/migrations/` antes de aplicarla (en proyectos nuevos).
 
 **Opción B: Usar la interfaz de Supabase**
 
@@ -156,7 +156,7 @@ El sistema está preparado para enviar emails pero requiere configuración:
    ```
 4. Instalar dependencia:
    ```bash
-   npm install resend
+   pnpm add resend
    ```
 5. Descomentar código de email en `app/api/reservations/create/route.ts`
 
@@ -214,7 +214,7 @@ Modifica ahí para cambiar cualquier texto del sistema.
 ### "Estilos no se aplican"
 
 1. Verifica que los archivos `.module.css` existen
-2. Reinicia el servidor de desarrollo: `npm run dev`
+2. Reinicia el servidor de desarrollo: `pnpm dev`
 3. Limpia la caché: Ctrl+Shift+R
 
 ## 📊 API Endpoints

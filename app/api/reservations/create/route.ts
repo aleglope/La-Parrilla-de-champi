@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import type {
   CreateReservationDto,
@@ -9,6 +8,8 @@ import {
   sendReservationConfirmation,
   sendAdminNotification,
 } from "@/lib/email/EmailService";
+import { ipAddress } from "@vercel/functions";
+import { checkRateLimit, rateLimitKey } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -84,7 +85,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createClient();
+
+    // Rate limit por IP (SEC-04): 5 req/60s sobre store distribuido en Postgres.
+    // IP de plataforma vía @vercel/functions (x-real-ip, fijada por Vercel desde
+    // la conexión) — el primer valor de x-forwarded-for lo controla el cliente
+    // y permitiría evadir el límite con un header falsificado.
+    // Sin IP (local/desconocida): rateLimitKey genera una clave efímera, nunca
+    // un literal compartido que agrupe a todos los clientes en un mismo bucket.
+    const ip = ipAddress(request);
+
+    if (
+      !(await checkRateLimit(supabase, rateLimitKey("reservation", ip), {
+        max: 5,
+        windowSeconds: 60,
+      }))
+    ) {
+      return NextResponse.json(
+        { error: "Demasiadas solicitudes" },
+        { status: 429 }
+      );
+    }
 
     // Check availability using the database function (use normalized time)
     const { data: availabilityCheck, error: availabilityError } =

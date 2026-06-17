@@ -1,0 +1,2 @@
+# Identificador local del proyecto para el CLI de Supabase (slug, NO el ref de producción).
+project_id = "la-parrilla-de-champi"

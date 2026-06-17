@@ -1,6 +1,7 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { verifySession } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -15,15 +16,16 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication using admin-auth cookie
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
+    // Check authentication using the signed admin-session cookie
+    const token = cookies().get("admin-session")?.value;
 
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!(await verifySession(token))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    // service_role: verbo admin gateado por verifySession; las escrituras de
+    // infra quedan restringidas a service_role tras el endurecimiento RLS.
+    const supabase = getSupabaseAdmin();
 
     const searchParams = request.nextUrl.searchParams;
     const startDate = searchParams.get("startDate");
@@ -80,15 +82,16 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication using admin-auth cookie
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
+    // Check authentication using the signed admin-session cookie
+    const token = cookies().get("admin-session")?.value;
 
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!(await verifySession(token))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    // service_role: verbo admin gateado por verifySession; las escrituras de
+    // infra quedan restringidas a service_role tras el endurecimiento RLS.
+    const supabase = getSupabaseAdmin();
 
     const body = await request.json();
     const { date, isOpen, maxCapacity, notes } = body;
@@ -163,15 +166,16 @@ export async function POST(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   try {
-    // Check authentication using admin-auth cookie
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
+    // Check authentication using the signed admin-session cookie
+    const token = cookies().get("admin-session")?.value;
 
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!(await verifySession(token))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    // service_role: verbo admin gateado por verifySession; las escrituras de
+    // infra quedan restringidas a service_role tras el endurecimiento RLS.
+    const supabase = getSupabaseAdmin();
 
     const searchParams = request.nextUrl.searchParams;
     const date = searchParams.get("date");

@@ -16,12 +16,17 @@ const supabaseMock = {
   from: vi.fn(),
 };
 
-vi.mock("@supabase/auth-helpers-nextjs", () => ({
-  createRouteHandlerClient: () => supabaseMock,
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: () => supabaseMock,
 }));
 
 function makeRequest(body: any) {
-  return { json: async () => body } as any;
+  return {
+    json: async () => body,
+    // El gate de rate limit (SEC-04) lee la IP de plataforma (x-real-ip vía
+    // ipAddress de @vercel/functions); null → IP indefinida → clave efímera.
+    headers: { get: () => null },
+  } as any;
 }
 
 describe("POST /api/reservations/create", () => {

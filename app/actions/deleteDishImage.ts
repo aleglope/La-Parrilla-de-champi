@@ -6,7 +6,7 @@
  */
 
 import { revalidatePath } from 'next/cache';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { IMAGE_CONFIG, ERROR_MESSAGES } from '@/utils/imageHelpers';
 
 // ============ Tipos ============
@@ -79,7 +79,7 @@ export async function deleteDishImage(params: DeleteDishImageParams): Promise<De
     }
     
     // 3. Eliminar de Storage
-    const { error: storageError } = await supabaseAdmin.storage
+    const { error: storageError } = await getSupabaseAdmin().storage
       .from(IMAGE_CONFIG.BUCKET_NAME)
       .remove([filePath]);
     
@@ -95,7 +95,7 @@ export async function deleteDishImage(params: DeleteDishImageParams): Promise<De
     
     // 4. Actualizar base de datos si se solicita
     if (updateDatabase) {
-      const { error: dbError } = await supabaseAdmin
+      const { error: dbError } = await getSupabaseAdmin()
         .from('dishes')
         .update({
           image_url: null,
@@ -146,7 +146,7 @@ export async function deleteDishImages(imageUrls: string[]): Promise<DeleteResul
       return { success: true }; // Nada que eliminar
     }
     
-    const { error } = await supabaseAdmin.storage
+    const { error } = await getSupabaseAdmin().storage
       .from(IMAGE_CONFIG.BUCKET_NAME)
       .remove(filePaths);
     

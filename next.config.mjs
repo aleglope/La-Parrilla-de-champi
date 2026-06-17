@@ -1,3 +1,5 @@
+import { withSentryConfig } from "@sentry/nextjs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -21,10 +23,19 @@ const nextConfig = {
   },
   // ISR - Incremental Static Regeneration
   // Nota: optimizeCss desactivado temporalmente por compatibilidad con Windows
-  // experimental: {
-  //   optimizeCss: true,
-  // },
+  experimental: {
+    // optimizeCss: true,
+    // Requerido en Next 13.2-14 para que Next llame a register() de instrumentation.ts
+    instrumentationHook: true,
+  },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: !process.env.CI,
+  // Sin SENTRY_AUTH_TOKEN no se intenta subir source maps:
+  // evita el warning de auth token y mantiene el build verde sin env vars de Sentry.
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+});
 

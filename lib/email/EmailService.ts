@@ -1,6 +1,18 @@
 import { Resend } from "resend";
+import { escapeHtml } from "./escapeHtml";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy init: el constructor de Resend lanza si falta la API key, así que
+// instanciarlo a nivel de módulo rompe `next build` sin env vars (la fase
+// "Collecting page data" evalúa los módulos de las rutas que lo importan).
+// Los callers ya comprueban RESEND_API_KEY antes de enviar.
+let resendClient: Resend | null = null;
+
+function getResend(): Resend {
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
 interface ReservationEmailData {
   guestName: string;
@@ -17,7 +29,7 @@ interface ReservationEmailData {
  */
 export async function sendReservationConfirmation(data: ReservationEmailData) {
   try {
-    const { data: emailData, error } = await resend.emails.send({
+    const { data: emailData, error } = await getResend().emails.send({
       from: "La Parrilla de Champi <reservas@reservas.laparrilladechampi.es>",
       to: [data.guestEmail],
       subject: `Confirmación de Reserva - ${data.reservationDate} a las ${data.timeSlot}`,
@@ -44,7 +56,7 @@ export async function sendAdminNotification(data: ReservationEmailData) {
   try {
     const adminEmail = process.env.ADMIN_EMAIL || "admin@laparrilla.com";
 
-    const { data: emailData, error } = await resend.emails.send({
+    const { data: emailData, error } = await getResend().emails.send({
       from: "Sistema de Reservas <sistema@reservas.laparrilladechampi.es>",
       to: [adminEmail],
       subject: `Nueva Reserva - ${data.reservationDate} a las ${data.timeSlot}`,
@@ -67,7 +79,9 @@ export async function sendAdminNotification(data: ReservationEmailData) {
 /**
  * Generate HTML for guest confirmation email
  */
-function generateConfirmationEmailHTML(data: ReservationEmailData): string {
+export function generateConfirmationEmailHTML(
+  data: ReservationEmailData
+): string {
   return `
 <!DOCTYPE html>
 <html lang="es">
@@ -83,9 +97,7 @@ function generateConfirmationEmailHTML(data: ReservationEmailData): string {
   </div>
   
   <div style="background: white; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-    <p style="font-size: 18px; color: #2c3e50; margin-top: 0;">Hola ${
-      data.guestName
-    },</p>
+    <p style="font-size: 18px; color: #2c3e50; margin-top: 0;">Hola ${escapeHtml(data.guestName)},</p>
     
     <p style="font-size: 16px; color: #555;">Tu reserva ha sido confirmada. ¡Te esperamos!</p>
     
@@ -122,7 +134,7 @@ function generateConfirmationEmailHTML(data: ReservationEmailData): string {
             ? `
         <tr>
           <td style="padding: 12px 0; color: #7f8c8d; font-weight: 600; vertical-align: top;">Solicitudes Especiales:</td>
-          <td style="padding: 12px 0; color: #2c3e50; text-align: right;">${data.specialRequests}</td>
+          <td style="padding: 12px 0; color: #2c3e50; text-align: right;">${escapeHtml(data.specialRequests)}</td>
         </tr>
         `
             : ""
@@ -157,7 +169,9 @@ function generateConfirmationEmailHTML(data: ReservationEmailData): string {
 /**
  * Generate HTML for admin notification email
  */
-function generateAdminNotificationHTML(data: ReservationEmailData): string {
+export function generateAdminNotificationHTML(
+  data: ReservationEmailData
+): string {
   return `
 <!DOCTYPE html>
 <html lang="es">
@@ -181,11 +195,11 @@ function generateAdminNotificationHTML(data: ReservationEmailData): string {
       </tr>
       <tr>
         <td style="padding: 10px 0; font-weight: bold;">Cliente:</td>
-        <td style="padding: 10px 0;">${data.guestName}</td>
+        <td style="padding: 10px 0;">${escapeHtml(data.guestName)}</td>
       </tr>
       <tr>
         <td style="padding: 10px 0; font-weight: bold;">Email:</td>
-        <td style="padding: 10px 0;">${data.guestEmail}</td>
+        <td style="padding: 10px 0;">${escapeHtml(data.guestEmail)}</td>
       </tr>
       <tr>
         <td style="padding: 10px 0; font-weight: bold;">Fecha:</td>
@@ -210,7 +224,7 @@ function generateAdminNotificationHTML(data: ReservationEmailData): string {
           ? `
       <tr>
         <td style="padding: 10px 0; font-weight: bold; vertical-align: top;">Solicitudes:</td>
-        <td style="padding: 10px 0;">${data.specialRequests}</td>
+        <td style="padding: 10px 0;">${escapeHtml(data.specialRequests)}</td>
       </tr>
       `
           : ""
