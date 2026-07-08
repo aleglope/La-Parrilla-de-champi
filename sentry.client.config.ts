@@ -11,4 +11,8 @@ Sentry.init({
   tracesSampleRate: 0.1,
   sendDefaultPii: false,
   beforeSend: scrubPii,
+  // Ruido del webview de Instagram (script inyectado navigation_performance_logger):
+  // errores al destruirse el puente nativo al salir de la página. 0 usuarios propios afectados.
+  ignoreErrors: [/Java object is gone/, /window\.webkit\.messageHandlers/],
+  denyUrls: [/navigation_performance_logger/],
 });
