@@ -35,8 +35,8 @@ describe("lib/event/feria-medieval", () => {
   });
 
   describe("MEDIEVAL_DISHES — integridad de datos", () => {
-    it("contiene exactamente 8 platos", () => {
-      expect(MEDIEVAL_DISHES).toHaveLength(8);
+    it("contiene exactamente 9 platos", () => {
+      expect(MEDIEVAL_DISHES).toHaveLength(9);
     });
 
     it("cada plato tiene textos es/gl no vacíos y precio > 0", () => {
@@ -88,7 +88,7 @@ describe("lib/event/feria-medieval", () => {
       const items = sections.flatMap((s: any) =>
         Array.isArray(s.hasMenuItem) ? s.hasMenuItem : [s.hasMenuItem]
       );
-      expect(items).toHaveLength(8);
+      expect(items).toHaveLength(9);
       for (const item of items) {
         expect(item["@type"]).toBe("MenuItem");
         expect(item.offers.priceCurrency).toBe("EUR");

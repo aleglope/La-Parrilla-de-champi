@@ -38,7 +38,7 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
       {/* Velo turquesa para integrar el cartel y asegurar legibilidad en bordes */}
       <div className="absolute inset-0 bg-[#87CDD2]/25" aria-hidden="true" />
 
-      <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9]/[0.78] backdrop-blur-[5px] px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
+      <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9]/70 backdrop-blur-[5px] px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
         {/* Cuadros mostaza en las 4 esquinas */}
         <CornerOrnament className="absolute -top-5 -left-5 h-12 w-12 sm:h-14 sm:w-14" />
         <CornerOrnament className="absolute -top-5 -right-5 h-12 w-12 sm:h-14 sm:w-14 rotate-90" />
@@ -88,7 +88,7 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
                     {name}
                   </h3>
                   <span
-                    className={`${medievalFont.className} whitespace-nowrap text-xl text-[#701F08]`}
+                    className={`${medievalFont.className} whitespace-nowrap text-xl text-[#571705]`}
                   >
                     {formatPrice(dish.price)}
                   </span>

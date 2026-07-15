@@ -102,6 +102,14 @@ export const MEDIEVAL_DISHES: MedievalDish[] = [
     description_gl: "Crocantes, a gornición de todo bo festín",
     price: 3.5,
   },
+  {
+    id: "pan",
+    name: "Pan",
+    name_gl: "Pan",
+    description: "Pan de aldea, compañero de toda buena mesa",
+    description_gl: "Pan de aldea, compañeiro de toda boa mesa",
+    price: 1.8,
+  },
 ];
 
 /** Formatea un precio como "NN,NN €" (coma decimal, convención es/gl). */
