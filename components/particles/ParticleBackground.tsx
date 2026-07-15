@@ -9,10 +9,14 @@ const ParticleSystem = dynamic(
   { ssr: false }
 );
 
+interface ParticleBackgroundProps {
+  readonly colors?: string[];
+}
+
 /**
  * Client Component wrapper que aísla el coste de Three.js al bundle de la home.
  * El opt-out (prefersReducedMotion / low-power-mode) vive dentro de ParticleSystem.
  */
-export function ParticleBackground() {
-  return <ParticleSystem />;
+export function ParticleBackground({ colors }: ParticleBackgroundProps = {}) {
+  return <ParticleSystem colors={colors} />;
 }

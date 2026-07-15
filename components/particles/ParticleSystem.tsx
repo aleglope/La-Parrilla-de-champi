@@ -58,11 +58,15 @@ interface LiquidEtherWebGL {
 
 const defaultColors = ["#5227FF", "#FF9FFC", "#B19EEF"];
 
+interface ParticleSystemProps {
+  readonly colors?: string[];
+}
+
 /**
  * Componente principal ParticleSystem
  * Implementa el efecto LiquidEther de fondo
  */
-export function ParticleSystem() {
+export function ParticleSystem({ colors }: ParticleSystemProps = {}) {
   const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
@@ -83,8 +87,8 @@ export function ParticleSystem() {
     return null;
   }
 
-  // Colores del tema: Fire Red, Flame Blue, y un tono intermedio
-  const themeColors = ["#C01F19", "#314A78", "#1789C0"];
+  // Colores del tema: Fire Red, Flame Blue, y un tono intermedio (default sin prop)
+  const themeColors = colors ?? ["#C01F19", "#314A78", "#1789C0"];
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
