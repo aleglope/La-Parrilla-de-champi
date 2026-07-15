@@ -20,7 +20,7 @@ export default function FeriaPreviewPage({
 }: Readonly<{ params: { lang: Locale } }>) {
   return (
     <main className="min-h-screen bg-[#87CDD2]">
-      <MedievalHeroBanner lang={params.lang} />
+      <MedievalHeroBanner lang={params.lang} showCta={false} />
       <MedievalMenuContent lang={params.lang} />
     </main>
   );

@@ -4,7 +4,12 @@ import {
   formatPrice,
 } from "@/lib/event/feria-medieval";
 import { medievalFont } from "./fonts";
-import { CornerOrnament, FleurDeLisDivider } from "./MedievalOrnaments";
+import {
+  CornerOrnament,
+  CrossedSwords,
+  FleurDeLisDivider,
+  WatercolorDragon,
+} from "./MedievalOrnaments";
 import type { Locale } from "@/i18n-config";
 
 interface MedievalMenuContentProps {
@@ -28,8 +33,11 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
         <CornerOrnament className="absolute -bottom-5 -left-5 h-12 w-12 sm:h-14 sm:w-14 -rotate-90" />
         <CornerOrnament className="absolute -bottom-5 -right-5 h-12 w-12 sm:h-14 sm:w-14 rotate-180" />
 
+        {/* Dragón acuarela como marca de agua tras la lista */}
+        <WatercolorDragon className="pointer-events-none absolute left-1/2 top-1/2 h-[min(85%,540px)] w-auto -translate-x-1/2 -translate-y-1/2 opacity-[0.16]" />
+
         {/* Cabecera del evento */}
-        <header className="text-center">
+        <header className="relative text-center">
           <p
             className={`${medievalFont.className} text-sm uppercase tracking-[0.3em] text-[#1E5A2E]`}
           >
@@ -48,10 +56,13 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
           </p>
         </header>
 
-        <FleurDeLisDivider className="mx-auto mt-8 h-6 w-56" />
+        {/* Espadas cruzadas bajo la cabecera */}
+        <CrossedSwords className="relative mx-auto mt-6 h-16 w-16" />
+
+        <FleurDeLisDivider className="mx-auto mt-4 h-6 w-56" />
 
         {/* Lista de platos */}
-        <ul className="mt-8 space-y-6">
+        <ul className="relative mt-8 space-y-6">
           {MEDIEVAL_DISHES.map((dish, index) => {
             const name = lang === "gl" ? dish.name_gl : dish.name;
             const description =
@@ -81,7 +92,7 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
           })}
         </ul>
 
-        <FleurDeLisDivider className="mx-auto mt-10 h-6 w-56" />
+        <FleurDeLisDivider className="relative mx-auto mt-10 h-6 w-56" />
       </div>
     </section>
   );
