@@ -9,7 +9,6 @@ import {
   CornerOrnament,
   CrossedSwords,
   FleurDeLisDivider,
-  WatercolorDragon,
 } from "./MedievalOrnaments";
 import type { Locale } from "@/i18n-config";
 
@@ -39,31 +38,28 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
       {/* Velo turquesa para integrar el cartel y asegurar legibilidad en bordes */}
       <div className="absolute inset-0 bg-[#87CDD2]/25" aria-hidden="true" />
 
-      <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9]/95 px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
+      <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9]/[0.78] backdrop-blur-[5px] px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
         {/* Cuadros mostaza en las 4 esquinas */}
         <CornerOrnament className="absolute -top-5 -left-5 h-12 w-12 sm:h-14 sm:w-14" />
         <CornerOrnament className="absolute -top-5 -right-5 h-12 w-12 sm:h-14 sm:w-14 rotate-90" />
         <CornerOrnament className="absolute -bottom-5 -left-5 h-12 w-12 sm:h-14 sm:w-14 -rotate-90" />
         <CornerOrnament className="absolute -bottom-5 -right-5 h-12 w-12 sm:h-14 sm:w-14 rotate-180" />
 
-        {/* Dragón acuarela como marca de agua tras la lista */}
-        <WatercolorDragon className="pointer-events-none absolute left-1/2 top-1/2 h-[min(85%,540px)] w-auto -translate-x-1/2 -translate-y-1/2 opacity-[0.16]" />
-
         {/* Cabecera del evento */}
         <header className="relative text-center">
           <p
-            className={`${medievalFont.className} text-sm uppercase tracking-[0.3em] text-[#1E5A2E]`}
+            className={`${medievalFont.className} text-sm uppercase tracking-[0.3em] text-[#14401F]`}
           >
             {texts.eventName}
           </p>
           <h2
-            className={`${medievalFont.className} mt-3 text-3xl sm:text-4xl text-[#6B4A2B]`}
+            className={`${medievalFont.className} mt-3 text-3xl sm:text-4xl text-[#4A2E12]`}
           >
             {texts.menuHeading}
           </h2>
-          <p className="mt-2 text-sm text-[#4A3320]">{texts.menuSubtitle}</p>
+          <p className="mt-2 text-sm text-[#2E1E0C]">{texts.menuSubtitle}</p>
           <p
-            className={`${medievalFont.className} mt-2 text-lg text-[#6B4A2B]`}
+            className={`${medievalFont.className} mt-2 text-lg text-[#4A2E12]`}
           >
             {texts.dates}
           </p>
@@ -87,17 +83,17 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
                 )}
                 <div className="flex items-baseline justify-between gap-4">
                   <h3
-                    className={`${medievalFont.className} text-xl text-[#6B4A2B]`}
+                    className={`${medievalFont.className} text-xl text-[#4A2E12]`}
                   >
                     {name}
                   </h3>
                   <span
-                    className={`${medievalFont.className} whitespace-nowrap text-xl text-[#8F2E14]`}
+                    className={`${medievalFont.className} whitespace-nowrap text-xl text-[#701F08]`}
                   >
                     {formatPrice(dish.price)}
                   </span>
                 </div>
-                <p className="mt-1 text-sm leading-relaxed text-[#4A3320]">
+                <p className="mt-1 text-sm leading-relaxed text-[#2E1E0C]">
                   {description}
                 </p>
               </li>
