@@ -10,6 +10,13 @@ import {
   generateBreadcrumbSchema,
 } from "@/lib/seo/schemas";
 import { JsonLd } from "@/components/seo/JsonLd";
+import {
+  isFeriaActiva,
+  FERIA_TEXTS,
+  generateMedievalMenuSchema,
+} from "@/lib/event/feria-medieval";
+import { MedievalMenuContent } from "@/components/feria/MedievalMenuContent";
+import type { Locale } from "@/i18n-config";
 
 /**
  * Página del Menú Digital
@@ -23,6 +30,21 @@ export async function generateMetadata({
 }: {
   params: { lang: string };
 }): Promise<Metadata> {
+  // Modo feria: metadata del evento manteniendo alternates idénticos
+  if (isFeriaActiva()) {
+    const texts = FERIA_TEXTS[params.lang as Locale];
+    return {
+      title: texts.metaTitle,
+      description: texts.metaDescription,
+      alternates: {
+        languages: {
+          es: "/es/menu",
+          gl: "/gl/menu",
+        },
+      },
+    };
+  }
+
   const dictionary = await getDictionary(params.lang as "es" | "gl");
 
   return {
@@ -42,6 +64,27 @@ export default async function MenuPage({
 }: {
   params: { lang: string };
 }) {
+  // Modo feria: carta medieval sin fetch a Supabase (bifurcación ANTES del fetch)
+  if (isFeriaActiva()) {
+    const lang = params.lang as Locale;
+    const medievalBreadcrumbSchema = generateBreadcrumbSchema([
+      { name: "Inicio", item: `/${lang}` },
+      { name: "Carta", item: `/${lang}/menu` },
+    ]);
+
+    return (
+      <main className="min-h-screen bg-[#87CDD2]">
+        <JsonLd data={generateMedievalMenuSchema(lang)} />
+        <JsonLd data={medievalBreadcrumbSchema} id="schema-breadcrumb" />
+        {/* Header con selector de idioma (se mantiene durante la feria) */}
+        <MenuHeader />
+
+        {/* Carta medieval */}
+        <MedievalMenuContent lang={lang} />
+      </main>
+    );
+  }
+
   // Fetch de datos en el servidor para SSG
   const categories = await getCategories();
   const dishes = await getDishes();
