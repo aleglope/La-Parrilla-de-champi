@@ -25,18 +25,24 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
   const texts = FERIA_TEXTS[lang];
 
   return (
-    <section className="relative overflow-hidden bg-[#87CDD2] py-14 px-4 sm:py-16 sm:px-6">
-      {/* Cartel oficial de la feria como fondo (decorativo) */}
-      <Image
-        src="/feria/cartel-feria-2026.jpg"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="pointer-events-none select-none object-cover object-[50%_18%]"
-      />
-      {/* Velo turquesa para integrar el cartel y asegurar legibilidad en bordes */}
-      <div className="absolute inset-0 bg-[#87CDD2]/25" aria-hidden="true" />
+    <section className="relative bg-[#87CDD2] py-14 px-4 sm:py-16 sm:px-6">
+      {/*
+       * Cartel oficial como fondo fijo al viewport (no a la sección): cada
+       * dispositivo lo muestra a su escala natural y el contenido se desliza
+       * por encima. Evita el zoom extremo en móvil de la variante absolute.
+       */}
+      <div className="fixed inset-0 pointer-events-none" aria-hidden="true">
+        <Image
+          src="/feria/cartel-feria-2026.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="select-none object-cover object-[50%_30%]"
+        />
+        {/* Velo turquesa para integrar el cartel y asegurar legibilidad en bordes */}
+        <div className="absolute inset-0 bg-[#87CDD2]/25" />
+      </div>
 
       <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9]/60 backdrop-blur-[6px] px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
         {/* Cuadros mostaza en las 4 esquinas */}
