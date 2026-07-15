@@ -38,7 +38,7 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
       {/* Velo turquesa para integrar el cartel y asegurar legibilidad en bordes */}
       <div className="absolute inset-0 bg-[#87CDD2]/25" aria-hidden="true" />
 
-      <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9]/70 backdrop-blur-[5px] px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
+      <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9]/60 backdrop-blur-[6px] px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
         {/* Cuadros mostaza en las 4 esquinas */}
         <CornerOrnament className="absolute -top-5 -left-5 h-12 w-12 sm:h-14 sm:w-14" />
         <CornerOrnament className="absolute -top-5 -right-5 h-12 w-12 sm:h-14 sm:w-14 rotate-90" />
@@ -48,18 +48,18 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
         {/* Cabecera del evento */}
         <header className="relative text-center">
           <p
-            className={`${medievalFont.className} text-sm uppercase tracking-[0.3em] text-[#14401F]`}
+            className={`${medievalFont.className} text-sm uppercase tracking-[0.3em] text-[#0E2E16]`}
           >
             {texts.eventName}
           </p>
           <h2
-            className={`${medievalFont.className} mt-3 text-3xl sm:text-4xl text-[#4A2E12]`}
+            className={`${medievalFont.className} mt-3 text-3xl sm:text-4xl text-[#38220C]`}
           >
             {texts.menuHeading}
           </h2>
           <p className="mt-2 text-sm text-[#2E1E0C]">{texts.menuSubtitle}</p>
           <p
-            className={`${medievalFont.className} mt-2 text-lg text-[#4A2E12]`}
+            className={`${medievalFont.className} mt-2 text-lg text-[#38220C]`}
           >
             {texts.dates}
           </p>
@@ -83,12 +83,12 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
                 )}
                 <div className="flex items-baseline justify-between gap-4">
                   <h3
-                    className={`${medievalFont.className} text-xl text-[#4A2E12]`}
+                    className={`${medievalFont.className} text-xl text-[#38220C]`}
                   >
                     {name}
                   </h3>
                   <span
-                    className={`${medievalFont.className} whitespace-nowrap text-xl text-[#571705]`}
+                    className={`${medievalFont.className} whitespace-nowrap text-xl text-[#451103]`}
                   >
                     {formatPrice(dish.price)}
                   </span>
