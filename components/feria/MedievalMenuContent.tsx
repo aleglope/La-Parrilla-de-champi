@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   MEDIEVAL_DISHES,
   FERIA_TEXTS,
@@ -25,8 +26,20 @@ export function MedievalMenuContent({ lang }: MedievalMenuContentProps) {
   const texts = FERIA_TEXTS[lang];
 
   return (
-    <section className="bg-[#87CDD2] py-10 px-4 sm:px-6">
-      <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9] px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
+    <section className="relative overflow-hidden bg-[#87CDD2] py-14 px-4 sm:py-16 sm:px-6">
+      {/* Cartel oficial de la feria como fondo (decorativo) */}
+      <Image
+        src="/feria/cartel-feria-2026.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="pointer-events-none select-none object-cover object-[50%_18%]"
+      />
+      {/* Velo turquesa para integrar el cartel y asegurar legibilidad en bordes */}
+      <div className="absolute inset-0 bg-[#87CDD2]/25" aria-hidden="true" />
+
+      <div className="relative mx-auto max-w-2xl rounded-lg border-4 border-[#8A6520] bg-[#9AD5D9]/95 px-5 py-12 sm:px-10 shadow-[0_10px_40px_rgba(43,74,43,0.35)]">
         {/* Cuadros mostaza en las 4 esquinas */}
         <CornerOrnament className="absolute -top-5 -left-5 h-12 w-12 sm:h-14 sm:w-14" />
         <CornerOrnament className="absolute -top-5 -right-5 h-12 w-12 sm:h-14 sm:w-14 rotate-90" />
