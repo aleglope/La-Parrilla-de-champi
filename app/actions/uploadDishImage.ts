@@ -8,6 +8,7 @@
 import { revalidatePath } from 'next/cache';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { isAdminRequest } from '@/lib/auth/requireAdmin';
 import { IMAGE_CONFIG, ERROR_MESSAGES } from '@/utils/imageHelpers';
 
 // ============ Tipos ============
@@ -109,6 +110,12 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
   let uploadedFilePath: string | null = null;
   
   try {
+    // 0. Exigir sesión admin ANTES del rate limit: sin este gate, un anónimo
+    // agota la cuota de la clave global 'upload:admin' y deja fuera al admin real
+    if (!(await isAdminRequest())) {
+      return { success: false, error: 'No autorizado' };
+    }
+
     // 1. Rate limiting distribuido (SEC-04): 10 req/60s, key global por panel
     // admin (la auth admin es una sola cuenta). Fail-open si el RPC no existe.
     if (!(await checkRateLimit(getSupabaseAdmin(), 'upload:admin', { max: 10, windowSeconds: 60 }))) {

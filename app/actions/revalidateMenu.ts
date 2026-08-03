@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { isAdminRequest } from '@/lib/auth/requireAdmin';
 
 /**
  * Server Action que revalida la página pública del menú.
@@ -16,5 +17,11 @@ import { revalidatePath } from 'next/cache';
  * llamada: mismo comportamiento observable del botón, pero ahora efectivo.
  */
 export async function revalidateMenu(): Promise<void> {
+  // Exigir sesión admin: la action es invocable por su Action ID sin pasar
+  // por el panel, y revalidar en bucle vacía la caché del menú a demanda
+  if (!(await isAdminRequest())) {
+    return;
+  }
+
   revalidatePath('/[lang]/menu', 'page');
 }

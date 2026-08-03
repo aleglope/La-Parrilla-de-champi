@@ -7,6 +7,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
+import { isAdminRequest } from '@/lib/auth/requireAdmin';
 import { IMAGE_CONFIG, ERROR_MESSAGES } from '@/utils/imageHelpers';
 
 // ============ Tipos ============
@@ -56,8 +57,14 @@ function isValidStorageUrl(url: string): boolean {
  */
 export async function deleteDishImage(params: DeleteDishImageParams): Promise<DeleteResult> {
   const { dishId, imageUrl, updateDatabase = true } = params;
-  
+
   try {
+    // 0. Exigir sesión admin: esta action escribe con service_role (salta RLS)
+    //    y es invocable directamente por su Action ID sin pasar por el panel
+    if (!(await isAdminRequest())) {
+      return { success: false, error: 'No autorizado' };
+    }
+
     // 1. Validar que la URL es de nuestro Storage
     if (!isValidStorageUrl(imageUrl)) {
       console.error('[Delete] URL inválida:', imageUrl);
@@ -137,6 +144,11 @@ export async function deleteDishImage(params: DeleteDishImageParams): Promise<De
  */
 export async function deleteDishImages(imageUrls: string[]): Promise<DeleteResult> {
   try {
+    // Exigir sesión admin (ver deleteDishImage): borrado masivo con service_role
+    if (!(await isAdminRequest())) {
+      return { success: false, error: 'No autorizado' };
+    }
+
     const filePaths = imageUrls
       .filter(isValidStorageUrl)
       .map(extractStoragePath)
