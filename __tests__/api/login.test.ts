@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { cookies } from "next/headers";
 import { POST } from "@/app/api/admin/login/route";
 import { signSession } from "@/lib/auth/session";
+import { checkRateLimit } from "@/lib/ratelimit";
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
@@ -9,6 +10,22 @@ vi.mock("next/headers", () => ({
 
 vi.mock("@/lib/auth/session", () => ({
   signSession: vi.fn().mockResolvedValue("signed.jwt.token"),
+}));
+
+// El login consulta el rate limit antes de mirar las credenciales.
+// Se aíslan Supabase y @vercel/functions: aquí se prueba la lógica de auth,
+// no la infraestructura.
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(() => ({})),
+}));
+
+vi.mock("@vercel/functions", () => ({
+  ipAddress: vi.fn(() => "203.0.113.1"),
+}));
+
+vi.mock("@/lib/ratelimit", () => ({
+  checkRateLimit: vi.fn().mockResolvedValue(true),
+  rateLimitKey: vi.fn((prefix: string, ip?: string) => `${prefix}:${ip ?? "anon"}`),
 }));
 
 const cookieStoreMock = {
@@ -29,6 +46,7 @@ describe("POST /api/admin/login", () => {
     vi.mocked(cookies).mockReturnValue(cookieStoreMock as any);
     cookieStoreMock.set.mockReset();
     vi.mocked(signSession).mockClear();
+    vi.mocked(checkRateLimit).mockReset().mockResolvedValue(true);
     process.env.ADMIN_EMAIL = TEST_EMAIL;
     process.env.ADMIN_PASSWORD = TEST_PASSWORD;
   });
@@ -80,6 +98,35 @@ describe("POST /api/admin/login", () => {
 
     expect(res.status).toBe(401);
     expect(json.error).toBeDefined();
+    expect(cookieStoreMock.set).not.toHaveBeenCalled();
+  });
+
+  it("al superar el rate limit responde 429 sin evaluar las credenciales", async () => {
+    vi.mocked(checkRateLimit).mockResolvedValueOnce(false);
+
+    const res = await POST(
+      makeRequest({ email: TEST_EMAIL, password: TEST_PASSWORD })
+    );
+
+    expect(res.status).toBe(429);
+    // Credenciales correctas y aun así no se emite sesión: el límite manda
+    expect(signSession).not.toHaveBeenCalled();
+    expect(cookieStoreMock.set).not.toHaveBeenCalled();
+  });
+
+  it("aplica un segundo límite global además del límite por IP", async () => {
+    // El primero (por IP) pasa, el segundo (global) corta: rotar IPs no evade
+    vi.mocked(checkRateLimit)
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false);
+
+    const res = await POST(
+      makeRequest({ email: TEST_EMAIL, password: TEST_PASSWORD })
+    );
+
+    expect(res.status).toBe(429);
+    expect(vi.mocked(checkRateLimit)).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(checkRateLimit).mock.calls[1][1]).toBe("login:global");
     expect(cookieStoreMock.set).not.toHaveBeenCalled();
   });
 });

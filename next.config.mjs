@@ -28,6 +28,33 @@ const nextConfig = {
     // Requerido en Next 13.2-14 para que Next llame a register() de instrumentation.ts
     instrumentationHook: true,
   },
+  async headers() {
+    return [
+      {
+        // Cabeceras base para todo el sitio
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+        ],
+      },
+      {
+        // El panel admin no debe poder embeberse: la cookie de sesión es
+        // sameSite "lax", que no impide el enmarcado, así que sin esto se
+        // puede hacer clickjacking sobre sus botones con el admin logueado.
+        source: "/:lang/admin/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "Cache-Control", value: "no-store, must-revalidate" },
+        ],
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {
