@@ -33,3 +33,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+
+# brag video output (local only)
+brag-output/
+
+# supabase cli cache (project-ref, pooler url, versiones) — nunca versionar
+supabase/.temp/
+
+# playwright mcp snapshots
+.playwright-mcp/

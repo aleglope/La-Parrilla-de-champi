@@ -6,11 +6,13 @@
 --              serverless) por un contador persistente en Postgres.
 -- ============================================================
 
--- NOTA: PENDIENTE de aplicar a producción (gate de BD del
--- milestone, requiere aprobación manual). Idempotente:
--- re-ejecutable sin riesgo. Tabla auxiliar nueva: no toca RLS
--- ni datos existentes. Mientras NO esté aplicada, el código
--- falla-abierto (permite y loguea).
+-- ESTADO: APLICADA en producción (verificado 2026-08-03: la tabla
+-- rate_limits y la función check_rate_limit existen y responden a
+-- una llamada real). El código usa el contador persistente, no el
+-- fallback en memoria.
+-- Idempotente: re-ejecutable sin riesgo. Tabla auxiliar nueva: no
+-- toca RLS ni datos existentes. Si alguna vez dejara de estar
+-- aplicada, el código falla-abierto (permite y loguea).
 
 -- 1. Tabla auxiliar de contadores por clave
 create table if not exists rate_limits (
