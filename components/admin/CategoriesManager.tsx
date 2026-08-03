@@ -119,7 +119,8 @@ export function CategoriesManager({
       {/* Lista de categorías */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <AnimatePresence mode="popLayout">
-          {[...categories].sort((a, b) => a.order_index - b.order_index)
+          {[...categories]
+            .sort((a, b) => a.order_index - b.order_index)
             .map((category) => (
               <motion.div
                 key={category.id}

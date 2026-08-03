@@ -201,7 +201,8 @@ export default function ClosedDaysManager() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...closedDays].sort((a, b) => a.date.localeCompare(b.date))
+            {[...closedDays]
+              .sort((a, b) => a.date.localeCompare(b.date))
               .map((day) => (
                 <div
                   key={day.date}
