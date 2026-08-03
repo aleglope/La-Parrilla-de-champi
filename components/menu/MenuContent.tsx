@@ -86,8 +86,7 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
 
       {/* Lista de platos */}
       <div className="mt-8">
-        {dishesByCategory
-          .toSorted((a, b) => {
+        {[...dishesByCategory].sort((a, b) => {
             // Custom sort: Roots first? Or just order_index?
             // Simplest: just order_index. If we want parents before children, we might need logic.
             // But usually children order_index is distinct.
@@ -116,8 +115,7 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   <AnimatePresence mode="popLayout">
-                    {category.dishes
-                      .toSorted((a, b) => a.order_index - b.order_index)
+                    {[...category.dishes].sort((a, b) => a.order_index - b.order_index)
                       .map((dish, index) => (
                         <DishCard
                           key={dish.id}
