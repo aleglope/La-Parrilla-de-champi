@@ -12,7 +12,7 @@ import {
   updateDish,
   deleteDish,
   toggleDishAvailability,
-} from "@/lib/supabase/menu-service";
+} from "@/app/actions/menuAdmin";
 import { DishModal } from "./DishModal";
 import { uploadDishImage } from "@/app/actions/uploadDishImage";
 import { deleteDishImage } from "@/app/actions/deleteDishImage";

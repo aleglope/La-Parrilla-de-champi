@@ -5,20 +5,18 @@ import {
   getDishes,
   getDishesByCategory,
   getDishById,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  createDish,
-  updateDish,
-  deleteDish,
-  toggleDishAvailability,
 } from "@/lib/supabase/menu-service";
 
-// Estrategia bimodal de menu-service (ARCH-02):
-// - Lectura (Server Components, menu ISR + admin SSR) -> createPublicReadClient
-//   (cookie-less; preserva la generacion estatica de /[lang]/menu).
-// - CRUD (Client Components DishesManager/CategoriesManager) -> getSupabase
-//   (browser client; un server client romperia su bundle 'use client').
+// menu-service quedó como módulo de SOLO LECTURA (SEC-05).
+//
+// Las lecturas (Server Components, menu ISR + admin SSR) usan
+// createPublicReadClient (cookie-less; preserva la generación estática de
+// /[lang]/menu).
+//
+// El CRUD ya no vive aquí: escribía desde el navegador con la clave anónima,
+// que es pública, y obligaba a mantener políticas RLS de escritura abiertas a
+// `anon`. Se movió a Server Actions autenticadas (app/actions/menuAdmin.ts).
+// Su cobertura está en __tests__/actions/menuAdmin.test.ts.
 const { createPublicReadClientMock, getSupabaseMock } = vi.hoisted(() => {
   function makeChainableClient() {
     const chain: Record<string, unknown> = {};
@@ -62,17 +60,7 @@ const readFns: Array<[string, () => Promise<unknown>]> = [
   ["getDishById", () => getDishById("dish-1")],
 ];
 
-const crudFns: Array<[string, () => Promise<unknown>]> = [
-  ["createCategory", () => createCategory("Tapas")],
-  ["updateCategory", () => updateCategory("cat-1", "Tapas", "Petiscos", 1)],
-  ["deleteCategory", () => deleteCategory("cat-1")],
-  ["createDish", () => createDish({ name: "Churrasco" })],
-  ["updateDish", () => updateDish("dish-1", { name: "Churrasco" })],
-  ["deleteDish", () => deleteDish("dish-1")],
-  ["toggleDishAvailability", () => toggleDishAvailability("dish-1", true)],
-];
-
-describe("menu-service — seleccion bimodal de cliente Supabase", () => {
+describe("menu-service — cliente Supabase", () => {
   beforeEach(() => {
     createPublicReadClientMock.mockClear();
     getSupabaseMock.mockClear();
@@ -89,14 +77,32 @@ describe("menu-service — seleccion bimodal de cliente Supabase", () => {
     );
   });
 
-  describe("funciones CRUD (Client Components admin)", () => {
-    it.each(crudFns)(
-      "%s sigue usando getSupabase (browser client)",
-      async (_name, call) => {
-        await call();
-        expect(getSupabaseMock).toHaveBeenCalledTimes(1);
-        expect(createPublicReadClientMock).not.toHaveBeenCalled();
+  describe("el módulo no reintroduce escritura desde el navegador", () => {
+    it("no exporta ninguna función de mutación", async () => {
+      const mod = await import("@/lib/supabase/menu-service");
+      const prohibidas = [
+        "createCategory",
+        "updateCategory",
+        "deleteCategory",
+        "createDish",
+        "updateDish",
+        "deleteDish",
+        "toggleDishAvailability",
+      ];
+
+      for (const nombre of prohibidas) {
+        expect(
+          mod[nombre as keyof typeof mod],
+          `menu-service volvió a exportar ${nombre}: escribiría con la clave anónima, que es pública`
+        ).toBeUndefined();
       }
-    );
+    });
+
+    it("ninguna lectura instancia el browser client", async () => {
+      for (const [, call] of readFns) {
+        await call();
+      }
+      expect(getSupabaseMock).not.toHaveBeenCalled();
+    });
   });
 });

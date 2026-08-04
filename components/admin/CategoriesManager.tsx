@@ -6,7 +6,7 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-} from "@/lib/supabase/menu-service";
+} from "@/app/actions/menuAdmin";
 import { CategoryModal } from "./CategoryModal";
 import type { Category } from "@/lib/types";
 

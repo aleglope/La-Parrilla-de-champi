@@ -1,4 +1,3 @@
-import { getSupabase } from './client';
 import { createPublicReadClient } from './public-read';
 import type { Category, Dish } from '../types';
 
@@ -111,89 +110,15 @@ export async function getDishById(id: string): Promise<Dish | null> {
 }
 
 // ============ Operaciones CRUD (para Admin) ============
-
-export async function createCategory(name: string, nameGl: string = '', orderIndex: number = 0) {
-  const { data, error } = await getSupabase()
-    .from('categories')
-    .insert([{ name, name_gl: nameGl, order_index: orderIndex }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function updateCategory(id: string, name: string, nameGl: string, orderIndex: number) {
-  const { data, error } = await getSupabase()
-    .from('categories')
-    .update({ name, name_gl: nameGl, order_index: orderIndex })
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function deleteCategory(id: string) {
-  const { error } = await getSupabase()
-    .from('categories')
-    .delete()
-    .eq('id', id);
-
-  if (error) throw error;
-}
-
-export async function createDish(dish: Partial<Dish>) {
-  const { data, error } = await getSupabase()
-    .from('dishes')
-    .insert([{
-      ...dish,
-      updated_at: new Date().toISOString(),
-    }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function updateDish(id: string, dish: Partial<Dish>) {
-  const { data, error } = await getSupabase()
-    .from('dishes')
-    .update({
-      ...dish,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function deleteDish(id: string) {
-  const { error } = await getSupabase()
-    .from('dishes')
-    .delete()
-    .eq('id', id);
-
-  if (error) throw error;
-}
-
-export async function toggleDishAvailability(id: string, isAvailable: boolean) {
-  const { data, error } = await getSupabase()
-    .from('dishes')
-    .update({ 
-      is_available: isAvailable,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
+//
+// Las mutaciones de categorias y platos vivian aqui y escribian desde el
+// navegador con la clave anonima. Esa clave es publica (viaja en el bundle),
+// asi que las politicas RLS que lo permitian dejaban la carta abierta a
+// cualquiera. Se movieron a Server Actions autenticadas que escriben con
+// service_role en el servidor:
+//
+//   app/actions/menuAdmin.ts
+//
+// No las reintroduzcas aqui: la migracion 20240101000011 cierra la escritura
+// de `dishes` y `categories` al rol anon, asi que desde el cliente fallarian.
+// Este modulo se queda solo con las lecturas publicas.
