@@ -16,6 +16,7 @@ import {
   generateMedievalMenuSchema,
 } from "@/lib/event/feria-medieval";
 import { MedievalMenuContent } from "@/components/feria/MedievalMenuContent";
+import { localeAlternates } from "@/lib/seo/site";
 import type { Locale } from "@/i18n-config";
 
 /**
@@ -36,12 +37,7 @@ export async function generateMetadata({
     return {
       title: texts.metaTitle,
       description: texts.metaDescription,
-      alternates: {
-        languages: {
-          es: "/es/menu",
-          gl: "/gl/menu",
-        },
-      },
+      alternates: localeAlternates(params.lang as Locale, "/menu"),
     };
   }
 
@@ -50,12 +46,7 @@ export async function generateMetadata({
   return {
     title: dictionary.menu.title,
     description: dictionary.menu.subtitle,
-    alternates: {
-      languages: {
-        es: "/es/menu",
-        gl: "/gl/menu",
-      },
-    },
+    alternates: localeAlternates(params.lang as Locale, "/menu"),
   };
 }
 
@@ -74,7 +65,7 @@ export default async function MenuPage({
 
     return (
       <main className="min-h-screen bg-[#87CDD2]">
-        <JsonLd data={generateMedievalMenuSchema(lang)} />
+        <JsonLd data={generateMedievalMenuSchema(lang)} id="schema-menu" />
         <JsonLd data={medievalBreadcrumbSchema} id="schema-breadcrumb" />
         {/* Header con selector de idioma (se mantiene durante la feria) */}
         <MenuHeader />
@@ -97,8 +88,8 @@ export default async function MenuPage({
 
   return (
     <main className="min-h-screen bg-charcoal pb-20">
-      <JsonLd data={menuSchema} />
-      <JsonLd data={breadcrumbSchema} />
+      <JsonLd data={menuSchema} id="schema-menu" />
+      <JsonLd data={breadcrumbSchema} id="schema-breadcrumb" />
       {/* Header con selector de idioma */}
       <MenuHeader />
 

@@ -2,26 +2,26 @@ import { HeroBentoBox } from "@/components/hero/HeroBentoBox";
 import { ParticleBackground } from "@/components/particles/ParticleBackground";
 import { StorySection } from "@/components/story/StorySection";
 import { CTASection } from "@/components/sections/CTASection";
+import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { Navigation } from "@/components/navigation/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { SocialMediaCard } from "@/components/social/SocialMediaCard";
 import { isFeriaActiva } from "@/lib/event/feria-medieval";
 import { MedievalHeroBanner } from "@/components/feria/MedievalHeroBanner";
 import { CornerOrnament } from "@/components/feria/MedievalOrnaments";
+import type { Metadata } from "next";
 import type { Locale } from "@/i18n-config";
+import { localeAlternates } from "@/lib/seo/site";
 
 // ISR: sin revalidate la home quedaría 100% estática y el date-gate de la
 // feria se congelaría en el valor del momento del build.
 export const revalidate = 60;
 
-export const metadata = {
-  alternates: {
-    languages: {
-      es: "/es",
-      gl: "/gl",
-    },
-  },
-};
+export function generateMetadata({
+  params,
+}: Readonly<{ params: { lang: Locale } }>): Metadata {
+  return { alternates: localeAlternates(params.lang) };
+}
 
 export default function HomePage({
   params,
@@ -64,6 +64,11 @@ export default function HomePage({
       {/* Story Section con Scrollytelling */}
       <section id="story" className="relative z-10 py-20 md:py-32">
         <StorySection />
+      </section>
+
+      {/* Prueba social: reseñas de Google */}
+      <section id="reviews" className="relative z-10 py-16 md:py-24">
+        <ReviewsSection />
       </section>
 
       {/* Call to Action */}

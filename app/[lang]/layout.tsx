@@ -6,10 +6,12 @@ import { DeviceDetector } from "@/components/utils/DeviceDetector";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Bebas_Neue, Barlow_Condensed, Inter } from "next/font/google";
-import { i18n, type Locale } from "@/i18n-config";
+import { notFound } from "next/navigation";
+import { i18n, isValidLocale, type Locale } from "@/i18n-config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { restaurantSchema } from "@/lib/seo/schemas";
+import { SITE_URL } from "@/lib/seo/site";
 
 // Fuente Display - Para títulos principales impactantes
 const bebasNeue = Bebas_Neue({
@@ -43,12 +45,20 @@ export async function generateMetadata({
 }: {
   params: { lang: Locale };
 }): Promise<Metadata> {
+  if (!isValidLocale(params.lang)) notFound();
+
   const dictionary = await getDictionary(params.lang);
 
   return {
+    // Sin esto, Next deja los hreflang y las URLs de Open Graph en relativo
+    // ("/es", "/gl"), y Google exige absolutas en rel="alternate": los ignora.
+    // Con dos idiomas es el ajuste de SEO más rentable del sitio.
+    metadataBase: new URL(SITE_URL),
     title: {
-      template: `%s | ${dictionary.nav.subtitle}`,
-      default: "La Parrilla de Champi | Carne a la Brasa",
+      template: "%s | La Parrilla de Champi",
+      // nav.subtitle está traducido y menciona Noia, así que el title cambia
+      // de verdad entre /es y /gl en vez de repetir el mismo castellano.
+      default: `La Parrilla de Champi — ${dictionary.nav.subtitle}`,
     },
     description: dictionary.hero.description,
     keywords:
@@ -81,6 +91,8 @@ export default function RootLayout({
   children: React.ReactNode;
   params: { lang: Locale };
 }>) {
+  if (!isValidLocale(params.lang)) notFound();
+
   return (
     <html
       lang={params.lang}

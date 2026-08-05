@@ -3,6 +3,8 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 import ReservationForm from "@/components/reservations/ReservationForm";
 import { generateBreadcrumbSchema } from "@/lib/seo/schemas";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { localeAlternates } from "@/lib/seo/site";
+import type { Locale } from "@/i18n-config";
 
 export async function generateMetadata({
   params,
@@ -14,12 +16,7 @@ export async function generateMetadata({
   return {
     title: `${dictionary.reservations.title} | La Parrilla de Champi`,
     description: dictionary.reservations.subtitle,
-    alternates: {
-      languages: {
-        es: "/es/reservas",
-        gl: "/gl/reservas",
-      },
-    },
+    alternates: localeAlternates(params.lang as Locale, "/reservas"),
   };
 }
 

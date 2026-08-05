@@ -1,7 +1,7 @@
 import { WithContext, Restaurant, Menu, BreadcrumbList } from "schema-dts";
 import type { Category, Dish } from "../types"; // Adjusted path to types
-
-// ... (previous code)
+import { SITE_URL } from "./site";
+import { BUSINESS } from "../config/business";
 
 export function generateBreadcrumbSchema(
   items: { name: string; item: string }[]
@@ -13,7 +13,7 @@ export function generateBreadcrumbSchema(
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: `https://www.laparrilladechampi.es${item.item}`,
+      item: `${SITE_URL}${item.item}`,
     })),
   };
 }
@@ -21,53 +21,49 @@ export function generateBreadcrumbSchema(
 export const restaurantSchema: WithContext<Restaurant> = {
   "@context": "https://schema.org",
   "@type": "Restaurant",
-  name: "La Parrilla de Champi",
+  name: BUSINESS.name,
   image: [
-    "https://www.laparrilladechampi.es/Logo-Bento-Hero.svg",
-    "https://www.laparrilladechampi.es/LOGO-CHAMPI-PNG-SOLO.png",
+    `${SITE_URL}/Logo-Bento-Hero.svg`,
+    `${SITE_URL}/LOGO-CHAMPI-PNG-SOLO.png`,
   ],
-  "@id": "https://www.laparrilladechampi.es",
-  url: "https://www.laparrilladechampi.es",
-  telephone: "+34711224328",
+  "@id": SITE_URL,
+  url: SITE_URL,
+  telephone: BUSINESS.phone.tel,
   priceRange: "€€-€€€",
   servesCuisine: ["Asador", "Carnes", "Cocina Gallega"],
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Rúa Galicia, 25",
-    addressLocality: "Noia",
-    addressRegion: "A Coruña",
-    postalCode: "15200",
-    addressCountry: "ES",
+    streetAddress: BUSINESS.address.street,
+    addressLocality: BUSINESS.address.locality,
+    addressRegion: BUSINESS.address.region,
+    postalCode: BUSINESS.address.postalCode,
+    addressCountry: BUSINESS.address.country,
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 42.7857,
-    longitude: -8.8878,
+    latitude: BUSINESS.geo.latitude,
+    longitude: BUSINESS.geo.longitude,
   },
+  // Sin validFrom/validThrough: el horario es permanente, no una excepción con
+  // fecha. Los valores anteriores caducaron el 2025-12-31 y desde entonces
+  // Google leía el horario como vencido.
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
       dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday", "Sunday"],
       opens: "13:00",
       closes: "16:00",
-      validFrom: "2024-01-01",
-      validThrough: "2025-12-31",
     },
     {
       "@type": "OpeningHoursSpecification",
       dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       opens: "20:00",
       closes: "23:30",
-      validFrom: "2024-01-01",
-      validThrough: "2025-12-31",
     },
   ],
-  menu: "https://www.laparrilladechampi.es/menu",
+  menu: `${SITE_URL}/menu`,
   acceptsReservations: "True",
-  sameAs: [
-    "https://www.instagram.com/laparrilladechampi",
-    "https://tiktok.com/@champimuros",
-  ],
+  sameAs: [BUSINESS.social.instagram, BUSINESS.social.tiktok],
 };
 
 export function generateMenuSchema(
