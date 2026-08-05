@@ -18,7 +18,7 @@ export function StorySection() {
 
   const storyBlocks = [
     {
-      title: "El Fuego que nos une",
+      title: t.story.block1Title,
       content: t.story.p1,
       iconImage: "/images/llama-de-historia.webp",
       imageAlt:
@@ -26,14 +26,14 @@ export function StorySection() {
       gradient: "from-fire-red/20 to-transparent",
     },
     {
-      title: "El Alma del Mar",
+      title: t.story.block2Title,
       content: t.story.p2,
       iconImage: "/images/ola-del-mar.svg",
       imageAlt: "Ingredientes frescos del mar de Galicia y Noia",
       gradient: "from-flame-blue/20 to-transparent",
     },
     {
-      title: "Carbón de Calidad",
+      title: t.story.block3Title,
       content: t.story.p3,
       iconImage: "/images/parrilla.svg",
       imageAlt: "Parrilla con carbón de encina de alta calidad",
@@ -41,7 +41,7 @@ export function StorySection() {
       gradient: "from-charcoal-dark/60 to-charcoal/30",
     },
     {
-      title: "Carne Premium",
+      title: t.story.block4Title,
       content: t.story.p4,
       iconImage: "/images/parrilla-carne.svg",
       imageAlt: "Mejores cortes de ternera gallega a la brasa",
@@ -94,10 +94,10 @@ export function StorySection() {
       >
         <div className="glass-card inline-block px-12 py-8">
           <p className="text-3xl md:text-4xl font-display text-ember mb-4">
-            &ldquo;Donde el fuego encuentra al mar&rdquo;
+            &ldquo;{t.story.closingQuote}&rdquo;
           </p>
           <p className="text-ash-400 font-body text-lg">
-            — La filosofía de La Parrilla de Champi
+            {t.story.closingAttribution}
           </p>
         </div>
       </motion.div>
