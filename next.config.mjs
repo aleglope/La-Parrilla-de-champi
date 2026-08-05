@@ -2,6 +2,21 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compiler: {
+    // En producción no se emiten console.log ni console.info/debug: los de los
+    // componentes de cliente acababan en la consola del visitante. Se conservan
+    // error y warn, que son los que Sentry recoge como breadcrumbs y los que
+    // sirven para diagnosticar en los logs de Vercel.
+    //
+    // Contrapartida: también desaparecen los console.log informativos de las
+    // Server Actions de imágenes ("[Upload] Éxito: …"). Si algún día hacen
+    // falta en producción, el camino es pasarlos a console.warn o a Sentry,
+    // no reactivar todos los logs.
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
+  },
   images: {
     // Configuración de patrones remotos para imágenes de Supabase Storage
     remotePatterns: [
