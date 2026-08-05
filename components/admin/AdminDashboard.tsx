@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { CategoriesManager } from "./CategoriesManager";
 import { DishesManager } from "./DishesManager";
 import { revalidateMenu as revalidateMenuAction } from "@/app/actions/revalidateMenu";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { localeHref } from "@/lib/i18n/href";
 import type { Category, Dish } from "@/lib/types";
 
 interface AdminDashboardProps {
@@ -21,6 +23,7 @@ export function AdminDashboard({
   dishes: initialDishes,
 }: AdminDashboardProps) {
   const router = useRouter();
+  const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<"dishes" | "categories">("dishes");
 
   // Estado mutable para actualizaciones optimistas
@@ -72,14 +75,14 @@ export function AdminDashboard({
 
             <div className="flex items-center space-x-4">
               <a
-                href="/admin/reservations"
+                href={localeHref(language, "/admin/reservations")}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-[0.95rem] bg-gradient-to-br from-[#ff512f] to-[#dd2476] text-white shadow-lg shadow-[#dd2476]/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#dd2476]/40 active:translate-y-0 transition-all duration-300 border-none cursor-pointer no-underline"
               >
                 <span>📅</span>
                 <span>Reservas</span>
               </a>
               <a
-                href="/menu"
+                href={localeHref(language, "/menu")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-[0.95rem] text-blue-400 bg-transparent hover:text-blue-300 hover:translate-x-1 hover:shadow-[0_0_20px_rgba(96,165,250,0.4)] transition-all duration-300 no-underline"

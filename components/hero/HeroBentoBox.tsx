@@ -5,6 +5,7 @@ import { useRef } from "react";
 import ChampiLogoReveal from "./ChampiLogoReveal";
 import { VideoBlock } from "./VideoBlock";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { localeHref } from "@/lib/i18n/href";
 import BrandButton from "@/components/ui/BrandButton";
 
 /**
@@ -13,7 +14,7 @@ import BrandButton from "@/components/ui/BrandButton";
  */
 export function HeroBentoBox() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   // Capturar scroll relativo al contenedor extendido
   const { scrollYProgress } = useScroll({
@@ -77,17 +78,14 @@ export function HeroBentoBox() {
                 <div className="absolute inset-0 bg-gradient-to-br from-fire-red/5 via-transparent to-flame-blue/5 animate-pulse" />
 
                 <div className="relative z-10">
-                  <motion.h1
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-4xl md:text-5xl lg:text-6xl font-display mb-6 drop-shadow-lg tracking-wider"
-                  >
+                  {/* Sin animación de entrada: este h1 contiene el elemento LCP
+                      y cualquier delay/opacity:0 entra íntegro en la métrica */}
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-display mb-6 drop-shadow-lg tracking-wider">
                     <span className="text-ember block mb-2">
                       {t.hero.title}
                     </span>
                     <span className="text-ash-50">{t.hero.subtitle}</span>
-                  </motion.h1>
+                  </h1>
 
                   <motion.p
                     initial={{ opacity: 0 }}
@@ -106,7 +104,7 @@ export function HeroBentoBox() {
                     className="inline-block bg-black/40 backdrop-blur-sm border-2 border-fire-red rounded-full px-6 py-3"
                   >
                     <p className="text-fire-red font-heading font-bold text-lg md:text-xl">
-                      ¡Que pasa gentuza! 🔥
+                      {t.hero.slogan}
                     </p>
                   </motion.div>
                 </div>
@@ -139,7 +137,7 @@ export function HeroBentoBox() {
                     </p>
 
                     <BrandButton
-                      href="/menu"
+                      href={localeHref(language, "/menu")}
                       className="w-full"
                       withGlow={false}
                     >
@@ -157,10 +155,10 @@ export function HeroBentoBox() {
                 <div className="text-4xl">🔥</div>
                 <div>
                   <h3 className="font-heading font-bold text-ash-100 text-lg">
-                    100% Natural
+                    {t.hero.features.naturalTitle}
                   </h3>
                   <p className="text-sm text-ash-400 font-body">
-                    Carbón de encina
+                    {t.hero.features.naturalSubtitle}
                   </p>
                 </div>
               </motion.div>
@@ -172,10 +170,10 @@ export function HeroBentoBox() {
                 <div className="text-4xl">🥩</div>
                 <div>
                   <h3 className="font-heading font-bold text-ash-100 text-lg">
-                    Carne Premium
+                    {t.hero.features.premiumTitle}
                   </h3>
                   <p className="text-sm text-ash-400 font-body">
-                    Selección diaria
+                    {t.hero.features.premiumSubtitle}
                   </p>
                 </div>
               </motion.div>
@@ -187,10 +185,10 @@ export function HeroBentoBox() {
                 <div className="text-4xl">⭐</div>
                 <div>
                   <h3 className="font-heading font-bold text-ash-100 text-lg">
-                    Experiencia
+                    {t.hero.features.experienceTitle}
                   </h3>
                   <p className="text-sm text-ash-400 font-body">
-                    Demostrada masivamente!
+                    {t.hero.features.experienceSubtitle}
                   </p>
                 </div>
               </motion.div>
@@ -216,7 +214,11 @@ export function HeroBentoBox() {
             <p className="text-ash-300 mb-6 text-sm font-body">
               {t.menu.subtitle}
             </p>
-            <BrandButton href="/menu" className="w-full" withGlow={false}>
+            <BrandButton
+              href={localeHref(language, "/menu")}
+              className="w-full"
+              withGlow={false}
+            >
               {t.hero.cta} 🍖
             </BrandButton>
           </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { localeHref } from "@/lib/i18n/href";
 import { translations } from "@/lib/i18n/translations";
 import type {
   ReservationFormData,
@@ -664,7 +665,7 @@ export default function ReservationForm() {
           <span className="text-ash-300 font-body leading-relaxed">
             {t.form.consentLabel}
             <a
-              href="/politica-privacidad"
+              href={localeHref(language, "/politica-privacidad")}
               target="_blank"
               rel="noopener noreferrer"
               className="text-flame-blue-bright hover:text-flame-blue-glow underline ml-1 transition-colors"

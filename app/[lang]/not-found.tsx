@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { localeHref } from "@/lib/i18n/href";
 
 export default function NotFoundPage() {
   const { language } = useLanguage();
@@ -134,7 +135,10 @@ export default function NotFoundPage() {
 
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-stretch sm:items-center">
-              <Link href="/" className="flex-1 sm:flex-initial">
+              <Link
+                href={localeHref(language, "/")}
+                className="flex-1 sm:flex-initial"
+              >
                 <motion.button
                   className="w-full px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-fire-red to-fire-red-dark text-white font-heading font-bold text-base md:text-lg rounded-xl shadow-lg hover:shadow-fire-red/50 transition-all duration-300 uppercase tracking-wider"
                   whileHover={{ scale: 1.05 }}
@@ -143,7 +147,10 @@ export default function NotFoundPage() {
                   {language === "es" ? "🏠 Inicio" : "🏠 Inicio"}
                 </motion.button>
               </Link>
-              <Link href="/menu" className="flex-1 sm:flex-initial">
+              <Link
+                href={localeHref(language, "/menu")}
+                className="flex-1 sm:flex-initial"
+              >
                 <motion.button
                   className="w-full px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-flame-blue to-flame-blue-bright text-white font-heading font-bold text-base md:text-lg rounded-xl shadow-lg hover:shadow-flame-blue-bright/50 transition-all duration-300 uppercase tracking-wider"
                   whileHover={{ scale: 1.05 }}

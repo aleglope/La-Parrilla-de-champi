@@ -2,13 +2,14 @@
 
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { localeHref } from "@/lib/i18n/href";
 import BrandButton from "@/components/ui/BrandButton";
 
 /**
  * Sección de Call-to-Action final
  */
 export function CTASection() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <div className="container-custom">
@@ -75,7 +76,11 @@ export function CTASection() {
               </span>
             </BrandButton>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <BrandButton href="/menu" className="w-full" withGlow={false}>
+              <BrandButton
+                href={localeHref(language, "/menu")}
+                className="w-full"
+                withGlow={false}
+              >
                 <span className="flex items-center justify-center gap-2">
                   {t.nav.menu}
                   <svg
@@ -94,7 +99,11 @@ export function CTASection() {
                   </svg>
                 </span>
               </BrandButton>
-              <BrandButton href="/#story" className="w-full" withGlow={false}>
+              <BrandButton
+                href={localeHref(language, "/#story")}
+                className="w-full"
+                withGlow={false}
+              >
                 <span className="flex items-center justify-center gap-2">
                   {t.story.cta}
                   <svg

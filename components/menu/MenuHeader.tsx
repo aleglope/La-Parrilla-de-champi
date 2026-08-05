@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { localeHref } from "@/lib/i18n/href";
 import BrandButton from "@/components/ui/BrandButton";
 import Link from "next/link";
 
@@ -15,7 +16,7 @@ export function MenuHeader() {
     <header className="sticky top-0 z-50 bg-charcoal-dark/95 backdrop-blur-lg border-b border-flame-blue/20">
       <div className="container-custom py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="group">
+          <Link href={localeHref(language, "/")} className="group">
             <h1 className="text-xl md:text-2xl font-display uppercase tracking-[0.45em] text-ash-50 drop-shadow-[0_5px_20px_rgba(0,0,0,0.55)] transition-colors group-hover:text-fire-red">
               LA PARRILLA DE CHAMPI
             </h1>
@@ -53,7 +54,7 @@ export function MenuHeader() {
 
             {/* Back Button */}
             <Link
-              href="/"
+              href={localeHref(language, "/")}
               aria-label={`Volver a ${t.nav.home}`}
               className="hidden sm:block group"
             >

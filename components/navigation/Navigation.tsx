@@ -5,9 +5,11 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { localeHref } from "@/lib/i18n/href";
 import BubbleMenu from "./BubbleMenu";
 import BrandButton from "@/components/ui/BrandButton";
 import InfoModal from "@/components/ui/InfoModal";
+import { RESERVAS_ONLINE_VISIBLES } from "@/lib/config/features";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,36 +31,43 @@ export function Navigation() {
   });
 
   const menuItems = [
-    { href: "/#hero", label: t.nav.home },
-    { href: "/#story", label: t.nav.story },
+    { href: localeHref(language, "/#hero"), label: t.nav.home },
+    { href: localeHref(language, "/#story"), label: t.nav.story },
   ];
 
   const bubbleMenuItems = [
     {
       label: t.nav.home,
-      href: "/#hero",
+      href: localeHref(language, "/#hero"),
       rotation: -5,
       hoverStyles: { bgColor: "#C01F19", textColor: "#ffffff" }, // Fire Red
     },
     {
       label: t.nav.story,
-      href: "/#story",
+      href: localeHref(language, "/#story"),
       rotation: 5,
       hoverStyles: { bgColor: "#314A78", textColor: "#ffffff" }, // Flame Blue
     },
     {
       label: t.nav.menu,
-      href: "/menu",
+      href: localeHref(language, "/menu"),
       rotation: -5,
       hoverStyles: { bgColor: "#1789C0", textColor: "#ffffff" }, // Bright Blue
     },
-    {
-      label: t.nav.reservations,
-      href: "/reservas",
-      rotation: 5,
-      hoverStyles: { bgColor: "#283435", textColor: "#ffffff" }, // Charcoal
-      onClick: (e: React.MouseEvent) => handleReservationClick(e), // Add custom handler
-    },
+    // La entrada de Reservas solo se monta si la funcionalidad está visible.
+    // Ver lib/config/features.ts: hoy está apagada por decisión del dueño y
+    // ahí queda documentado lo que hay que revisar antes de reactivarla.
+    ...(RESERVAS_ONLINE_VISIBLES
+      ? [
+          {
+            label: t.nav.reservations,
+            href: localeHref(language, "/reservas"),
+            rotation: 5,
+            hoverStyles: { bgColor: "#283435", textColor: "#ffffff" }, // Charcoal
+            onClick: (e: React.MouseEvent) => handleReservationClick(e),
+          },
+        ]
+      : []),
   ];
 
   const handleReservationClick = async (e: React.MouseEvent) => {
@@ -113,7 +122,10 @@ export function Navigation() {
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3 group">
+            <Link
+              href={localeHref(language, "/")}
+              className="flex items-center space-x-3 group"
+            >
               <div className="w-12 h-12 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <img
                   src="/Logo-Bento-Hero.svg"
@@ -169,7 +181,10 @@ export function Navigation() {
                 </span>
               </BrandButton>
 
-              <BrandButton href="/menu" className="!text-base">
+              <BrandButton
+                href={localeHref(language, "/menu")}
+                className="!text-base"
+              >
                 {t.nav.menu}
               </BrandButton>
 
