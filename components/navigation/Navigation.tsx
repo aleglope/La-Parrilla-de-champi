@@ -84,7 +84,7 @@ export function Navigation() {
       if (response.ok) {
         if (data.reservationsEnabled) {
           // Reservations are open, navigate
-          router.push("/reservas");
+          router.push(localeHref(language, "/reservas"));
         } else {
           // Reservations are closed, show modal
           setShowClosedModal(true);
@@ -92,12 +92,12 @@ export function Navigation() {
       } else {
         // Error checking status, allow navigation anyway
         console.error("Error checking reservation status:", data.error);
-        router.push("/reservas");
+        router.push(localeHref(language, "/reservas"));
       }
     } catch (error) {
       // Network error, allow navigation anyway
       console.error("Network error checking reservation status:", error);
-      router.push("/reservas");
+      router.push(localeHref(language, "/reservas"));
     } finally {
       setCheckingReservations(false);
     }
@@ -188,12 +188,19 @@ export function Navigation() {
                 {t.nav.menu}
               </BrandButton>
 
-              <BrandButton
-                onClick={handleReservationClick}
-                className="!text-base cursor-pointer"
-              >
-                {checkingReservations ? "..." : t.nav.reservations}
-              </BrandButton>
+              {/* Mismo interruptor que el menú móvil: este botón se quedó
+                  fuera del condicional y en escritorio seguía apareciendo.
+                  Como no lleva href sino onClick, la comprobación de "cero
+                  enlaces a /reservas" no lo detectaba: el visitante veía
+                  "Reservar" y solo conseguía abrir el modal de cerradas. */}
+              {RESERVAS_ONLINE_VISIBLES && (
+                <BrandButton
+                  onClick={handleReservationClick}
+                  className="!text-base cursor-pointer"
+                >
+                  {checkingReservations ? "..." : t.nav.reservations}
+                </BrandButton>
+              )}
             </div>
 
             {/* Mobile Language Switcher (Visible when Bubble Menu is closed or as part of header) */}

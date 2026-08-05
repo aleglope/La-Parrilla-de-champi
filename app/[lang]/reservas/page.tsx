@@ -4,6 +4,7 @@ import ReservationForm from "@/components/reservations/ReservationForm";
 import { generateBreadcrumbSchema } from "@/lib/seo/schemas";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { localeAlternates } from "@/lib/seo/site";
+import { RESERVAS_ONLINE_VISIBLES } from "@/lib/config/features";
 import type { Locale } from "@/i18n-config";
 
 export async function generateMetadata({
@@ -14,9 +15,17 @@ export async function generateMetadata({
   const dictionary = await getDictionary(params.lang as "es" | "gl");
 
   return {
-    title: `${dictionary.reservations.title} | La Parrilla de Champi`,
+    // Sin la marca a mano: la plantilla del layout ya añade
+    // "| La Parrilla de Champi" y salia duplicada.
+    title: dictionary.reservations.title,
     description: dictionary.reservations.subtitle,
     alternates: localeAlternates(params.lang as Locale, "/reservas"),
+    // Mientras las reservas estén ocultas, la ruta sigue viva pero no se
+    // anuncia: fuera del sitemap, sin enlaces internos y sin indexar. Si no,
+    // Google mantendría en resultados una página que ofrece algo que la web
+    // ya no ofrece. Se sigue rastreando (follow) para no cortar el flujo
+    // hacia las legales que enlaza.
+    robots: RESERVAS_ONLINE_VISIBLES ? undefined : { index: false, follow: true },
   };
 }
 
