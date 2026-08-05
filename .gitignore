@@ -42,3 +42,7 @@ supabase/.temp/
 
 # playwright mcp snapshots
 .playwright-mcp/
+
+# fotos originales descargadas de las reseñas de Google (16 MB, material de
+# trabajo). Las seleccionadas y optimizadas viven en public/images/reviews/
+_fotos-google/
