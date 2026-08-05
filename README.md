@@ -97,17 +97,19 @@ graph TB
         A[App Router - i18n] --> B[Componentes React]
         B --> C[Framer Motion / GSAP]
         B --> D[Three.js Particles]
-        B --> E[Zustand State]
+        B --> E[Context i18n es/gl]
     end
 
     subgraph API["⚡ API Layer"]
-        F[Next.js API Routes]
+        F[Route Handlers]
         G[Server Components]
+        S[Server Actions]
         H[Resend Email API]
+        R[Rate limiting + JWT admin]
     end
 
     subgraph Backend["🗄️ Backend (Supabase)"]
-        I[(PostgreSQL DB)]
+        I[(PostgreSQL + RLS)]
         K[Storage Bucket]
     end
 
@@ -163,7 +165,9 @@ sequenceDiagram
 | **Backend** | ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=flat-square) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=fff&style=flat-square) |
 | **Email** | ![Resend](https://img.shields.io/badge/Resend-000?logo=resend&logoColor=fff&style=flat-square) |
 | **Deploy** | ![Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel&logoColor=fff&style=flat-square) |
-| **Estado** | ![Zustand](https://img.shields.io/badge/Zustand-433E38?logo=react&logoColor=fff&style=flat-square) |
+| **Tests** | ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=fff&style=flat-square) |
+| **Observabilidad** | ![Sentry](https://img.shields.io/badge/Sentry-362D59?logo=sentry&logoColor=fff&style=flat-square) |
+| **Auth admin** | ![JWT](https://img.shields.io/badge/JWT_(jose)-000?logo=jsonwebtokens&logoColor=fff&style=flat-square) |
 
 </div>
 
@@ -174,31 +178,52 @@ sequenceDiagram
 ```
 la-parrilla-de-champi/
 ├── 📂 app/
-│   └── 📂 [lang]/                # Rutas internacionalizadas (es/gl)
-│       ├── 📄 page.tsx           # Página principal
-│       ├── 📂 menu/              # Carta digital
-│       ├── 📂 reservas/          # Sistema de reservas
-│       ├── 📂 admin/             # Panel de administración
-│       │   ├── 📂 login/         # Autenticación admin
-│       │   └── 📂 reservations/  # Gestión de reservas
-│       ├── 📂 aviso-legal/       # Aviso legal
-│       ├── 📂 politica-privacidad/
-│       └── 📂 politica-cookies/
+│   ├── 📂 [lang]/                # Rutas internacionalizadas (es/gl)
+│   │   ├── 📄 layout.tsx         # Fuentes, JSON-LD, metadata, guard de idioma
+│   │   ├── 📄 page.tsx           # Página principal
+│   │   ├── 📄 opengraph-image.tsx # Imagen de vista previa al compartir
+│   │   ├── 📂 menu/              # Carta digital (ISR 60 s)
+│   │   ├── 📂 reservas/          # Sistema de reservas
+│   │   ├── 📂 admin/             # Panel de administración (noindex)
+│   │   │   ├── 📂 login/         # Autenticación admin
+│   │   │   └── 📂 reservations/  # Gestión de reservas
+│   │   ├── 📂 aviso-legal/       # Aviso legal
+│   │   ├── 📂 politica-privacidad/
+│   │   └── 📂 politica-cookies/
+│   ├── 📂 actions/               # Server Actions (subida/borrado de imágenes)
+│   ├── 📂 api/                   # Route Handlers (reservas, admin, revalidate)
+│   ├── 📄 robots.ts              # robots.txt generado
+│   ├── 📄 sitemap.ts             # sitemap.xml generado
+│   └── 📂 llms.txt/              # Resumen del sitio para asistentes de IA
 ├── 📂 components/
 │   ├── 📂 admin/                 # Componentes del panel admin
+│   ├── 📂 feria/                 # Capa temática de la feria medieval
 │   ├── 📂 hero/                  # Hero section con animaciones
-│   ├── 📂 layout/                # Footer, estructura
+│   ├── 📂 layout/                # Footer con NAP visible
 │   ├── 📂 menu/                  # Carta y platos
 │   ├── 📂 navigation/            # Menú burbuja + navegación
 │   ├── 📂 particles/             # Sistema de partículas 3D
 │   ├── 📂 reservations/          # Formulario de reservas
+│   ├── 📂 reviews/               # Reseñas de Google en acordeón (GSAP)
 │   ├── 📂 sections/              # CTA y secciones
+│   ├── 📂 seo/                   # Emisión de JSON-LD
 │   ├── 📂 social/                # Redes sociales
 │   ├── 📂 story/                 # Sección "Nuestra Historia"
 │   └── 📂 ui/                    # Componentes reutilizables
 ├── 📂 lib/
-│   └── 📂 i18n/                  # Contexto de idioma
+│   ├── 📂 auth/                  # Sesión admin firmada (JWT con jose)
+│   ├── 📂 config/                # Datos del negocio y feature flags
+│   ├── 📂 email/                 # Envío transaccional vía Resend
+│   ├── 📂 event/                 # Date-gate de la feria medieval
+│   ├── 📂 i18n/                  # Diccionarios, contexto y helper de rutas
+│   ├── 📂 observability/         # Sentry y saneado de PII en los logs
+│   ├── 📂 ratelimit/             # Límite de peticiones (login y reservas)
+│   ├── 📂 seo/                   # Schemas Schema.org y host canónico
+│   └── 📂 supabase/              # Clientes (browser, SSR, service-role)
+├── 📂 supabase/migrations/       # Migraciones SQL versionadas, con rollback
+├── 📂 __tests__/                 # 91 casos: JWT, rate limiting, RLS, emails
 ├── 📂 public/                    # Assets estáticos y logos
+├── 📄 middleware.ts              # Redirección al prefijo de idioma
 └── 📄 tailwind.config.ts         # Configuración Tailwind
 ```
 

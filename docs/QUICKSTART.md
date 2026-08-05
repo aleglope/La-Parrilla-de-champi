@@ -13,17 +13,21 @@ Si solo quieres ver cómo se ve sin configurar base de datos:
 pnpm install
 
 # 2. Crear archivo de entorno (temporal sin Supabase)
+#    ADMIN_JWT_SECRET y REVALIDATE_SECRET no tienen valor por defecto:
+#    sin ellos el panel de admin y /api/revalidate fallan al arrancar.
 echo "NEXT_PUBLIC_SUPABASE_URL=https://demo.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=demo
 SUPABASE_SERVICE_ROLE_KEY=demo
 ADMIN_EMAIL=admin@laparrilla.com
-ADMIN_PASSWORD=admin123" > .env.local
+ADMIN_PASSWORD=admin123
+ADMIN_JWT_SECRET=$(openssl rand -base64 32)
+REVALIDATE_SECRET=$(openssl rand -base64 32)" > .env.local
 
 # 3. Ejecutar
 pnpm dev
 
 # 4. Abrir navegador
-# http://localhost:3000
+# http://localhost:3000  (redirige a /es)
 ```
 
 **⚠️ Nota**: El menú estará vacío sin Supabase. Para funcionalidad completa, sigue el setup completo.
@@ -63,7 +67,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key
 SUPABASE_SERVICE_ROLE_KEY=tu_service_role_key
 ADMIN_EMAIL=admin@laparrilla.com
 ADMIN_PASSWORD=admin123
+# Genera cada uno con: openssl rand -base64 32
+ADMIN_JWT_SECRET=...
+REVALIDATE_SECRET=...
 ```
+
+`.env.example` lleva la lista completa y comentada, incluidos los opcionales de
+Resend y Sentry. Si Sentry no se configura, queda en no-op y el build pasa igual.
 
 ### 4️⃣ Ejecutar en Local (10 segundos)
 
@@ -73,10 +83,13 @@ pnpm dev
 
 ### 5️⃣ Verificar (1 minuto)
 
-✅ Abre: http://localhost:3000  
+✅ Abre: http://localhost:3000 (redirige a `/es`)  
 ✅ Verifica animaciones y partículas  
-✅ Ve al menú: http://localhost:3000/menu  
-✅ Login admin: http://localhost:3000/admin/login  
+✅ Ve al menú: http://localhost:3000/es/menu  
+✅ Login admin: http://localhost:3000/es/admin/login  
+
+Todas las rutas públicas llevan prefijo de idioma (`/es` o `/gl`); el middleware
+redirige las que no lo traen.
 
 ---
 
@@ -108,12 +121,15 @@ git push -u origin main
 
 Ve a: **Settings** → **Environment Variables**
 
-Agrega las mismas 5 variables de `.env.local`:
+Agrega las mismas variables de `.env.local`:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD`
+- `ADMIN_JWT_SECRET`
+- `REVALIDATE_SECRET`
+- `RESEND_API_KEY` (si quieres emails de confirmación)
 
 ---
 
@@ -166,11 +182,15 @@ fire: {
 <span>de Champi</span>
 ```
 
-**Archivo**: `app/layout.tsx` (línea ~9)
+**Archivo**: `app/[lang]/layout.tsx`, dentro de `generateMetadata`
 
 ```typescript
-title: "Tu Restaurante | Carne a la Brasa",
+default: `Tu Restaurante — ${dictionary.nav.subtitle}`,
 ```
+
+Los datos de contacto (dirección, teléfono, Maps, redes) están centralizados en
+`lib/config/business.ts`: cambiarlos ahí actualiza a la vez el pie, el JSON-LD,
+la imagen de vista previa y `/llms.txt`.
 
 ---
 
@@ -178,7 +198,7 @@ title: "Tu Restaurante | Carne a la Brasa",
 
 ### Desde el Admin (Recomendado)
 
-1. Ve a `/admin/login`
+1. Ve a `/es/admin/login`
 2. Login: `admin@laparrilla.com` / `admin123`
 3. Click en "Crear Plato"
 4. Rellena los campos
@@ -203,6 +223,8 @@ pnpm dev           # Inicia servidor en localhost:3000
 pnpm build            # Compila para producción
 pnpm start            # Ejecuta build de producción
 pnpm lint             # Verifica errores de código
+pnpm test --run       # Suite de tests (Vitest)
+npx tsc --noEmit      # Comprobación de tipos
 
 # Vercel
 vercel                # Deploy preview
