@@ -5,10 +5,13 @@
  * La parrilla de Champi, Noia — 4,7 ★ y 171 reseñas.
  * Si cambia, actualizar RATING / REVIEW_COUNT.
  */
+import { BUSINESS } from "@/lib/config/business";
+
 export const RATING = 4.7;
 export const REVIEW_COUNT = 171;
-export const GOOGLE_MAPS_URL =
-  "https://www.google.com/maps/search/?api=1&query=La+parrilla+de+Champi+Noia";
+
+/** Reexportada desde lib/config/business.ts: una sola URL para todo el sitio. */
+export const GOOGLE_MAPS_URL = BUSINESS.mapsUrl;
 
 export interface Review {
   readonly author: string;

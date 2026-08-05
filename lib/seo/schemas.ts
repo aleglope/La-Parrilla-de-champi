@@ -2,6 +2,7 @@ import { WithContext, Restaurant, Menu, BreadcrumbList } from "schema-dts";
 import type { Category, Dish } from "../types"; // Adjusted path to types
 import { SITE_URL } from "./site";
 import { BUSINESS } from "../config/business";
+import { i18n } from "../../i18n-config";
 
 export function generateBreadcrumbSchema(
   items: { name: string; item: string }[]
@@ -61,7 +62,9 @@ export const restaurantSchema: WithContext<Restaurant> = {
       closes: "23:30",
     },
   ],
-  menu: `${SITE_URL}/menu`,
+  // Con prefijo de idioma: "/menu" a secas provoca un 307 del middleware,
+  // y el schema debe apuntar a la URL canónica, no a una redirección.
+  menu: `${SITE_URL}/${i18n.defaultLocale}/menu`,
   acceptsReservations: "True",
   sameAs: [BUSINESS.social.instagram, BUSINESS.social.tiktok],
 };
