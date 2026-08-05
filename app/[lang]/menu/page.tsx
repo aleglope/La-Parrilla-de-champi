@@ -16,8 +16,9 @@ import {
   generateMedievalMenuSchema,
 } from "@/lib/event/feria-medieval";
 import { MedievalMenuContent } from "@/components/feria/MedievalMenuContent";
+import { notFound } from "next/navigation";
 import { localeAlternates } from "@/lib/seo/site";
-import type { Locale } from "@/i18n-config";
+import { isValidLocale, type Locale } from "@/i18n-config";
 
 /**
  * Página del Menú Digital
@@ -55,6 +56,9 @@ export default async function MenuPage({
 }: {
   params: { lang: string };
 }) {
+  // Mismo guard que la home: "/foo.txt/menu" entraba con lang inválido.
+  if (!isValidLocale(params.lang)) notFound();
+
   // Modo feria: carta medieval sin fetch a Supabase (bifurcación ANTES del fetch)
   if (isFeriaActiva()) {
     const lang = params.lang as Locale;

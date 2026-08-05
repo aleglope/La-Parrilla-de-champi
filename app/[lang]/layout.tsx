@@ -6,7 +6,6 @@ import { DeviceDetector } from "@/components/utils/DeviceDetector";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Bebas_Neue, Barlow_Condensed, Inter } from "next/font/google";
-import { notFound } from "next/navigation";
 import { i18n, isValidLocale, type Locale } from "@/i18n-config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -45,8 +44,6 @@ export async function generateMetadata({
 }: {
   params: { lang: Locale };
 }): Promise<Metadata> {
-  if (!isValidLocale(params.lang)) notFound();
-
   const dictionary = await getDictionary(params.lang);
 
   return {
@@ -91,11 +88,18 @@ export default function RootLayout({
   children: React.ReactNode;
   params: { lang: Locale };
 }>) {
-  if (!isValidLocale(params.lang)) notFound();
+  // El guard de idioma vive en las páginas, no aquí: este layout es el único
+  // root layout del proyecto (no hay app/layout.tsx), así que si lanzase
+  // notFound() no quedaría nadie que emitiera <html> y <body>, y el 404 se
+  // servía como un fragmento suelto sin título ni idioma.
+  //
+  // Aquí solo se acota el atributo lang: un segmento inválido no puede acabar
+  // en <html lang="llms.txt">.
+  const htmlLang = isValidLocale(params.lang) ? params.lang : i18n.defaultLocale;
 
   return (
     <html
-      lang={params.lang}
+      lang={htmlLang}
       suppressHydrationWarning={true}
       className={`dark ${bebasNeue.variable} ${barlowCondensed.variable} ${inter.variable}`}
     >

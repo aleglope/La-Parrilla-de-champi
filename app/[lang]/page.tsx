@@ -9,8 +9,9 @@ import { SocialMediaCard } from "@/components/social/SocialMediaCard";
 import { isFeriaActiva } from "@/lib/event/feria-medieval";
 import { MedievalHeroBanner } from "@/components/feria/MedievalHeroBanner";
 import { CornerOrnament } from "@/components/feria/MedievalOrnaments";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import type { Locale } from "@/i18n-config";
+import { isValidLocale, type Locale } from "@/i18n-config";
 import { localeAlternates } from "@/lib/seo/site";
 
 // ISR: sin revalidate la home quedaría 100% estática y el date-gate de la
@@ -26,6 +27,12 @@ export function generateMetadata({
 export default function HomePage({
   params,
 }: Readonly<{ params: { lang: Locale } }>) {
+  // El segmento [lang] acepta cualquier cadena y el middleware no filtra las
+  // rutas con punto, así que "/llms.txt" o "/foo.txt" entraban aquí como
+  // idioma y devolvían la home entera con un 200. El guard va en la página y
+  // no en el layout para que el 404 se sirva como documento completo.
+  if (!isValidLocale(params.lang)) notFound();
+
   const feriaActiva = isFeriaActiva();
 
   return (
