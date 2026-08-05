@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { localeHref } from "@/lib/i18n/href";
 
 /**
  * Formulario de login para el admin
@@ -10,6 +12,7 @@ import { motion } from "framer-motion";
  */
 export function LoginForm() {
   const router = useRouter();
+  const { language } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -30,7 +33,7 @@ export function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
-        router.push("/admin");
+        router.push(localeHref(language, "/admin"));
         router.refresh();
       } else {
         setError(data.error || "Credenciales incorrectas");
