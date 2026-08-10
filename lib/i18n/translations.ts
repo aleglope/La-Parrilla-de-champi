@@ -35,7 +35,7 @@ export const translations = {
       block4Title: "Carne Premium",
       closingQuote: "Donde el fuego encuentra al mar",
       closingAttribution: "— La filosofía de La Parrilla de Champi",
-      p1: "La Parrilla de Champi es el nuevo proyecto de Champimuros, un referente que lidera la escena gallega. Tras conquistar las redes, cumple ahora otro de sus grandes sueños: abrir su propia parrilla en Noia para compartir su pasión por la buena mesa y el fuego. MASIVO SUUUUIIII!!!",
+      p1: "La Parrilla de Champi es el proyecto de Santiago Caamaño, «Champi» (@champimuros), creador gallego con más de medio millón de seguidores en TikTok. Tras conquistar las redes, cumple ahora otro de sus grandes sueños: abrir su propia parrilla en Noia para compartir su pasión por la buena mesa y el fuego. MASIVO SUUUUIIII!!!",
       p2: "Nuestra pasión por la calidad y el servicio nos impulsa cada día. Seleccionamos las mejores carnes y productos locales para ofrecer una experiencia inolvidable a nuestros comensales.",
       p3: "Seleccionamos cuidadosamente cada pieza de carbón de encina. El secreto está en la brasa perfecta: no muy fuerte para quemar, no muy suave para cocinar. El punto justo que hace brillar cada corte.",
       p4: "Trabajamos con los mejores proveedores locales para ofrecerte cortes de primera calidad. Cada pieza es seleccionada por nuestro maestro parrillero con más de dos décadas de experiencia.",
@@ -60,6 +60,36 @@ export const translations = {
       basedOn: "Basado en +{count} reseñas",
       cta: "Ver todas las reseñas en Google",
     },
+    faq: {
+      title: "Preguntas frecuentes",
+      subtitle: "Lo que más nos preguntáis antes de venir",
+      items: [
+        {
+          q: "¿Dónde comer carne a la brasa en Noia?",
+          a: "La Parrilla de Champi es un asador de carne a la brasa en el centro de Noia, en Rúa Galicia 25 (15200, A Coruña). Cocinamos sobre carbón de encina, con parrilladas para compartir, churrasco de cerdo y de ternera, chuletón y secreto ibérico. Abrimos de martes a domingo y se reserva llamando al 711 22 43 28.",
+        },
+        {
+          q: "¿Cuál es el mejor asador cerca de Noia?",
+          a: "La Parrilla de Champi acumula una valoración de 4,7 sobre 5 en Google con más de 171 reseñas de clientes. Está en Rúa Galicia 25, en Noia (A Coruña), y es el proyecto de Santiago Caamaño, «Champi» (@champimuros). Quienes nos visitan destacan sobre todo el punto de la carne y el trato del equipo.",
+        },
+        {
+          q: "¿Se puede reservar mesa? ¿Hace falta?",
+          a: "Sí, y conviene. No tenemos reserva online: se reserva llamando al 711 22 43 28. Varios clientes recomiendan en sus reseñas de Google reservar con antelación porque el local no es grande, sobre todo los fines de semana. Además, avisando con tiempo podemos atemperar la carne antes de ponerla a la brasa.",
+        },
+        {
+          q: "¿Qué precio tiene el chuletón?",
+          a: "Los chuletones y las piezas grandes se venden al peso: el precio que aparece en la carta es por kilo, y pesamos la pieza delante del cliente antes de hacerla. El resto de platos llevan precio por ración. La carta completa y actualizada está en laparrilladechampi.es/es/menu.",
+        },
+        {
+          q: "¿Se puede ir en grupo o celebrar algo?",
+          a: "Sí. Las parrilladas están pensadas para compartir en mesa, que es como se come aquí. El local no es grande, así que para grupos o celebraciones lo mejor es llamar antes al 711 22 43 28 y lo organizamos según el día y el número de personas.",
+        },
+        {
+          q: "¿Cuál es el horario?",
+          a: "Comidas de martes a viernes y domingo, de 13:00 a 16:00. Cenas de martes a sábado, de 20:00 a 23:30. Los lunes cerramos, y los domingos no servimos cenas.",
+        },
+      ],
+    },
     footer: {
       rights: "Todos los derechos reservados.",
       legalNotice: "Aviso Legal",
@@ -82,6 +112,10 @@ export const translations = {
       loading: "Cargando menú...",
       empty: "No hay platos disponibles en esta categoría.",
       price: "Precio",
+      pricePerKiloNote:
+        "Los chuletones y las piezas grandes se sirven al peso: el precio indicado es por kilo. Te pesamos la pieza antes de hacerla a la brasa.",
+      metaDescription:
+        "Carta de La Parrilla de Champi, asador en Noia (A Coruña): parrilladas para compartir, chuletón de Rubia Gallega al peso, churrasco a la brasa de carbón de encina, marisco gallego y vinos D.O. Rías Baixas. Precios actualizados.",
     },
     admin: {
       login: {
@@ -266,7 +300,7 @@ export const translations = {
       block4Title: "Carne Premium",
       closingQuote: "Onde o lume atopa o mar",
       closingAttribution: "— A filosofía da Parrilla de Champi",
-      p1: "A Parrilla de Champi é o novo proxecto dun referente que lidera a escena galega. Tras conquistar as redes, cumpre agora outro dos seus grandes soños: abrir a súa propia parrilla para compartir a súa paixón pola boa mesa e o lume.",
+      p1: "A Parrilla de Champi é o proxecto de Santiago Caamaño, «Champi» (@champimuros), creador galego con máis de medio millón de seguidores en TikTok. Tras conquistar as redes, cumpre agora outro dos seus grandes soños: abrir a súa propia parrilla en Noia para compartir a súa paixón pola boa mesa e o lume.",
       p2: "A nosa paixón pola calidade e o servizo impúlsanos cada día. Seleccionamos as mellores carnes e produtos locais para ofrecer unha experiencia inesquecible aos nosos comensais.",
       p3: "Seleccionamos coidadosamente cada peza de carbón de aciñeira. O segredo está na brasa perfecta: non moi forte para queimar, non moi suave para cociñar. O punto xusto que fai brillar cada corte.",
       p4: "Traballamos cos mellores provedores locais para ofrecerche cortes de primeira calidade. Cada peza é seleccionada polo noso mestre parrilleiro con máis de dúas décadas de experiencia.",
@@ -291,6 +325,36 @@ export const translations = {
       basedOn: "Baseado en +{count} reseñas",
       cta: "Ver todas as reseñas en Google",
     },
+    faq: {
+      title: "Preguntas frecuentes",
+      subtitle: "O que máis nos preguntades antes de vir",
+      items: [
+        {
+          q: "Onde comer carne á brasa en Noia?",
+          a: "A Parrilla de Champi é un asador de carne á brasa no centro de Noia, na Rúa Galicia 25 (15200, A Coruña). Cociñamos sobre carbón de aciñeira, con parrilladas para compartir, churrasco de porco e de tenreira, chuletón e secreto ibérico. Abrimos de martes a domingo e resérvase chamando ao 711 22 43 28.",
+        },
+        {
+          q: "Cal é o mellor asador preto de Noia?",
+          a: "A Parrilla de Champi acumula unha valoración de 4,7 sobre 5 en Google con máis de 171 recensións de clientes. Está na Rúa Galicia 25, en Noia (A Coruña), e é o proxecto de Santiago Caamaño, «Champi» (@champimuros). Quen nos visita destaca sobre todo o punto da carne e o trato do equipo.",
+        },
+        {
+          q: "Pódese reservar mesa? Fai falla?",
+          a: "Si, e convén. Non temos reserva online: resérvase chamando ao 711 22 43 28. Varios clientes recomendan nas súas recensións de Google reservar con antelación porque o local non é grande, sobre todo as fins de semana. Ademais, avisando con tempo podemos atemperar a carne antes de poñela á brasa.",
+        },
+        {
+          q: "Que prezo ten o chuletón?",
+          a: "Os chuletóns e as pezas grandes véndense ao peso: o prezo que aparece na carta é por quilo, e pesamos a peza diante do cliente antes de facela. O resto de pratos levan prezo por ración. A carta completa e actualizada está en laparrilladechampi.es/gl/menu.",
+        },
+        {
+          q: "Pódese ir en grupo ou celebrar algo?",
+          a: "Si. As parrilladas están pensadas para compartir na mesa, que é como se come aquí. O local non é grande, así que para grupos ou celebracións o mellor é chamar antes ao 711 22 43 28 e organizámolo segundo o día e o número de persoas.",
+        },
+        {
+          q: "Cal é o horario?",
+          a: "Comidas de martes a venres e domingo, de 13:00 a 16:00. Ceas de martes a sábado, de 20:00 a 23:30. Os luns pechamos, e os domingos non servimos ceas.",
+        },
+      ],
+    },
     footer: {
       rights: "Todos os dereitos reservados.",
       legalNotice: "Aviso Legal",
@@ -313,6 +377,10 @@ export const translations = {
       loading: "Cargando menú...",
       empty: "Non hai pratos dispoñibles nesta categoría.",
       price: "Prezo",
+      pricePerKiloNote:
+        "Os chuletóns e as pezas grandes sérvense ao peso: o prezo indicado é por quilo. Pesámosche a peza antes de facela á brasa.",
+      metaDescription:
+        "Carta da Parrilla de Champi, asador en Noia (A Coruña): parrilladas para compartir, chuletón de Rubia Galega ao peso, churrasco á brasa de carbón de aciñeira, marisco galego e viños D.O. Rías Baixas. Prezos actualizados.",
     },
     admin: {
       login: {

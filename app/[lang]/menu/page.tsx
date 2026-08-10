@@ -46,7 +46,8 @@ export async function generateMetadata({
 
   return {
     title: dictionary.menu.title,
-    description: dictionary.menu.subtitle,
+    // La subtitle ("Sabores de Galicia") no describía nada ni mencionaba Noia.
+    description: dictionary.menu.metaDescription,
     alternates: localeAlternates(params.lang as Locale, "/menu"),
   };
 }
