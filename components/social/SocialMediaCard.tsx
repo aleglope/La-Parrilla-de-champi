@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { BUSINESS } from "@/lib/config/business";
 
 interface SocialLink {
   name: string;
@@ -30,6 +31,27 @@ export function SocialMediaCard() {
 
   const socialLinks: SocialLink[] = [
     {
+      // Primera posición: es la cuenta con más audiencia con diferencia y, hasta
+      // ahora, la única que no estaba enlazada en toda la web — solo existía
+      // dentro del `sameAs` del JSON-LD, que ningún visitante ve.
+      name: "TikTok",
+      href: BUSINESS.social.tiktok,
+      icon: (
+        <svg
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full"
+        >
+          <path
+            d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 0 1 0-5.18c.27 0 .52.04.76.12v-3.2a5.8 5.8 0 0 0-.76-.05A5.72 5.72 0 0 0 4.14 15.3 5.72 5.72 0 0 0 9.86 21a5.72 5.72 0 0 0 5.72-5.7V9.01a7.35 7.35 0 0 0 4.28 1.38V7.3a4.29 4.29 0 0 1-3.26-1.48z"
+            fill="currentColor"
+          />
+        </svg>
+      ),
+      gradient: "from-flame-blue-bright via-fire-red to-fire-red-glow",
+      delay: 0,
+    },
+    {
       name: "Instagram Principal",
       href: "https://www.instagram.com/laparrilladechampi/",
       icon: (
@@ -45,7 +67,7 @@ export function SocialMediaCard() {
         </svg>
       ),
       gradient: "from-fire-red via-fire-red-glow to-flame-blue-bright",
-      delay: 0,
+      delay: 0.1,
     },
     {
       name: "Instagram Stories",
