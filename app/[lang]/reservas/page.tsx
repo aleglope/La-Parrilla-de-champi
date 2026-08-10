@@ -5,6 +5,7 @@ import { generateBreadcrumbSchema } from "@/lib/seo/schemas";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { localeAlternates } from "@/lib/seo/site";
 import { RESERVAS_ONLINE_VISIBLES } from "@/lib/config/features";
+import { BUSINESS } from "@/lib/config/business";
 import type { Locale } from "@/i18n-config";
 
 export async function generateMetadata({
@@ -81,7 +82,7 @@ export default function ReservationsPage({
           </p>
 
           <a
-            href="tel:711224328"
+            href={`tel:${BUSINESS.phone.tel}`}
             className="inline-flex items-center gap-3 px-12 py-5 bg-gradient-to-r from-ash-50 to-white text-charcoal-dark rounded-full text-2xl font-heading font-bold transition-all duration-300 shadow-lg shadow-flame-blue-bright/20 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-flame-blue-bright/30 mb-4"
           >
             <svg
@@ -98,7 +99,7 @@ export default function ReservationsPage({
                 strokeLinejoin="round"
               />
             </svg>
-            711 22 43 28
+            {BUSINESS.phone.display}
           </a>
 
           <p className="text-sm text-ash-400 italic font-body">

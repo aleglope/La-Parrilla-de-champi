@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { localeHref } from "@/lib/i18n/href";
 import BrandButton from "@/components/ui/BrandButton";
+import { BUSINESS } from "@/lib/config/business";
 
 /**
  * Sección de Call-to-Action final
@@ -54,7 +55,7 @@ export function CTASection() {
 
           <div className="flex flex-col gap-4 justify-center items-center max-w-md mx-auto w-full">
             <BrandButton
-              href="tel:711224328"
+              href={`tel:${BUSINESS.phone.tel}`}
               className="w-full"
               withGlow={false}
             >

@@ -7,6 +7,8 @@ import { VideoBlock } from "./VideoBlock";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { localeHref } from "@/lib/i18n/href";
 import BrandButton from "@/components/ui/BrandButton";
+import Link from "next/link";
+import { BUSINESS } from "@/lib/config/business";
 
 /**
  * Hero Section con layout Bento Box
@@ -107,6 +109,44 @@ export function HeroBentoBox() {
                       {t.hero.slogan}
                     </p>
                   </motion.div>
+
+                  {/*
+                    Acciones reales en el primer pliegue.
+                    El único enlace para llamar vivía a 7.700 px de scroll en una
+                    página de 9.200, y la columna con el CTA de la carta está
+                    oculta en móvil (`hidden md:grid`). Es decir: quien llegaba
+                    desde TikTok no tenía ninguna acción a mano, y lo único con
+                    aspecto de botón era el eslogan, que no es pulsable.
+                  */}
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <a
+                      href={`tel:${BUSINESS.phone.tel}`}
+                      className="inline-flex items-center justify-center gap-3 rounded-full bg-fire-red px-7 py-4 font-heading text-base font-bold text-white shadow-lg shadow-fire-red/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-fire-red-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      {t.cta.button}
+                    </a>
+
+                    <Link
+                      href={localeHref(language, "/menu")}
+                      className="inline-flex items-center justify-center rounded-full border-2 border-flame-blue/50 px-7 py-4 font-heading text-base font-bold text-ash-100 transition-all duration-300 hover:border-flame-blue-bright hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame-blue-bright/70"
+                    >
+                      {t.hero.cta}
+                    </Link>
+                  </div>
                 </div>
               </motion.div>
 
