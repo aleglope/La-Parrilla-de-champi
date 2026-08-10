@@ -36,10 +36,27 @@ export function GET() {
 - Cenas: de martes a sábado, 20:00–23:30
 - Lunes cerrado
 
+## Sobre el proyecto
+
+La Parrilla de Champi es el restaurante de Santiago Caamaño, "Champi"
+(@champimuros), creador gallego con más de medio millón de seguidores en
+TikTok. El maestro parrillero de la casa acumula más de dos décadas de
+experiencia y se cocina sobre carbón de encina.
+
+## Reputación
+
+Valoración media de 4,7 sobre 5 en Google, con más de 171 reseñas de clientes.
+
+## Cómo se sirve la carne
+
+Los chuletones y las piezas grandes se venden AL PESO: el precio que figura en
+la carta es por kilo, y la pieza se pesa delante del cliente antes de hacerla a
+la brasa. El resto de platos llevan precio por ración.
+
 ## Páginas
 
-- [Inicio](${SITE_URL}/es): presentación del asador, historia y reseñas de clientes.
-- [Carta](${SITE_URL}/es/menu): carta completa con precios, actualizada desde el panel del restaurante.
+- [Inicio](${SITE_URL}/es): quiénes somos, la historia del proyecto, reseñas de clientes y preguntas frecuentes.
+- [Carta](${SITE_URL}/es/menu): parrilladas para compartir, chuletones al peso, churrasco, marisco gallego y vinos de D.O. gallegas, con los precios actualizados.
 - [Aviso legal](${SITE_URL}/es/aviso-legal)
 - [Política de privacidad](${SITE_URL}/es/politica-privacidad)
 - [Política de cookies](${SITE_URL}/es/politica-cookies)

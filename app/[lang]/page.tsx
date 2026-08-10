@@ -2,6 +2,10 @@ import { HeroBentoBox } from "@/components/hero/HeroBentoBox";
 import { ParticleBackground } from "@/components/particles/ParticleBackground";
 import { StorySection } from "@/components/story/StorySection";
 import { CTASection } from "@/components/sections/CTASection";
+import { FaqSection } from "@/components/sections/FaqSection";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateFaqSchema } from "@/lib/seo/schemas";
+import { translations } from "@/lib/i18n/translations";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { Navigation } from "@/components/navigation/Navigation";
 import { Footer } from "@/components/layout/Footer";
@@ -76,6 +80,15 @@ export default function HomePage({
       {/* Prueba social: reseñas de Google */}
       <section id="reviews" className="relative z-10 py-16 md:py-24">
         <ReviewsSection />
+      </section>
+
+      {/* Preguntas frecuentes: pasajes citables para buscadores generativos */}
+      <section id="faq" className="relative z-10 py-16 md:py-20">
+        <JsonLd
+          data={generateFaqSchema(translations[params.lang].faq.items)}
+          id="schema-faq"
+        />
+        <FaqSection />
       </section>
 
       {/* Call to Action */}
