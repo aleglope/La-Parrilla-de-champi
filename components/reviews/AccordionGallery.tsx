@@ -316,6 +316,14 @@ export default function AccordionGallery({
                   src={item.image}
                   alt={item.alt || item.label || ""}
                   draggable="false"
+                  // React inyecta un <link rel="preload" as="image"> en el head
+                  // por cada <img> que renderiza en servidor SIN loading="lazy".
+                  // Estas fotos viven varias pantallas por debajo del pliegue,
+                  // así que se precargaban 3,5 MB a máxima prioridad compitiendo
+                  // con el LCP del hero. Con lazy + prioridad baja desaparecen
+                  // del head y se descargan cuando hacen falta.
+                  loading="lazy"
+                  fetchPriority="low"
                   style={
                     item.objectPosition
                       ? { objectPosition: item.objectPosition }
