@@ -55,6 +55,15 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
           },
+          // Antiframing en todo el sitio, no solo en /admin: /reservas sigue
+          // siendo una URL pública alcanzable a mano aunque esté oculta a los
+          // buscadores, y era la superficie sin proteger. SAMEORIGIN en vez de
+          // DENY para no romper una futura previsualización propia.
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self'",
+          },
         ],
       },
       {
