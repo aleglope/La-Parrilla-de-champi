@@ -217,8 +217,10 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
       ? { perspective: "1400px" }
       : undefined;
 
-    // Determinar loading strategy basado en prioridad
-    const shouldPrioritize = priority || index < 6;
+    // La prioridad la decide el padre con la posición del plato en la carta
+    // entera. El `|| index < 6` que había aquí volvía a introducir el índice
+    // por categoría y anulaba esa decisión.
+    const shouldPrioritize = priority;
 
     return (
       <motion.button

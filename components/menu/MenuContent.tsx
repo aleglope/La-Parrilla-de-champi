@@ -61,6 +61,25 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
     dishes: filteredDishes.filter((dish) => dish.category_id === category.id),
   }));
 
+  /**
+   * Ids de los primeros platos de la carta ENTERA, en el orden en que se pintan.
+   *
+   * Antes la prioridad se decidía con el índice dentro de cada categoría, que
+   * se reinicia en cada una: `index < 6` marcaba las 6 primeras de CADA
+   * categoría y, con 16 categorías, salían 34 imágenes con `loading="eager"`
+   * (2,6 MB) descargándose a la vez. Encima esas fotos viven en la cara trasera
+   * de la tarjeta (`rotateY(180deg)` + `backface-visibility: hidden`), así que
+   * nadie las ve hasta que toca la tarjeta.
+   */
+  const PLATOS_PRIORITARIOS = 6;
+  const idsPrioritarios = new Set(
+    [...dishesByCategory]
+      .sort((a, b) => a.order_index - b.order_index)
+      .flatMap((c) => [...c.dishes].sort((a, b) => a.order_index - b.order_index))
+      .slice(0, PLATOS_PRIORITARIOS)
+      .map((d) => d.id)
+  );
+
   return (
     <div className="container-custom py-8">
       {/* Mensaje de bienvenida */}
@@ -74,6 +93,15 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
         </h2>
         <p className="text-ash-300 font-heading text-sm md:text-base uppercase tracking-[0.55em]">
           <span className="text-ember">{t.menu.subtitle}</span>
+        </p>
+
+        {/*
+          Los chuletones se venden al peso. Sin decirlo, un precio de 99 € se
+          lee como el de una ración — y en cuanto una IA lo cite tal cual, el
+          cliente llega con una expectativa equivocada.
+        */}
+        <p className="mx-auto mt-5 max-w-xl rounded-lg border border-flame-blue/25 bg-charcoal-light/40 px-4 py-3 font-body text-sm text-ash-300">
+          {t.menu.pricePerKiloNote}
         </p>
       </motion.div>
 
@@ -123,8 +151,7 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
                           key={dish.id}
                           dish={dish}
                           index={index}
-                          // Priorizar carga de primeras 6 imágenes (above-the-fold)
-                          priority={index < 6}
+                          priority={idsPrioritarios.has(dish.id)}
                         />
                       ))}
                   </AnimatePresence>
