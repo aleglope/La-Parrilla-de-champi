@@ -9,7 +9,7 @@ import { Bebas_Neue, Barlow_Condensed, Inter } from "next/font/google";
 import { i18n, isValidLocale, type Locale } from "@/i18n-config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { restaurantSchema } from "@/lib/seo/schemas";
+import { generateRestaurantSchema } from "@/lib/seo/schemas";
 import { SITE_URL } from "@/lib/seo/site";
 
 // Fuente Display - Para títulos principales impactantes
@@ -104,7 +104,7 @@ export default function RootLayout({
       className={`dark ${bebasNeue.variable} ${barlowCondensed.variable} ${inter.variable}`}
     >
       <body className="overflow-x-hidden">
-        <JsonLd data={restaurantSchema} />
+        <JsonLd data={generateRestaurantSchema(htmlLang)} />
         <DeviceDetector />
 
         <ClientProviders lang={params.lang}>{children}</ClientProviders>
