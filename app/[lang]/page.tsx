@@ -6,6 +6,7 @@ import { FaqSection } from "@/components/sections/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateFaqSchema } from "@/lib/seo/schemas";
 import { translations } from "@/lib/i18n/translations";
+import { faqTextoPlano } from "@/lib/i18n/faq-render";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { Navigation } from "@/components/navigation/Navigation";
 import { Footer } from "@/components/layout/Footer";
@@ -84,8 +85,17 @@ export default function HomePage({
 
       {/* Preguntas frecuentes: pasajes citables para buscadores generativos */}
       <section id="faq" className="relative z-10 py-16 md:py-20">
+        {/* Los marcadores se resuelven ANTES de emitir el schema: el `text`
+            del FAQPage tiene que decir exactamente lo mismo que se lee en la
+            página. Si aquí saliera "{telefono}" en crudo, el marcado estaría
+            describiendo algo que no existe. */}
         <JsonLd
-          data={generateFaqSchema(translations[params.lang].faq.items)}
+          data={generateFaqSchema(
+            translations[params.lang].faq.items.map((item) => ({
+              q: item.q,
+              a: faqTextoPlano(item.a, params.lang),
+            }))
+          )}
           id="schema-faq"
         />
         <FaqSection />

@@ -66,27 +66,27 @@ export const translations = {
       items: [
         {
           q: "¿Dónde comer carne a la brasa en Noia?",
-          a: "La Parrilla de Champi es un asador de carne a la brasa en el centro de Noia, en Rúa Galicia 25 (15200, A Coruña). Cocinamos sobre carbón de encina, con parrilladas para compartir, churrasco de cerdo y de ternera, chuletón y secreto ibérico. Abrimos de martes a domingo y se reserva llamando al 711 22 43 28.",
+          a: "La Parrilla de Champi es un asador de carne a la brasa en Noia, en Rúa Galicia 25 (15200, A Coruña). Cocinamos sobre carbón de encina, con parrilladas para compartir, churrasco de cerdo y de ternera, chuletón y secreto ibérico. Abrimos de martes a domingo y se reserva llamando al {telefono}.",
         },
         {
           q: "¿Cuál es el mejor asador cerca de Noia?",
-          a: "La Parrilla de Champi acumula una valoración de 4,7 sobre 5 en Google con más de 171 reseñas de clientes. Está en Rúa Galicia 25, en Noia (A Coruña), y es el proyecto de Santiago Caamaño, «Champi» (@champimuros). Quienes nos visitan destacan sobre todo el punto de la carne y el trato del equipo.",
+          a: "Eso lo dicen los clientes: La Parrilla de Champi tiene una valoración de {valoracion} en Google. Está en Rúa Galicia 25, en Noia (A Coruña), y es el proyecto de Santiago Caamaño, «Champi» ({tiktok}). Lo que más se repite en las reseñas es el punto de la carne y el trato del equipo.",
         },
         {
           q: "¿Se puede reservar mesa? ¿Hace falta?",
-          a: "Sí, y conviene. No tenemos reserva online: se reserva llamando al 711 22 43 28. Varios clientes recomiendan en sus reseñas de Google reservar con antelación porque el local no es grande, sobre todo los fines de semana. Además, avisando con tiempo podemos atemperar la carne antes de ponerla a la brasa.",
+          a: "Sí, y conviene. No tenemos reserva online: se reserva llamando al {telefono}. Varios clientes recomiendan en sus reseñas de Google reservar con antelación porque el local no es grande, sobre todo los fines de semana. Además, avisando con tiempo podemos atemperar la carne antes de ponerla a la brasa.",
         },
         {
           q: "¿Qué precio tiene el chuletón?",
-          a: "Los chuletones y las piezas grandes se venden al peso: el precio que aparece en la carta es por kilo, y pesamos la pieza delante del cliente antes de hacerla. El resto de platos llevan precio por ración. La carta completa y actualizada está en laparrilladechampi.es/es/menu.",
+          a: "Los chuletones y las piezas grandes se venden al peso: el precio que aparece en la carta es por kilo, y pesamos la pieza delante del cliente antes de hacerla. En el resto de la carta, cada plato lleva indicado su precio. Puedes consultar {carta}, y para reservar llama al {telefono}.",
         },
         {
           q: "¿Se puede ir en grupo o celebrar algo?",
-          a: "Sí. Las parrilladas están pensadas para compartir en mesa, que es como se come aquí. El local no es grande, así que para grupos o celebraciones lo mejor es llamar antes al 711 22 43 28 y lo organizamos según el día y el número de personas.",
+          a: "Sí. Las parrilladas están pensadas para compartir en mesa, que es como se come aquí. El local no es grande, así que para grupos o celebraciones lo mejor es llamar antes al {telefono} y lo organizamos según el día y el número de personas.",
         },
         {
           q: "¿Cuál es el horario?",
-          a: "Comidas de martes a viernes y domingo, de 13:00 a 16:00. Cenas de martes a sábado, de 20:00 a 23:30. Los lunes cerramos, y los domingos no servimos cenas.",
+          a: "De martes a viernes servimos comidas de 13:00 a 16:00 y cenas de 20:00 a 23:30. Los sábados abrimos solo por la noche, de 20:00 a 23:30. Los domingos, solo al mediodía, de 13:00 a 16:00. Los lunes cerramos.",
         },
       ],
     },
@@ -300,7 +300,7 @@ export const translations = {
       block4Title: "Carne Premium",
       closingQuote: "Onde o lume atopa o mar",
       closingAttribution: "— A filosofía da Parrilla de Champi",
-      p1: "A Parrilla de Champi é o proxecto de Santiago Caamaño, «Champi» (@champimuros), creador galego con máis de medio millón de seguidores en TikTok. Tras conquistar as redes, cumpre agora outro dos seus grandes soños: abrir a súa propia parrilla en Noia para compartir a súa paixón pola boa mesa e o lume.",
+      p1: "La Parrilla de Champi é o proxecto de Santiago Caamaño, «Champi» (@champimuros), creador galego con máis de medio millón de seguidores en TikTok. Tras conquistar as redes, cumpre agora outro dos seus grandes soños: abrir a súa propia parrilla en Noia para compartir a súa paixón pola boa mesa e o lume.",
       p2: "A nosa paixón pola calidade e o servizo impúlsanos cada día. Seleccionamos as mellores carnes e produtos locais para ofrecer unha experiencia inesquecible aos nosos comensais.",
       p3: "Seleccionamos coidadosamente cada peza de carbón de aciñeira. O segredo está na brasa perfecta: non moi forte para queimar, non moi suave para cociñar. O punto xusto que fai brillar cada corte.",
       p4: "Traballamos cos mellores provedores locais para ofrecerche cortes de primeira calidade. Cada peza é seleccionada polo noso mestre parrilleiro con máis de dúas décadas de experiencia.",
@@ -331,27 +331,27 @@ export const translations = {
       items: [
         {
           q: "Onde comer carne á brasa en Noia?",
-          a: "A Parrilla de Champi é un asador de carne á brasa no centro de Noia, na Rúa Galicia 25 (15200, A Coruña). Cociñamos sobre carbón de aciñeira, con parrilladas para compartir, churrasco de porco e de tenreira, chuletón e secreto ibérico. Abrimos de martes a domingo e resérvase chamando ao 711 22 43 28.",
+          a: "La Parrilla de Champi é un asador de carne á brasa en Noia, na Rúa Galicia 25 (15200, A Coruña). Cociñamos sobre carbón de aciñeira, con parrilladas para compartir, churrasco de porco e de tenreira, chuletón e secreto ibérico. Abrimos de martes a domingo e resérvase chamando ao {telefono}.",
         },
         {
           q: "Cal é o mellor asador preto de Noia?",
-          a: "A Parrilla de Champi acumula unha valoración de 4,7 sobre 5 en Google con máis de 171 recensións de clientes. Está na Rúa Galicia 25, en Noia (A Coruña), e é o proxecto de Santiago Caamaño, «Champi» (@champimuros). Quen nos visita destaca sobre todo o punto da carne e o trato do equipo.",
+          a: "Iso dinno os clientes: La Parrilla de Champi ten unha valoración de {valoracion} en Google. Está na Rúa Galicia 25, en Noia (A Coruña), e é o proxecto de Santiago Caamaño, «Champi» ({tiktok}). O que máis se repite nas recensións é o punto da carne e o trato do equipo.",
         },
         {
           q: "Pódese reservar mesa? Fai falla?",
-          a: "Si, e convén. Non temos reserva online: resérvase chamando ao 711 22 43 28. Varios clientes recomendan nas súas recensións de Google reservar con antelación porque o local non é grande, sobre todo as fins de semana. Ademais, avisando con tempo podemos atemperar a carne antes de poñela á brasa.",
+          a: "Si, e convén. Non temos reserva online: resérvase chamando ao {telefono}. Varios clientes recomendan nas súas recensións de Google reservar con antelación porque o local non é grande, sobre todo as fins de semana. Ademais, avisando con tempo podemos atemperar a carne antes de poñela á brasa.",
         },
         {
           q: "Que prezo ten o chuletón?",
-          a: "Os chuletóns e as pezas grandes véndense ao peso: o prezo que aparece na carta é por quilo, e pesamos a peza diante do cliente antes de facela. O resto de pratos levan prezo por ración. A carta completa e actualizada está en laparrilladechampi.es/gl/menu.",
+          a: "Os chuletóns e as pezas grandes véndense ao peso: o prezo que aparece na carta é por quilo, e pesamos a peza diante do cliente antes de facela. No resto da carta, cada prato leva indicado o seu prezo. Podes consultar {carta}, e para reservar chama ao {telefono}.",
         },
         {
           q: "Pódese ir en grupo ou celebrar algo?",
-          a: "Si. As parrilladas están pensadas para compartir na mesa, que é como se come aquí. O local non é grande, así que para grupos ou celebracións o mellor é chamar antes ao 711 22 43 28 e organizámolo segundo o día e o número de persoas.",
+          a: "Si. As parrilladas están pensadas para compartir na mesa, que é como se come aquí. O local non é grande, así que para grupos ou celebracións o mellor é chamar antes ao {telefono} e organizámolo segundo o día e o número de persoas.",
         },
         {
           q: "Cal é o horario?",
-          a: "Comidas de martes a venres e domingo, de 13:00 a 16:00. Ceas de martes a sábado, de 20:00 a 23:30. Os luns pechamos, e os domingos non servimos ceas.",
+          a: "De martes a venres servimos comidas de 13:00 a 16:00 e ceas de 20:00 a 23:30. Os sábados abrimos só pola noite, de 20:00 a 23:30. Os domingos, só ao mediodía, de 13:00 a 16:00. Os luns pechamos.",
         },
       ],
     },
