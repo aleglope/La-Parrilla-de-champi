@@ -29,6 +29,37 @@ export const BUSINESS = {
     longitude: -8.8878,
   },
 
+  /**
+   * Horarios de apertura. Fuente única.
+   *
+   * Estaban copiados a mano en cuatro sitios (pie, FAQ, /llms.txt y el schema)
+   * y llegaron a divergir: /reservas anunciaba "Martes a Domingo, 12:00-23:30",
+   * que ni es la hora de apertura ni refleja que hay dos turnos con cuatro
+   * horas de cierre en medio.
+   *
+   * De aquí sale el `openingHoursSpecification` del schema. Los textos en prosa
+   * siguen en translations.ts porque tienen que sonar naturales en cada idioma,
+   * pero un test comprueba que las horas coinciden con estas (ver
+   * __tests__/config/business.test.ts): si alguien cambia un turno aquí y se
+   * olvida de la prosa, falla el build.
+   *
+   * Nombres de día en inglés porque es lo que exige Schema.org.
+   */
+  hours: {
+    lunch: {
+      days: ["Tuesday", "Wednesday", "Thursday", "Friday", "Sunday"],
+      opens: "13:00",
+      closes: "16:00",
+    },
+    dinner: {
+      days: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: "20:00",
+      closes: "23:30",
+    },
+    /** Día de cierre completo. */
+    closed: "Monday",
+  },
+
   /** Ficha en Google Maps: enlazarla es una señal directa de SEO local. */
   mapsUrl:
     "https://www.google.com/maps/search/?api=1&query=La+parrilla+de+Champi+Noia",

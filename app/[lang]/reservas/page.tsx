@@ -30,11 +30,13 @@ export async function generateMetadata({
   };
 }
 
-export default function ReservationsPage({
+export default async function ReservationsPage({
   params,
 }: {
   params: { lang: string };
 }) {
+  const dictionary = await getDictionary(params.lang as "es" | "gl");
+
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Inicio", item: `/${params.lang}` },
     { name: "Reservas", item: `/${params.lang}/reservas` },
@@ -102,9 +104,14 @@ export default function ReservationsPage({
             {BUSINESS.phone.display}
           </a>
 
-          <p className="text-sm text-ash-400 italic font-body">
-            Horario de atención: Martes a Domingo, 12:00 - 23:30
-          </p>
+          {/* Aquí había un horario escrito a mano que ni daba bien la hora de
+              apertura ni reflejaba que hay dos turnos con el mediodía cerrado.
+              Se reusan las mismas cadenas del pie, que salen del diccionario. */}
+          <div className="font-body text-sm italic text-ash-400">
+            <p>{dictionary.footer.hoursLunch}</p>
+            <p>{dictionary.footer.hoursDinner}</p>
+            <p>{dictionary.footer.closedDay}</p>
+          </div>
         </div>
       </section>
 
