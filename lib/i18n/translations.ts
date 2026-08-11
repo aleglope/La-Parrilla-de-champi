@@ -66,7 +66,7 @@ export const translations = {
       items: [
         {
           q: "¿Dónde comer carne a la brasa en Noia?",
-          a: "La Parrilla de Champi es un asador de carne a la brasa en Noia, en Rúa Galicia 25 (15200, A Coruña). Cocinamos sobre carbón de encina, con parrilladas para compartir, churrasco de cerdo y de ternera, chuletón y secreto ibérico. Abrimos de martes a domingo y se reserva llamando al {telefono}.",
+          a: "La Parrilla de Champi es un asador de carne a la brasa en Noia, en Rúa Galicia 25 (15200, A Coruña). Cocinamos sobre carbón de encina, con parrilladas para compartir, churrasco de cerdo y de ternera, chuletón y secreto ibérico. Abrimos de miércoles a domingo (y los martes en verano) y se reserva llamando al {telefono}.",
         },
         {
           q: "¿Cuál es el mejor asador cerca de Noia?",
@@ -86,7 +86,7 @@ export const translations = {
         },
         {
           q: "¿Cuál es el horario?",
-          a: "De martes a viernes servimos comidas de 13:00 a 16:00 y cenas de 20:00 a 23:30. Los sábados abrimos solo por la noche, de 20:00 a 23:30. Los domingos, solo al mediodía, de 13:00 a 16:00. Los lunes cerramos.",
+          a: "De miércoles a sábado servimos comidas de 11:00 a 16:00 y cenas de 20:00 a 00:00. Los domingos el mediodía se alarga hasta las 18:00, y por la noche abrimos igual, de 20:00 a 00:00. Los lunes cerramos. Los martes solo abrimos en verano.",
         },
       ],
     },
@@ -101,9 +101,9 @@ export const translations = {
       city: "15200 Noia (A Coruña)",
       viewOnMaps: "Cómo llegar",
       hoursTitle: "Horarios",
-      hoursLunch: "Comidas: de martes a viernes y domingo, 13:00–16:00",
-      hoursDinner: "Cenas: de martes a sábado, 20:00–23:30",
-      closedDay: "Lunes cerrado",
+      hoursLunch: "Comidas: de miércoles a sábado, 11:00–16:00 · domingos, 11:00–18:00",
+      hoursDinner: "Cenas: de miércoles a domingo, 20:00–00:00",
+      closedDay: "Lunes cerrado · Martes solo en verano",
       phoneTitle: "Teléfono",
     },
     menu: {
@@ -331,7 +331,7 @@ export const translations = {
       items: [
         {
           q: "Onde comer carne á brasa en Noia?",
-          a: "La Parrilla de Champi é un asador de carne á brasa en Noia, na Rúa Galicia 25 (15200, A Coruña). Cociñamos sobre carbón de aciñeira, con parrilladas para compartir, churrasco de porco e de tenreira, chuletón e secreto ibérico. Abrimos de martes a domingo e resérvase chamando ao {telefono}.",
+          a: "La Parrilla de Champi é un asador de carne á brasa en Noia, na Rúa Galicia 25 (15200, A Coruña). Cociñamos sobre carbón de aciñeira, con parrilladas para compartir, churrasco de porco e de tenreira, chuletón e secreto ibérico. Abrimos de mércores a domingo (e os martes no verán) e resérvase chamando ao {telefono}.",
         },
         {
           q: "Cal é o mellor asador preto de Noia?",
@@ -351,7 +351,7 @@ export const translations = {
         },
         {
           q: "Cal é o horario?",
-          a: "De martes a venres servimos comidas de 13:00 a 16:00 e ceas de 20:00 a 23:30. Os sábados abrimos só pola noite, de 20:00 a 23:30. Os domingos, só ao mediodía, de 13:00 a 16:00. Os luns pechamos.",
+          a: "De mércores a sábado servimos comidas de 11:00 a 16:00 e ceas de 20:00 a 00:00. Os domingos o mediodía alóngase ata as 18:00, e pola noite abrimos igual, de 20:00 a 00:00. Os luns pechamos. Os martes só abrimos no verán.",
         },
       ],
     },
@@ -366,9 +366,9 @@ export const translations = {
       city: "15200 Noia (A Coruña)",
       viewOnMaps: "Como chegar",
       hoursTitle: "Horarios",
-      hoursLunch: "Comidas: de martes a venres e domingo, 13:00–16:00",
-      hoursDinner: "Ceas: de martes a sábado, 20:00–23:30",
-      closedDay: "Luns pechado",
+      hoursLunch: "Comidas: de mércores a sábado, 11:00–16:00 · domingos, 11:00–18:00",
+      hoursDinner: "Ceas: de mércores a domingo, 20:00–00:00",
+      closedDay: "Luns pechado · Martes só no verán",
       phoneTitle: "Teléfono",
     },
     menu: {

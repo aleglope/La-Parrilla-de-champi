@@ -46,18 +46,39 @@ export const BUSINESS = {
    * Nombres de día en inglés porque es lo que exige Schema.org.
    */
   hours: {
-    lunch: {
-      days: ["Tuesday", "Wednesday", "Thursday", "Friday", "Sunday"],
-      opens: "13:00",
-      closes: "16:00",
-    },
-    dinner: {
-      days: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-      opens: "20:00",
-      closes: "23:30",
-    },
-    /** Día de cierre completo. */
-    closed: "Monday",
+    /**
+     * Turnos vigentes todo el año, copiados de la ficha de Google Maps
+     * (leída el 2026-08-11), que es la que gestiona el propio restaurante y
+     * por tanto manda sobre cualquier otra fuente.
+     */
+    regular: [
+      {
+        days: ["Wednesday", "Thursday", "Friday", "Saturday"],
+        opens: "11:00",
+        closes: "16:00",
+      },
+      // El domingo el turno de mediodía se alarga dos horas más.
+      { days: ["Sunday"], opens: "11:00", closes: "18:00" },
+      {
+        days: ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "20:00",
+        // Cierra a medianoche. `closes` menor que `opens` es como Schema.org
+        // expresa que el turno cruza el cambio de día.
+        closes: "00:00",
+      },
+    ],
+
+    /**
+     * Los martes solo se abre en temporada de verano (dato del dueño).
+     * Google muestra hoy el martes abierto porque estamos en agosto.
+     */
+    verano: [
+      { days: ["Tuesday"], opens: "11:00", closes: "16:00" },
+      { days: ["Tuesday"], opens: "20:00", closes: "00:00" },
+    ],
+
+    /** Cierre completo, todo el año. */
+    closed: ["Monday"],
   },
 
   /** Ficha en Google Maps: enlazarla es una señal directa de SEO local. */

@@ -66,14 +66,15 @@ export function generateRestaurantSchema(
   // Sin validFrom/validThrough: el horario es permanente, no una excepción con
   // fecha. Los valores anteriores caducaron el 2025-12-31 y desde entonces
   // Google leía el horario como vencido.
-  openingHoursSpecification: [BUSINESS.hours.lunch, BUSINESS.hours.dinner].map(
-    (turno) => ({
-      "@type": "OpeningHoursSpecification" as const,
-      dayOfWeek: [...turno.days],
-      opens: turno.opens,
-      closes: turno.closes,
-    })
-  ),
+  openingHoursSpecification: [
+    ...BUSINESS.hours.regular,
+    ...BUSINESS.hours.verano,
+  ].map((turno) => ({
+    "@type": "OpeningHoursSpecification" as const,
+    dayOfWeek: [...turno.days],
+    opens: turno.opens,
+    closes: turno.closes,
+  })),
   // Con prefijo de idioma: "/menu" a secas provoca un 307 del middleware,
   // y el schema debe apuntar a la URL canónica, no a una redirección.
   menu: menuUrl,
