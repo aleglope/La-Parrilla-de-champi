@@ -7,6 +7,14 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { IMAGE_CONFIG } from "@/utils/imageHelpers";
+
+/**
+ * Techo de lo que cabe en el envío, en KB. El peso que se muestra aquí es el del
+ * fichero que va a viajar al servidor, no el que acabará en Storage: la barra
+ * mide cuánto del presupuesto de envío ocupa, no la calidad final.
+ */
+const TRANSPORT_MAX_KB = IMAGE_CONFIG.TRANSPORT_MAX_SIZE_BYTES / 1024;
 
 interface ImagePreviewProps {
   /** URL de la imagen (blob URL o URL de Supabase) */
@@ -43,15 +51,15 @@ export function ImagePreview({
       ? Math.round(((originalSizeKb - compressedSizeKb) / originalSizeKb) * 100)
       : null;
 
-  // Determinar el color de la barra de progreso basado en el tamaño
+  // Color según lo que ocupa del presupuesto de envío, no de la calidad final
   const getProgressBarColor = (sizeKb: number): string => {
-    if (sizeKb <= 100) {
-      return "bg-emerald-500";
+    if (sizeKb > TRANSPORT_MAX_KB) {
+      return "bg-fire-red";
     }
-    if (sizeKb <= 150) {
+    if (sizeKb > TRANSPORT_MAX_KB / 2) {
       return "bg-flame-blue-bright";
     }
-    return "bg-fire-red";
+    return "bg-emerald-500";
   };
 
   if (!imageUrl && !isLoading) {
@@ -212,7 +220,7 @@ export function ImagePreview({
                       initial={{ width: 0 }}
                       animate={{
                         width: `${Math.min(
-                          (compressedSizeKb / 150) * 100,
+                          (compressedSizeKb / TRANSPORT_MAX_KB) * 100,
                           100
                         )}%`,
                       }}
@@ -223,9 +231,9 @@ export function ImagePreview({
                     />
                   </div>
                   <p className="text-[10px] text-gray-500 mt-1">
-                    {compressedSizeKb <= 150
-                      ? "✓ Tamaño óptimo"
-                      : "⚠ Considera reducir el tamaño"}
+                    {compressedSizeKb <= TRANSPORT_MAX_KB
+                      ? "✓ Lista para enviar · el servidor la optimizará al guardar"
+                      : "⚠ Demasiado pesada para enviarla, prueba con otra foto"}
                   </p>
                 </div>
               )}

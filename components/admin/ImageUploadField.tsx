@@ -184,16 +184,18 @@ export function ImageUploadField({
    * Actualiza el estado con la nueva imagen procesada
    */
   const updateImageState = async (compressed: CompressedImageResult) => {
-    // La compresión del navegador es "best-effort": si no llega al objetivo
-    // devuelve el resultado igual, sin error. Avisamos aquí, al elegir la foto,
-    // en vez de dejar que la sorpresa salte al pulsar Guardar. No bloquea:
-    // el servidor reencoda con sharp y garantiza el límite.
-    const limiteKb = IMAGE_CONFIG.MAX_SIZE_AFTER_COMPRESSION / 1024;
+    // El navegador solo encoge para el transporte, así que el peso que sale de
+    // aquí (cientos de KB) es normal y no se avisa de él: el servidor reencoda
+    // con sharp al guardar. Lo único que merece aviso es que ni así quepa en el
+    // envío, porque entonces sí fallaría al pulsar Guardar.
+    const techoKb = IMAGE_CONFIG.TRANSPORT_MAX_SIZE_BYTES / 1024;
     setNotice(
-      compressed.sizeKB > limiteKb
-        ? `Tu navegador dejó la foto en ${compressed.sizeKB.toFixed(
-            0
-          )}KB, por encima de los ${limiteKb}KB. El servidor la optimizará al guardar.`
+      compressed.sizeKB > techoKb
+        ? `La foto sigue pesando ${(compressed.sizeKB / 1024).toFixed(
+            1
+          )}MB tras comprimirla, más de lo que admite el envío (${(
+            techoKb / 1024
+          ).toFixed(1)}MB). Prueba con una foto menos pesada.`
         : null
     );
 
@@ -434,8 +436,8 @@ export function ImageUploadField({
             {IMAGE_CONFIG.MAX_SIZE_BEFORE_COMPRESSION / 1024 / 1024}MB
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            Se comprimirá automáticamente a WebP (máx{" "}
-            {IMAGE_CONFIG.TARGET_SIZE_KB}KB)
+            Se optimizará a WebP al guardar (máx{" "}
+            {IMAGE_CONFIG.MAX_SIZE_AFTER_COMPRESSION / 1024}KB)
           </p>
 
           {/* Input oculto */}
