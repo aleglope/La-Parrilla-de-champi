@@ -10,6 +10,7 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { checkRateLimit } from '@/lib/ratelimit';
 import { isAdminRequest } from '@/lib/auth/requireAdmin';
 import { IMAGE_CONFIG, ERROR_MESSAGES } from '@/utils/imageHelpers';
+import { reencodeToWebp, reencodeErrorMessage } from '@/lib/images/reencodeImage';
 
 // ============ Tipos ============
 
@@ -24,7 +25,7 @@ interface UploadDishImageParams {
   dishId: string;
   dishName: string;
   imageData: string; // Base64 encoded image
-  imageSizeKb: number;
+  imageSizeKb: number; // Informativo: el tamaño real lo decide el reencodado del servidor
 }
 
 // ============ Funciones de Validación Server-Side ============
@@ -105,7 +106,7 @@ function generateFileName(dishName: string): string {
  * Incluye validaciones server-side y transacciones atómicas
  */
 export async function uploadDishImage(params: UploadDishImageParams): Promise<UploadResult> {
-  const { dishId, dishName, imageData, imageSizeKb } = params;
+  const { dishId, dishName, imageData } = params;
   
   let uploadedFilePath: string | null = null;
   
@@ -135,26 +136,35 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
       };
     }
     
-    // 4. Validar tamaño post-compresión
+    // 4. Reencodar en servidor con sharp: el límite de 200KB es una garantía
+    // de salida, no un muro de entrada. Lo que el navegador del cliente no
+    // consiguió comprimir se arregla aquí en vez de rechazarse.
     const base64Data = imageData.split(',')[1] || imageData;
-    const binarySize = Buffer.from(base64Data, 'base64').length;
-    const actualSizeKb = binarySize / 1024;
-    
-    if (actualSizeKb > IMAGE_CONFIG.MAX_SIZE_AFTER_COMPRESSION / 1024) {
-      console.error(`[Upload] Imagen muy grande: ${actualSizeKb.toFixed(2)}KB`);
+    const originalBuffer = Buffer.from(base64Data, 'base64');
+
+    const reencoded = await reencodeToWebp(
+      originalBuffer,
+      IMAGE_CONFIG.MAX_SIZE_AFTER_COMPRESSION
+    );
+
+    if (!reencoded.success) {
+      console.error(
+        `[Upload] Reencodado fallido (${reencoded.reason}): ${reencoded.sizeKb.toFixed(2)}KB`
+      );
       return {
         success: false,
-        error: `Imagen comprimida muy grande (${actualSizeKb.toFixed(0)}KB). Máximo permitido: ${IMAGE_CONFIG.MAX_SIZE_AFTER_COMPRESSION / 1024}KB`,
+        error: reencodeErrorMessage(reencoded.reason),
       };
     }
-    
+
+    // El buffer que se sube ya es WebP de verdad, no un JPEG etiquetado como tal.
+    const fileBuffer = reencoded.buffer;
+    const actualSizeKb = reencoded.sizeKb;
+
     // 5. Generar nombre de archivo único
     const fileName = generateFileName(dishName);
     const filePath = `dishes/${fileName}`;
     uploadedFilePath = filePath;
-    
-    // 6. Convertir base64 a Buffer
-    const fileBuffer = Buffer.from(base64Data, 'base64');
     
     // 7. Subir a Supabase Storage
     const { error: uploadError } = await getSupabaseAdmin().storage
@@ -212,7 +222,9 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
     revalidatePath('/menu');
     revalidatePath('/admin');
     
-    console.log(`[Upload] Éxito: ${fileName} (${actualSizeKb.toFixed(2)}KB) para plato ${dishId}`);
+    console.log(
+      `[Upload] Éxito: ${fileName} (${actualSizeKb.toFixed(2)}KB, calidad ${reencoded.quality}) para plato ${dishId}`
+    );
     
     return {
       success: true,
