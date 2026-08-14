@@ -42,6 +42,15 @@ const getInitialFormState = (dish: Dish | null, categories: Category[]) => ({
   order_index: dish?.order_index || 0,
 });
 
+/** Texto del botón mientras la foto se prepara, se sube o se guarda el plato */
+const renderTextoGuardando = (
+  procesandoImagen: boolean,
+  subiendoImagen: boolean
+) => {
+  if (procesandoImagen) return "Preparando foto...";
+  return subiendoImagen ? "Subiendo imagen..." : "Guardando...";
+};
+
 export function DishModal({
   isOpen,
   dish,
@@ -60,6 +69,7 @@ export function DishModal({
     null
   );
   const [imageRemoved, setImageRemoved] = useState(false);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -69,6 +79,7 @@ export function DishModal({
       setFormData(getInitialFormState(dish, categories));
       setPendingImage(null);
       setImageRemoved(false);
+      setIsProcessingImage(false);
       setUploadError(null);
     }
   }, [dish, categories, isOpen]);
@@ -172,6 +183,16 @@ export function DishModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploadError(null);
+
+    // La foto elegida no llega a `pendingImage` hasta que termina de validarse
+    // y comprimirse. Guardar antes de eso no sube nada y deja el plato con la
+    // imagen que ya tenía, sin avisar: por eso aquí se corta.
+    if (isProcessingImage) {
+      setUploadError(
+        "La foto todavía se está preparando. Espera un momento y vuelve a guardar."
+      );
+      return;
+    }
 
     // Si hay imagen pendiente, primero la subimos
     if (pendingImage) {
@@ -390,6 +411,7 @@ export function DishModal({
                     imageRemoved ? null : dish?.image_url || null
                   }
                   onImageReady={handleImageReady}
+                  onProcessingChange={setIsProcessingImage}
                   disabled={isSaving}
                   label="Imagen del plato"
                   helpText="La imagen se comprimirá automáticamente a formato WebP optimizado"
@@ -480,13 +502,13 @@ export function DishModal({
                 </button>
                 <button
                   type="submit"
-                  disabled={isSaving}
+                  disabled={isSaving || isProcessingImage}
                   className="flex-1 btn-fire disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {isSaving ? (
+                  {isSaving || isProcessingImage ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      {isUploadingImage ? "Subiendo imagen..." : "Guardando..."}
+                      {renderTextoGuardando(isProcessingImage, isUploadingImage)}
                     </>
                   ) : (
                     "Guardar"

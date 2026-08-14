@@ -33,6 +33,12 @@ interface ImageUploadFieldProps {
   onImageReady: (result: ImageUploadResult | null) => void;
   /** Callback cuando se selecciona usar imagen por defecto */
   onUseDefault?: (useDefault: boolean) => void;
+  /**
+   * Avisa al padre de que hay una foto validándose y comprimiéndose. Mientras
+   * sea `true` la imagen elegida todavía NO ha llegado por `onImageReady`, así
+   * que guardar en ese momento guardaría el plato con la imagen anterior.
+   */
+  onProcessingChange?: (isProcessing: boolean) => void;
   /** Si el campo está deshabilitado */
   disabled?: boolean;
   /** Etiqueta del campo */
@@ -58,12 +64,25 @@ export interface ImageUploadResult {
   dimensions: { width: number; height: number };
 }
 
+/**
+ * Convierte un File a base64
+ */
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 // ============ Componente ============
 
 export function ImageUploadField({
   existingImageUrl,
   onImageReady,
   onUseDefault,
+  onProcessingChange,
   disabled = false,
   label = "Imagen del plato",
   helpText,
@@ -151,7 +170,7 @@ export function ImageUploadField({
   /**
    * Valida y comprime la imagen
    */
-  const validateAndCompress = async (
+  const validateAndCompress = useCallback(async (
     file: File
   ): Promise<CompressedImageResult | null> => {
     // Validar imagen
@@ -169,21 +188,21 @@ export function ImageUploadField({
       setError(ERROR_MESSAGES.COMPRESSION_FAILED);
       return null;
     }
-  };
+  }, []);
 
   /**
    * Limpia el preview anterior si es necesario
    */
-  const cleanupPreviousPreview = () => {
+  const cleanupPreviousPreview = useCallback(() => {
     if (previewData && !previewData.isExisting && !previewData.isDefault) {
       revokePreviewUrl(previewData.url);
     }
-  };
+  }, [previewData]);
 
   /**
    * Actualiza el estado con la nueva imagen procesada
    */
-  const updateImageState = async (compressed: CompressedImageResult) => {
+  const updateImageState = useCallback(async (compressed: CompressedImageResult) => {
     // El navegador solo encoge para el transporte, así que el peso que sale de
     // aquí (cientos de KB) es normal y no se avisa de él: el servidor reencoda
     // con sharp al guardar. Lo único que merece aviso es que ni así quepa en el
@@ -239,7 +258,7 @@ export function ImageUploadField({
         1
       )}KB (${compressed.compressionRatio.toFixed(0)}% reducción)`
     );
-  };
+  }, [cleanupPreviousPreview, onImageReady, onUseDefault]);
 
   /**
    * Procesa el archivo seleccionado: valida y comprime
@@ -249,6 +268,7 @@ export function ImageUploadField({
       setError(null);
       setNotice(null);
       setIsProcessing(true);
+      onProcessingChange?.(true);
 
       try {
         const compressed = await validateAndCompress(file);
@@ -262,22 +282,11 @@ export function ImageUploadField({
         setError(ERROR_MESSAGES.COMPRESSION_FAILED);
       } finally {
         setIsProcessing(false);
+        onProcessingChange?.(false);
       }
     },
-    [onImageReady, previewData, onUseDefault]
+    [validateAndCompress, updateImageState, onProcessingChange]
   );
-
-  /**
-   * Convierte un File a base64
-   */
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
 
   /**
    * Handler para cambio de archivo via input
