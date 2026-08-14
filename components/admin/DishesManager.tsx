@@ -13,7 +13,7 @@ import {
   deleteDish,
   toggleDishAvailability,
 } from "@/app/actions/menuAdmin";
-import { DishModal } from "./DishModal";
+import { DishModal, type DishSaveResult } from "./DishModal";
 import { uploadDishImage } from "@/app/actions/uploadDishImage";
 import { deleteDishImage } from "@/app/actions/deleteDishImage";
 import type { Category, Dish } from "@/lib/types";
@@ -114,7 +114,7 @@ export function DishesManager({
    */
   const handleSave = async (
     data: Partial<Dish> & { _pendingImage?: ImageUploadResult }
-  ) => {
+  ): Promise<DishSaveResult> => {
     setIsLoading(true);
 
     // Extraer imagen pendiente si existe
@@ -150,11 +150,30 @@ export function DishesManager({
               "Error subiendo imagen para plato nuevo:",
               uploadResult.error
             );
-            // El plato se creó pero sin imagen - notificar al usuario
-            alert(
-              `Plato creado pero hubo un error con la imagen: ${uploadResult.error}`
-            );
-          } else if (newDish) {
+
+            // El plato no puede quedarse creado sin la foto que el usuario
+            // eligió: se revierte la creación y el error se enseña en el
+            // modal, que sigue abierto con los datos para reintentar.
+            const motivo = uploadResult.error || "No se pudo subir la imagen.";
+
+            try {
+              await deleteDish(newDish.id);
+            } catch (revertError) {
+              console.error(
+                "No se pudo revertir el plato tras fallar la imagen:",
+                revertError
+              );
+              onUpdate();
+              return {
+                success: false,
+                error: `${motivo} Además el plato quedó creado sin foto: revísalo en la lista.`,
+              };
+            }
+
+            return { success: false, error: motivo };
+          }
+
+          if (newDish) {
             // Actualizar con la URL de la imagen
             newDish.image_url = uploadResult.imageUrl || null;
           }
@@ -169,9 +188,13 @@ export function DishesManager({
       onRevalidate();
       onUpdate();
       setIsModalOpen(false);
+      return { success: true };
     } catch (error) {
       console.error("Error saving dish:", error);
-      alert("Error al guardar el plato");
+      return {
+        success: false,
+        error: "No se pudo guardar el plato. Inténtalo de nuevo.",
+      };
     } finally {
       setIsLoading(false);
     }

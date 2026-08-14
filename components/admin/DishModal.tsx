@@ -12,12 +12,20 @@ import { ImageUploadField, type ImageUploadResult } from "./ImageUploadField";
 import { updateDishImage } from "@/app/actions/updateDishImage";
 import { deleteDishImage } from "@/app/actions/deleteDishImage";
 
+/** Resultado que el componente padre devuelve al guardar */
+export interface DishSaveResult {
+  readonly success: boolean;
+  readonly error?: string;
+}
+
 interface DishModalProps {
   readonly isOpen: boolean;
   readonly dish: Dish | null;
   readonly categories: Category[];
   readonly onClose: () => void;
-  readonly onSave: (data: Partial<Dish>) => void;
+  readonly onSave: (
+    data: Partial<Dish>
+  ) => void | Promise<DishSaveResult | void>;
   readonly isLoading: boolean;
 }
 
@@ -106,11 +114,25 @@ export function DishModal({
   };
 
   /**
+   * Helper: Entrega el plato al componente padre y refleja aquí el error que
+   * devuelva, en vez de cerrar el modal dando por hecho que se guardó
+   */
+  const submitToParent = async (
+    data: Partial<Dish> & { _pendingImage?: ImageUploadResult }
+  ) => {
+    const result = await onSave(data);
+
+    if (result && !result.success) {
+      setUploadError(result.error || "No se pudo guardar el plato");
+    }
+  };
+
+  /**
    * Helper: Maneja el upload de imagen para un plato nuevo
    */
   const handleUploadNewImage = () => {
     // Para platos nuevos, guardamos los datos y el componente padre manejará el upload
-    onSave({
+    return submitToParent({
       ...formData,
       _pendingImage: pendingImage,
     } as Partial<Dish> & { _pendingImage?: ImageUploadResult });
@@ -137,7 +159,7 @@ export function DishModal({
     }
 
     // Guardar plato sin imagen (continuar aunque falle la eliminación)
-    onSave({
+    await submitToParent({
       ...formData,
       image_url: null,
     });
@@ -165,12 +187,12 @@ export function DishModal({
             return;
           }
 
-          onSave({
+          await submitToParent({
             ...formData,
             image_url: imageUrl,
           });
         } else {
-          handleUploadNewImage();
+          await handleUploadNewImage();
         }
       } catch (error) {
         console.error("Error en upload de imagen:", error);
@@ -190,7 +212,12 @@ export function DishModal({
     }
 
     // Sin cambios en imagen, guardar normalmente
-    onSave(formData);
+    setIsUploadingImage(true);
+    try {
+      await submitToParent(formData);
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   // Estado de carga combinado
