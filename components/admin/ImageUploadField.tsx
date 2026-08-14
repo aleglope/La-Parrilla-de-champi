@@ -73,6 +73,7 @@ export function ImageUploadField({
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [useDefaultImage, setUseDefaultImage] = useState(false);
   const [previewData, setPreviewData] = useState<{
     url: string;
@@ -110,6 +111,7 @@ export function ImageUploadField({
     (checked: boolean) => {
       setUseDefaultImage(checked);
       setError(null);
+      setNotice(null);
 
       if (checked) {
         // Limpiar preview anterior si no es existente
@@ -182,6 +184,19 @@ export function ImageUploadField({
    * Actualiza el estado con la nueva imagen procesada
    */
   const updateImageState = async (compressed: CompressedImageResult) => {
+    // La compresión del navegador es "best-effort": si no llega al objetivo
+    // devuelve el resultado igual, sin error. Avisamos aquí, al elegir la foto,
+    // en vez de dejar que la sorpresa salte al pulsar Guardar. No bloquea:
+    // el servidor reencoda con sharp y garantiza el límite.
+    const limiteKb = IMAGE_CONFIG.MAX_SIZE_AFTER_COMPRESSION / 1024;
+    setNotice(
+      compressed.sizeKB > limiteKb
+        ? `Tu navegador dejó la foto en ${compressed.sizeKB.toFixed(
+            0
+          )}KB, por encima de los ${limiteKb}KB. El servidor la optimizará al guardar.`
+        : null
+    );
+
     // Convertir a base64
     const base64 = await fileToBase64(compressed.file);
 
@@ -230,6 +245,7 @@ export function ImageUploadField({
   const processFile = useCallback(
     async (file: File) => {
       setError(null);
+      setNotice(null);
       setIsProcessing(true);
 
       try {
@@ -285,6 +301,7 @@ export function ImageUploadField({
     }
     setPreviewData(null);
     setError(null);
+    setNotice(null);
     setUseDefaultImage(false);
     onImageReady(null);
     onUseDefault?.(false);
@@ -579,8 +596,36 @@ export function ImageUploadField({
         )}
       </AnimatePresence>
 
+      {/* Aviso informativo: no bloquea el guardado */}
+      <AnimatePresence>
+        {notice && !error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="flex items-center gap-2 p-3 bg-flame-blue-bright/10 border border-flame-blue-bright/30 rounded-lg"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-flame-blue-bright flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p className="text-sm text-flame-blue-bright">{notice}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Texto de ayuda */}
-      {helpText && !error && (
+      {helpText && !error && !notice && (
         <p className="text-xs text-gray-500">{helpText}</p>
       )}
 
