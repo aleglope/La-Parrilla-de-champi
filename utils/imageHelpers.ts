@@ -10,24 +10,46 @@ import imageCompression from 'browser-image-compression';
 export const IMAGE_CONFIG = {
   // Tipos MIME permitidos
   ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp'] as const,
-  
+
   // Extensiones permitidas
   ALLOWED_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.webp'] as const,
-  
-  // Tamaños en bytes
+
+  // Tamaño máximo del fichero que el admin puede elegir
   MAX_SIZE_BEFORE_COMPRESSION: 10 * 1024 * 1024, // 10MB
+
+  // ---- TRANSPORTE (navegador) ----
+  // El navegador NO decide la calidad final: solo encoge lo justo para que el
+  // payload quepa en el envío a la server action, conservando resolución. Quien
+  // comprime de verdad es el servidor (lib/images/reencodeImage.ts) con sharp.
+  //
+  // Lado máximo antes de enviar: el doble del lado de salida (800px) para que al
+  // servidor le sobren píxeles y no tenga que ampliar (usa withoutEnlargement).
+  TRANSPORT_MAX_DIMENSION: 1600,
+  // Objetivo de peso del envío. El bodySizeLimit de las server actions es 4mb y
+  // el base64 infla un ~33%, así que 2,5MB de binario (~3,4MB en base64) entra
+  // con margen.
+  TRANSPORT_TARGET_MB: 2.5,
+  // Techo real del envío: por encima el base64 revienta el bodySizeLimit de 4mb.
+  TRANSPORT_MAX_SIZE_BYTES: 2.9 * 1024 * 1024,
+  // Calidad alta a propósito: cualquier pérdida aquí es pérdida que el servidor
+  // ya no puede recuperar.
+  TRANSPORT_QUALITY: 0.9,
+
+  // ---- SALIDA (servidor) ----
+  // Lo que acaba en Storage. `reencodeToWebp` recibe este límite de peso y aplica
+  // su propio MAX_DIMENSION = 800, que debe ir a la par con MAX_WIDTH de aquí.
   MAX_SIZE_AFTER_COMPRESSION: 200 * 1024, // 200KB (margen de seguridad)
   TARGET_SIZE_KB: 150, // 150KB objetivo
-  
-  // Dimensiones
   MAX_WIDTH: 800,
   MAX_HEIGHT: 600,
+
+  // ---- Validación de la imagen de origen ----
   MIN_WIDTH: 400,
   MIN_HEIGHT: 300,
-  
+
   // Calidad de compresión
   QUALITY: 0.85,
-  
+
   // Bucket de Supabase Storage
   BUCKET_NAME: 'menu-images',
   
@@ -166,23 +188,33 @@ export async function validateImage(file: File): Promise<ImageValidationResult> 
 // ============ Funciones de Compresión ============
 
 /**
- * Comprime una imagen usando browser-image-compression
- * Convierte a WebP y optimiza para el tamaño objetivo
+ * Encoge la imagen en el navegador SOLO para que quepa en el envío.
+ *
+ * No es la compresión final: el servidor reencoda con sharp y es quien decide
+ * calidad y lado de salida. Por eso `alwaysKeepResolution: true` — si bajar la
+ * calidad no basta para llegar al objetivo, `browser-image-compression` recorta
+ * resolución, y esos píxeles el servidor ya no los puede recuperar
+ * (`withoutEnlargement: true`). Antes pasaba: una foto acababa en 380×475 y
+ * 15KB, muy por debajo del objetivo de 150KB, habiendo tirado resolución a
+ * cambio de nada.
+ *
+ * `maxWidthOrHeight` sí se sigue aplicando con `alwaysKeepResolution: true`:
+ * la librería lo resuelve antes del bucle de calidad.
  */
 export async function compressImage(file: File): Promise<CompressedImageResult> {
   const originalSizeKB = file.size / 1024;
-  
-  // Opciones de compresión optimizadas
+
+  // Opciones de TRANSPORTE, no de salida
   const options = {
-    maxSizeMB: IMAGE_CONFIG.TARGET_SIZE_KB / 1024, // 0.15MB = 150KB
-    maxWidthOrHeight: IMAGE_CONFIG.MAX_WIDTH,
+    maxSizeMB: IMAGE_CONFIG.TRANSPORT_TARGET_MB,
+    maxWidthOrHeight: IMAGE_CONFIG.TRANSPORT_MAX_DIMENSION,
     useWebWorker: true,
     fileType: 'image/webp' as const,
-    initialQuality: IMAGE_CONFIG.QUALITY,
-    alwaysKeepResolution: false,
+    initialQuality: IMAGE_CONFIG.TRANSPORT_QUALITY,
+    alwaysKeepResolution: true,
     preserveExif: false,
   };
-  
+
   try {
     const compressedFile = await imageCompression(file, options);
     
