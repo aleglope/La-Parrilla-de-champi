@@ -58,6 +58,10 @@ interface LiquidEtherWebGL {
 
 const defaultColors = ["#5227FF", "#FF9FFC", "#B19EEF"];
 
+// Paleta por defecto del tema (Fire Red, Flame Blue y un tono intermedio).
+// Izada a constante de módulo para que su identidad no cambie entre renders.
+const defaultThemeColors = ["#C01F19", "#314A78", "#1789C0"];
+
 interface ParticleSystemProps {
   readonly colors?: string[];
 }
@@ -88,7 +92,7 @@ export function ParticleSystem({ colors }: ParticleSystemProps = {}) {
   }
 
   // Colores del tema: Fire Red, Flame Blue, y un tono intermedio (default sin prop)
-  const themeColors = colors ?? ["#C01F19", "#314A78", "#1789C0"];
+  const themeColors = colors ?? defaultThemeColors;
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
