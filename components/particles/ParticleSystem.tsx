@@ -1301,6 +1301,7 @@ function LiquidEther({
       }
 
       dispose() {
+        this.pause();
         try {
           window.removeEventListener("resize", this._resize);
           if (this._onVisibility)
@@ -1310,13 +1311,19 @@ function LiquidEther({
             );
           Mouse.dispose();
           if (Common.renderer) {
+            // Forzar la perdida de contexto es lo unico que libera de verdad
+            // el contexto WebGL: dispose por si solo no lo hace, asi que las
+            // dos llamadas deben quedar adyacentes y sincronas.
+            Common.renderer.forceContextLoss();
+            Common.renderer.dispose();
             const canvas = Common.renderer.domElement;
             if (canvas && canvas.parentNode)
               canvas.parentNode.removeChild(canvas);
-            Common.renderer.dispose();
           }
-        } catch {
-          /* noop */
+        } catch (err) {
+          console.warn("LiquidEther: fallo al liberar el contexto WebGL", err);
+        } finally {
+          Common.renderer = null;
         }
       }
     }
