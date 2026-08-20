@@ -21,23 +21,15 @@ interface UploadResult {
   error?: string;
 }
 
-interface UploadDishImageParams {
-  dishId: string;
-  dishName: string;
-  imageData: string; // Base64 encoded image
-  imageSizeKb: number; // Informativo: el tamaño real lo decide el reencodado del servidor
-}
-
 // ============ Funciones de Validación Server-Side ============
 
 /**
  * Valida el tipo MIME del archivo en el servidor
- * No confía en la extensión, verifica los magic bytes
+ * No confía ni en la extensión ni en el tipo que declara el cliente (`Blob.type`
+ * lo fija el navegador y se puede falsear): verifica los magic bytes del buffer
+ * que ha llegado de verdad
  */
-function validateServerMimeType(base64Data: string): { isValid: boolean; detectedType: string } {
-  // Extraer los primeros bytes del base64 para detectar el tipo real
-  const binaryString = Buffer.from(base64Data.split(',')[1] || base64Data, 'base64');
-  
+function validateServerMimeType(buffer: Buffer): { isValid: boolean; detectedType: string } {
   // Magic bytes para cada formato
   const magicBytes = {
     jpeg: [0xFF, 0xD8, 0xFF],
@@ -45,7 +37,7 @@ function validateServerMimeType(base64Data: string): { isValid: boolean; detecte
     webp: [0x52, 0x49, 0x46, 0x46], // RIFF header
   };
   
-  const bytes = Array.from(binaryString.slice(0, 12));
+  const bytes = Array.from(buffer.subarray(0, 12));
   
   // Verificar JPEG
   if (bytes[0] === magicBytes.jpeg[0] && 
@@ -104,10 +96,12 @@ function generateFileName(dishName: string): string {
 /**
  * Sube una imagen para un plato nuevo o existente
  * Incluye validaciones server-side y transacciones atómicas
+ *
+ * La foto llega en BINARIO dentro del FormData, no en base64: la codificación
+ * inflaba el envío un ~33% contra un techo de cuerpo (4.5MB en Vercel) que es
+ * infraestructura y no se puede subir.
  */
-export async function uploadDishImage(params: UploadDishImageParams): Promise<UploadResult> {
-  const { dishId, dishName, imageData } = params;
-  
+export async function uploadDishImage(payload: FormData): Promise<UploadResult> {
   let uploadedFilePath: string | null = null;
   
   try {
@@ -126,8 +120,29 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
       };
     }
 
+    // 2. Leer el cuerpo SOLO después de los gates: hacerlo antes le daría a un
+    // anónimo una vía para hacer trabajo en el servidor sin estar autorizado.
+    const dishId = String(payload.get('dishId') ?? '');
+    const dishName = String(payload.get('dishName') ?? 'plato');
+    const image = payload.get('image');
+
+    if (!dishId) {
+      console.error('[Upload] FormData sin identificador de plato');
+      return { success: false, error: ERROR_MESSAGES.UPLOAD_FAILED };
+    }
+
+    // `File` extiende `Blob`, así que comprobar `Blob` cubre los dos casos y no
+    // depende de qué clase concreta construya el runtime.
+    if (!(image instanceof Blob) || image.size === 0) {
+      console.error('[Upload] FormData sin imagen utilizable');
+      return { success: false, error: ERROR_MESSAGES.INVALID_TYPE };
+    }
+
+    // Un solo buffer para todo: se valida y se reencoda el MISMO binario.
+    const originalBuffer = Buffer.from(await image.arrayBuffer());
+
     // 3. Validar tipo MIME en servidor
-    const mimeValidation = validateServerMimeType(imageData);
+    const mimeValidation = validateServerMimeType(originalBuffer);
     if (!mimeValidation.isValid) {
       console.error(`[Upload] Tipo MIME inválido detectado: ${mimeValidation.detectedType}`);
       return {
@@ -139,9 +154,6 @@ export async function uploadDishImage(params: UploadDishImageParams): Promise<Up
     // 4. Reencodar en servidor con sharp: el límite de 200KB es una garantía
     // de salida, no un muro de entrada. Lo que el navegador del cliente no
     // consiguió comprimir se arregla aquí en vez de rechazarse.
-    const base64Data = imageData.split(',')[1] || imageData;
-    const originalBuffer = Buffer.from(base64Data, 'base64');
-
     const reencoded = await reencodeToWebp(
       originalBuffer,
       IMAGE_CONFIG.MAX_SIZE_AFTER_COMPRESSION

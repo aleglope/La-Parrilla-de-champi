@@ -138,12 +138,15 @@ export function DishesManager({
 
         // 2. Si hay imagen pendiente, subirla
         if (_pendingImage && newDish?.id) {
-          const uploadResult = await uploadDishImage({
-            dishId: newDish.id,
-            dishName: dishData.name || "plato",
-            imageData: _pendingImage.base64,
-            imageSizeKb: _pendingImage.sizeKb,
-          });
+          const payload = new FormData();
+          payload.append("dishId", newDish.id);
+          payload.append("dishName", dishData.name || "plato");
+          // El tercer argumento conserva el nombre: con compresión en web
+          // worker la librería devuelve un Blob con el nombre pegado, no un
+          // File de verdad.
+          payload.append("image", _pendingImage.file, _pendingImage.file.name);
+
+          const uploadResult = await uploadDishImage(payload);
 
           if (!uploadResult.success) {
             console.error(

@@ -102,13 +102,22 @@ export function DishModal({
   const handleUpdateDishImage = async () => {
     if (!dish) return null;
 
-    const result = await updateDishImage({
-      dishId: dish.id,
-      dishName: formData.name,
-      imageData: pendingImage!.base64,
-      imageSizeKb: pendingImage!.sizeKb,
-      oldImageUrl: dish.image_url,
-    });
+    // Ojo: `formData` ya es el estado del formulario del plato. Este otro
+    // contenedor va aparte y se llama `payload` para que no se confundan.
+    const payload = new FormData();
+    payload.append("dishId", dish.id);
+    payload.append("dishName", formData.name);
+    // Solo si existe: adjuntar null lo convertiría en la cadena "null" y el
+    // servidor intentaría borrar una ruta inexistente.
+    if (dish.image_url) {
+      payload.append("oldImageUrl", dish.image_url);
+    }
+    // El tercer argumento conserva el nombre: cuando la compresión ocurre en un
+    // web worker, la librería devuelve un Blob con el nombre pegado, no un File
+    // de verdad, y sin él el nombre se pierde por el camino.
+    payload.append("image", pendingImage!.file, pendingImage!.file.name);
+
+    const result = await updateDishImage(payload);
 
     if (!result.success) {
       setUploadError(result.error || "Error al subir la imagen");

@@ -94,6 +94,13 @@ vi.mock("@/app/actions/deleteDishImage", () => ({
  * `compressImage` real usa canvas, que jsdom no tiene. El doble conserva el
  * contenido del fichero de entrada para poder afirmar, byte a byte, cuál de
  * las fotos elegidas acabó viajando al servidor.
+ *
+ * El `setTimeout` no es adorno: comprimir una foto de móvil tarda segundos, y
+ * es en esa ventana donde el admin se adelanta pulsando Guardar. Sin él, el
+ * doble resolvería en el mismo tick y la ventana que se está probando no
+ * existiría. Antes la aportaba de rebote el `FileReader` que convertía a
+ * base64 dentro del componente; al pasar la foto a binario ese paso desapareció
+ * y la espera hay que declararla aquí, que es donde de verdad ocurre.
  */
 vi.mock("@/utils/imageHelpers", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/utils/imageHelpers")>();
@@ -102,6 +109,7 @@ vi.mock("@/utils/imageHelpers", async (importOriginal) => {
     validateImage: vi.fn(async () => ({ isValid: true })),
     compressImage: vi.fn(async (file: File) => {
       const contenido = await file.text();
+      await new Promise((resolve) => setTimeout(resolve, 0));
       return {
         file: new File([`comprimida:${contenido}`], file.name, {
           type: "image/webp",
@@ -204,14 +212,20 @@ const guardar = async () => {
   });
 };
 
-/** Devuelve el contenido real de la imagen que se envió al servidor. */
-const contenidoEnviado = () => {
-  const llamada = updateDishImage.mock.calls.at(-1)?.[0] as
-    | { imageData: string }
-    | undefined;
+/** Devuelve el FormData con el que se llamó a la Server Action. */
+const payloadEnviado = () => {
+  const llamada = updateDishImage.mock.calls.at(-1)?.[0] as FormData | undefined;
   if (!llamada) throw new Error("updateDishImage no fue llamada");
-  const base64 = llamada.imageData.split(",")[1] ?? llamada.imageData;
-  return Buffer.from(base64, "base64").toString("utf8");
+  return llamada;
+};
+
+/** Devuelve el contenido real de la imagen que se envió al servidor. */
+const contenidoEnviado = async () => {
+  const imagen = payloadEnviado().get("image");
+  if (!(imagen instanceof Blob)) {
+    throw new Error("La imagen no viajó como binario");
+  }
+  return imagen.text();
 };
 
 beforeEach(() => {
@@ -238,12 +252,17 @@ describe("reemplazo de la imagen de un plato existente", () => {
 
     // El admin elige la foto y pulsa Guardar sin esperar a que se comprima.
     await elegirFoto("nueva.jpg", "PIXELES-NUEVOS");
+
+    // Mientras la foto se prepara, Guardar está bloqueado. Se comprueba aquí,
+    // que es el momento en que se puede observar: el `act` del propio submit
+    // vacía la cola de tareas y con ella termina la compresión.
+    expect(botonGuardar().disabled).toBe(true);
+
     await guardar();
 
     // Guardar aquí sería guardar el plato con su imagen anterior.
     expect(onSave).not.toHaveBeenCalled();
     expect(updateDishImage).not.toHaveBeenCalled();
-    expect(botonGuardar().disabled).toBe(true);
 
     // En cuanto la foto está lista, guardar sube la nueva.
     await esperarProcesado();
@@ -251,7 +270,7 @@ describe("reemplazo de la imagen de un plato existente", () => {
 
     await guardar();
     expect(updateDishImage).toHaveBeenCalledTimes(1);
-    expect(contenidoEnviado()).toBe("comprimida:PIXELES-NUEVOS");
+    expect(await contenidoEnviado()).toBe("comprimida:PIXELES-NUEVOS");
     expect(onSave).not.toHaveBeenCalledWith(
       expect.objectContaining({ image_url: IMAGEN_ANTIGUA })
     );
@@ -264,7 +283,7 @@ describe("reemplazo de la imagen de un plato existente", () => {
     await guardar();
 
     expect(updateDishImage).toHaveBeenCalledTimes(1);
-    expect(contenidoEnviado()).toBe("comprimida:PIXELES-NUEVOS");
+    expect(await contenidoEnviado()).toBe("comprimida:PIXELES-NUEVOS");
   });
 
   it("tras cambiar de idea, envía la última foto elegida y no la primera", async () => {
@@ -276,7 +295,7 @@ describe("reemplazo de la imagen de un plato existente", () => {
     await guardar();
 
     expect(updateDishImage).toHaveBeenCalledTimes(1);
-    expect(contenidoEnviado()).toBe("comprimida:PIXELES-SEGUNDA");
+    expect(await contenidoEnviado()).toBe("comprimida:PIXELES-SEGUNDA");
   });
 
   it("manda como imagen anterior la del plato, para que el servidor borre la correcta", async () => {
@@ -285,11 +304,25 @@ describe("reemplazo de la imagen de un plato existente", () => {
     await esperarProcesado();
     await guardar();
 
-    expect(updateDishImage).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dishId: "plato-1",
-        oldImageUrl: IMAGEN_ANTIGUA,
-      })
-    );
+    // Mismo invariante que antes; se lee del FormData en vez de un objeto.
+    const payload = payloadEnviado();
+    expect(payload.get("dishId")).toBe("plato-1");
+    expect(payload.get("oldImageUrl")).toBe(IMAGEN_ANTIGUA);
+  });
+
+  /**
+   * Red de seguridad del paso a binario: si alguien "arregla" un fallo futuro
+   * volviendo a serializar la foto a cadena, el envío recuperaría el ~33% de
+   * inflado del base64 contra un techo de cuerpo que no se puede subir.
+   */
+  it("manda la foto en binario, no como cadena", async () => {
+    await montarModal();
+    await elegirFoto("nueva.jpg", "PIXELES-NUEVOS");
+    await esperarProcesado();
+    await guardar();
+
+    const imagen = payloadEnviado().get("image");
+    expect(imagen).toBeInstanceOf(Blob);
+    expect(typeof imagen).not.toBe("string");
   });
 });

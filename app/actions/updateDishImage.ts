@@ -21,14 +21,6 @@ interface UpdateResult {
   error?: string;
 }
 
-interface UpdateDishImageParams {
-  dishId: string;
-  dishName: string;
-  imageData: string; // Base64 encoded image
-  imageSizeKb: number; // Informativo: el tamaño real lo decide el reencodado del servidor
-  oldImageUrl?: string | null; // URL de la imagen anterior para eliminar
-}
-
 // ============ Funciones de Utilidad ============
 
 /**
@@ -45,11 +37,11 @@ function extractStoragePath(url: string): string | null {
 }
 
 /**
- * Valida el tipo MIME verificando magic bytes
+ * Valida el tipo MIME verificando magic bytes del buffer recibido
+ * Nunca el tipo que declara el cliente: `Blob.type` lo fija el navegador
  */
-function validateServerMimeType(base64Data: string): boolean {
-  const binaryString = Buffer.from(base64Data.split(',')[1] || base64Data, 'base64');
-  const bytes = Array.from(binaryString.slice(0, 12));
+function validateServerMimeType(buffer: Buffer): boolean {
+  const bytes = Array.from(buffer.subarray(0, 12));
   
   // JPEG
   if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) {
@@ -100,10 +92,12 @@ function generateFileName(dishName: string): string {
 /**
  * Actualiza la imagen de un plato existente
  * Elimina la imagen anterior para evitar archivos huérfanos
+ *
+ * La foto llega en BINARIO dentro del FormData, no en base64: la codificación
+ * inflaba el envío un ~33% contra un techo de cuerpo (4.5MB en Vercel) que es
+ * infraestructura y no se puede subir.
  */
-export async function updateDishImage(params: UpdateDishImageParams): Promise<UpdateResult> {
-  const { dishId, dishName, imageData, oldImageUrl } = params;
-  
+export async function updateDishImage(payload: FormData): Promise<UpdateResult> {
   let newFilePath: string | null = null;
   let oldFilePath: string | null = null;
   
@@ -123,20 +117,44 @@ export async function updateDishImage(params: UpdateDishImageParams): Promise<Up
       };
     }
     
+    // 1.5. Leer el cuerpo SOLO después de los gates: hacerlo antes le daría a
+    // un anónimo una vía para hacer trabajo en el servidor sin estar autorizado.
+    const dishId = String(payload.get('dishId') ?? '');
+    const dishName = String(payload.get('dishName') ?? 'plato');
+    const image = payload.get('image');
+    // La imagen anterior es opcional: si no viene, no hay nada que borrar.
+    const oldImageUrlField = payload.get('oldImageUrl');
+    const oldImageUrl =
+      typeof oldImageUrlField === 'string' && oldImageUrlField.length > 0
+        ? oldImageUrlField
+        : null;
+
+    if (!dishId) {
+      console.error('[Update] FormData sin identificador de plato');
+      return { success: false, error: ERROR_MESSAGES.UPLOAD_FAILED };
+    }
+
+    // `File` extiende `Blob`, así que comprobar `Blob` cubre los dos casos y no
+    // depende de qué clase concreta construya el runtime.
+    if (!(image instanceof Blob) || image.size === 0) {
+      console.error('[Update] FormData sin imagen utilizable');
+      return { success: false, error: ERROR_MESSAGES.INVALID_TYPE };
+    }
+
+    // Un solo buffer para todo: se valida y se reencoda el MISMO binario.
+    const originalBuffer = Buffer.from(await image.arrayBuffer());
+
     // 2. Validar tipo MIME
-    if (!validateServerMimeType(imageData)) {
+    if (!validateServerMimeType(originalBuffer)) {
       return {
         success: false,
         error: ERROR_MESSAGES.INVALID_TYPE,
       };
     }
-    
+
     // 3. Reencodar en servidor con sharp: el límite de 200KB es una garantía
     // de salida, no un muro de entrada. Lo que el navegador del cliente no
     // consiguió comprimir se arregla aquí en vez de rechazarse.
-    const base64Data = imageData.split(',')[1] || imageData;
-    const originalBuffer = Buffer.from(base64Data, 'base64');
-
     const reencoded = await reencodeToWebp(
       originalBuffer,
       IMAGE_CONFIG.MAX_SIZE_AFTER_COMPRESSION

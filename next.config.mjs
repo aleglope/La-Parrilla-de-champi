@@ -42,12 +42,17 @@ const nextConfig = {
     // optimizeCss: true,
     // Requerido en Next 13.2-14 para que Next llame a register() de instrumentation.ts
     instrumentationHook: true,
-    // El body por defecto de una Server Action es 1MB, y las imágenes viajan en
-    // base64 (+33%): eso dejaba el techo real en ~750KB de binario, por debajo
-    // de cualquier foto de móvil. 4mb es el máximo sensato: Vercel corta el
-    // cuerpo de una función serverless en 4.5MB.
+    // El body por defecto de una Server Action es 1MB, por debajo de cualquier
+    // foto de móvil. Las imágenes viajan en binario dentro de un FormData, así
+    // que este número es el techo real del envío.
+    //
+    // 4.4mb y no 4.5mb a propósito: Vercel corta el cuerpo de una función
+    // serverless en 4.5MB y ese límite es infraestructura, no se puede subir.
+    // Dejando 100KB de margen, quien corta es Next con un error legible en vez
+    // de la plataforma con uno opaco. El cliente aprieta más aún (4.2MB, ver
+    // TRANSPORT_MAX_SIZE_BYTES en utils/imageHelpers.ts).
     serverActions: {
-      bodySizeLimit: "4mb",
+      bodySizeLimit: "4.4mb",
     },
   },
   async headers() {

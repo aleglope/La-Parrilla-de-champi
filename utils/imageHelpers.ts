@@ -25,12 +25,20 @@ export const IMAGE_CONFIG = {
   // Lado máximo antes de enviar: el doble del lado de salida (800px) para que al
   // servidor le sobren píxeles y no tenga que ampliar (usa withoutEnlargement).
   TRANSPORT_MAX_DIMENSION: 1600,
-  // Objetivo de peso del envío. El bodySizeLimit de las server actions es 4mb y
-  // el base64 infla un ~33%, así que 2,5MB de binario (~3,4MB en base64) entra
-  // con margen.
+  // OBJETIVO de peso del envío: a lo que apunta la compresión del navegador. No
+  // confundir con el techo de abajo, que es la línea a partir de la cual el
+  // envío falla. Subir el objetivo solo gastaría más datos móviles para una foto
+  // que el servidor va a reencodar a 800px y 200KB de todos modos.
   TRANSPORT_TARGET_MB: 2.5,
-  // Techo real del envío: por encima el base64 revienta el bodySizeLimit de 4mb.
-  TRANSPORT_MAX_SIZE_BYTES: 2.9 * 1024 * 1024,
+  // TECHO del envío. La foto viaja en binario dentro de un FormData, así que el
+  // límite es directamente el bodySizeLimit de las server actions, y por encima
+  // de él el techo duro de la infraestructura: 4.5MB, que NO es configurable.
+  // Invariante de la cadena, que debe seguir siendo creciente:
+  //   4.2MB (transporte) < 4.4MB (bodySizeLimit, next.config.mjs) < 4.5MB (Vercel)
+  // y el guard de memoria de sharp (MAX_INPUT_SIZE_BYTES) nunca por debajo del
+  // techo de transporte, o rechazaría por peso envíos que el cliente da por
+  // válidos.
+  TRANSPORT_MAX_SIZE_BYTES: 4.2 * 1024 * 1024,
   // Calidad alta a propósito: cualquier pérdida aquí es pérdida que el servidor
   // ya no puede recuperar.
   TRANSPORT_QUALITY: 0.9,

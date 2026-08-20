@@ -50,10 +50,8 @@ interface ImageUploadFieldProps {
 }
 
 export interface ImageUploadResult {
-  /** Archivo comprimido listo para subir */
+  /** Archivo comprimido listo para subir, en binario dentro de un FormData */
   file: File;
-  /** Base64 del archivo comprimido */
-  base64: string;
   /** URL de preview (blob URL) */
   previewUrl: string;
   /** Tamaño comprimido en KB */
@@ -62,18 +60,6 @@ export interface ImageUploadResult {
   originalSizeKb: number;
   /** Dimensiones de la imagen */
   dimensions: { width: number; height: number };
-}
-
-/**
- * Convierte un File a base64
- */
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }
 
 // ============ Componente ============
@@ -218,9 +204,6 @@ export function ImageUploadField({
         : null
     );
 
-    // Convertir a base64
-    const base64 = await fileToBase64(compressed.file);
-
     // Crear preview URL
     const previewUrl = createPreviewUrl(compressed.file);
 
@@ -244,7 +227,6 @@ export function ImageUploadField({
     // Notificar al componente padre
     onImageReady({
       file: compressed.file,
-      base64,
       previewUrl,
       sizeKb: compressed.sizeKB,
       originalSizeKb: compressed.originalSizeKB,

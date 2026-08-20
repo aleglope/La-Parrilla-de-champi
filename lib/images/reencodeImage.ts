@@ -15,8 +15,13 @@ import sharp from 'sharp';
  * Techo del buffer de entrada antes de invocar a sharp: evita que una imagen
  * enorme agote la memoria de la función serverless. Por encima de esto ni se
  * intenta decodificar.
+ *
+ * Debe quedar POR ENCIMA del techo de transporte del cliente (4.2MB, ver
+ * TRANSPORT_MAX_SIZE_BYTES en utils/imageHelpers.ts). Si quedara por debajo,
+ * rechazaría con "la foto pesa demasiado" envíos que el cliente considera
+ * válidos — el mismo diagnóstico falso que se está corrigiendo aguas arriba.
  */
-export const MAX_INPUT_SIZE_BYTES = 4 * 1024 * 1024; // 4MB
+export const MAX_INPUT_SIZE_BYTES = 4.5 * 1024 * 1024; // 4,5MB
 
 /** Lado máximo de la imagen resultante (se respeta la relación de aspecto). */
 const MAX_DIMENSION = 800;
