@@ -88,6 +88,8 @@ export const ERROR_MESSAGES = {
   TOO_SMALL: `Imagen demasiado pequeña (mín ${IMAGE_CONFIG.MIN_WIDTH}x${IMAGE_CONFIG.MIN_HEIGHT}px)`,
   INVALID_DIMENSIONS: `Dimensiones inválidas. Mínimo ${IMAGE_CONFIG.MIN_WIDTH}x${IMAGE_CONFIG.MIN_HEIGHT}px`,
   COMPRESSION_FAILED: 'Error al comprimir la imagen. Intenta con otra imagen',
+  TRANSPORT_ENCODE_MISMATCH:
+    'Tu navegador no ha podido convertir la foto al formato de envío. Guárdala como JPG e inténtalo de nuevo',
   UPLOAD_FAILED: 'Error al subir la imagen. Intenta nuevamente',
   DELETE_FAILED: 'Error al eliminar la imagen',
   NETWORK_ERROR: 'Error de conexión. Verifica tu internet',
@@ -185,6 +187,60 @@ export async function validateImage(file: File): Promise<ImageValidationResult> 
   return { isValid: true };
 }
 
+// ============ Formato de Transporte ============
+
+/**
+ * Resultado cacheado de la sonda de codificación WebP.
+ * `null` = todavía sin sondear; `true`/`false` = respuesta ya conocida.
+ */
+let canvasWebpEncodeSupport: boolean | null = null;
+
+/**
+ * Sonda si el canvas de ESTE navegador sabe CODIFICAR WebP (no solo mostrarlo).
+ *
+ * Safari decodifica WebP pero no lo codifica por canvas, y `toDataURL` no lanza
+ * cuando no conoce el tipo pedido: según la especificación cae en silencio a
+ * PNG. Por eso la sonda comprueba el prefijo real del data URL devuelto — que
+ * la llamada no falle no demuestra absolutamente nada.
+ *
+ * El resultado se cachea: es una propiedad del navegador, no de la foto.
+ */
+export function canvasCanEncodeWebp(): boolean {
+  if (canvasWebpEncodeSupport !== null) {
+    return canvasWebpEncodeSupport;
+  }
+
+  // Este módulo también se carga en el bundle de servidor.
+  if (typeof document === 'undefined') {
+    canvasWebpEncodeSupport = false;
+    return canvasWebpEncodeSupport;
+  }
+
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    canvasWebpEncodeSupport = canvas
+      .toDataURL('image/webp')
+      .startsWith('data:image/webp');
+  } catch {
+    canvasWebpEncodeSupport = false;
+  }
+
+  return canvasWebpEncodeSupport;
+}
+
+/**
+ * MIME con el que la foto viaja al servidor.
+ *
+ * Es indiferente para el resultado final (el servidor reencoda a WebP con
+ * sharp): lo único que se le exige es que el navegador sepa producirlo de
+ * verdad.
+ */
+export function getTransportMimeType(): 'image/webp' | 'image/jpeg' {
+  return canvasCanEncodeWebp() ? 'image/webp' : 'image/jpeg';
+}
+
 // ============ Funciones de Compresión ============
 
 /**
@@ -200,40 +256,59 @@ export async function validateImage(file: File): Promise<ImageValidationResult> 
  *
  * `maxWidthOrHeight` sí se sigue aplicando con `alwaysKeepResolution: true`:
  * la librería lo resuelve antes del bucle de calidad.
+ *
+ * El formato de transporte se ELIGE, no se impone: hay navegadores (Safari) cuyo
+ * canvas decodifica WebP pero no lo codifica, y en ellos pedir WebP devuelve un
+ * PNG en silencio — enorme, insensible al bucle de calidad y, con la resolución
+ * bloqueada, imposible de encoger. Da igual qué formato viaje: el servidor
+ * reencoda con sharp de todos modos.
  */
 export async function compressImage(file: File): Promise<CompressedImageResult> {
   const originalSizeKB = file.size / 1024;
+  const transportMimeType = getTransportMimeType();
 
   // Opciones de TRANSPORTE, no de salida
   const options = {
     maxSizeMB: IMAGE_CONFIG.TRANSPORT_TARGET_MB,
     maxWidthOrHeight: IMAGE_CONFIG.TRANSPORT_MAX_DIMENSION,
     useWebWorker: true,
-    fileType: 'image/webp' as const,
+    fileType: transportMimeType,
     initialQuality: IMAGE_CONFIG.TRANSPORT_QUALITY,
     alwaysKeepResolution: true,
     preserveExif: false,
   };
 
+  let compressedFile: File;
   try {
-    const compressedFile = await imageCompression(file, options);
-    
-    // Obtener dimensiones del archivo comprimido
-    const dimensions = await getImageDimensions(compressedFile);
-    const sizeKB = compressedFile.size / 1024;
-    const compressionRatio = ((originalSizeKB - sizeKB) / originalSizeKB) * 100;
-    
-    return {
-      file: compressedFile,
-      sizeKB: Math.round(sizeKB * 100) / 100,
-      dimensions,
-      originalSizeKB: Math.round(originalSizeKB * 100) / 100,
-      compressionRatio: Math.round(compressionRatio * 100) / 100,
-    };
+    compressedFile = await imageCompression(file, options);
   } catch (error) {
     console.error('Error comprimiendo imagen:', error);
     throw new Error(ERROR_MESSAGES.COMPRESSION_FAILED);
   }
+
+  // Fuera del `try` a propósito: su `catch` reescribiría este diagnóstico como
+  // "error al comprimir", que es justo la mentira que se está corrigiendo. El
+  // MIME del fichero devuelto se parsea de la cabecera del data URL, así que
+  // refleja el formato REALMENTE codificado.
+  if (compressedFile.type !== transportMimeType) {
+    console.error(
+      `Formato de transporte inesperado: se pidió ${transportMimeType} y el navegador devolvió ${compressedFile.type}`
+    );
+    throw new Error(ERROR_MESSAGES.TRANSPORT_ENCODE_MISMATCH);
+  }
+
+  // Obtener dimensiones del archivo comprimido
+  const dimensions = await getImageDimensions(compressedFile);
+  const sizeKB = compressedFile.size / 1024;
+  const compressionRatio = ((originalSizeKB - sizeKB) / originalSizeKB) * 100;
+
+  return {
+    file: compressedFile,
+    sizeKB: Math.round(sizeKB * 100) / 100,
+    dimensions,
+    originalSizeKB: Math.round(originalSizeKB * 100) / 100,
+    compressionRatio: Math.round(compressionRatio * 100) / 100,
+  };
 }
 
 // ============ Funciones de Generación de Nombres ============
