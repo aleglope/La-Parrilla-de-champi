@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DishCard } from "./DishCard";
 import { CategoryTabs } from "./CategoryTabs";
+import { NeonWall } from "@/components/rotulos/NeonWall";
 import type { Category, Dish } from "@/lib/types";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
@@ -104,6 +105,9 @@ export function MenuContent({ categories, dishes }: MenuContentProps) {
           {t.menu.pricePerKiloNote}
         </p>
       </motion.div>
+
+      {/* Los dos rótulos de neón del local, flotando sobre las categorías */}
+      <NeonWall className="mt-10 mb-2 md:mt-14" />
 
       {/* Tabs de categorías */}
       <CategoryTabs
