@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { BUSINESS } from "@/lib/config/business";
 import { generateRestaurantSchema } from "@/lib/seo/schemas";
+import { translations } from "@/lib/i18n/translations";
 import { GET } from "@/app/llms.txt/route";
 
 /**
@@ -65,5 +66,45 @@ describe("dirección: la fuente única dice lo que dice la ficha de Google", () 
 
     expect(cuerpo).toContain(CALLE);
     expect(cuerpo).toContain(BUSINESS.mapsUrl);
+  });
+});
+
+/**
+ * El pie y dos respuestas del FAQ escriben la dirección a mano, en dos idiomas,
+ * porque tienen que sonar naturales en cada lengua y no se pueden generar del
+ * todo desde los datos. Lo que sí se puede es comprobar que ninguna de esas
+ * copias contradice a la fuente: eso es exactamente lo que falló durante nueve
+ * meses.
+ */
+describe("dirección: la prosa no contradice a BUSINESS.address", () => {
+  const idiomas = ["es", "gl"] as const;
+
+  it.each(idiomas)("el pie de %s repite la cadena exacta del NAP", (lang) => {
+    // El pie es el NAP visible: tiene que coincidir carácter a carácter con la
+    // ficha de Google, así que lo mínimo es que sea idéntico a la fuente.
+    expect(translations[lang].footer.address).toBe(BUSINESS.address.street);
+  });
+
+  it.each(idiomas)("no queda rastro de la dirección antigua en %s", (lang) => {
+    const todo = JSON.stringify(translations[lang]);
+
+    // Las dos redacciones que llegaron a producción: con coma en el pie y sin
+    // coma en el FAQ.
+    expect(todo).not.toContain("Galicia 25");
+    expect(todo).not.toContain("Galicia, 25");
+  });
+
+  it.each(idiomas)("las respuestas del FAQ de %s citan la plaza", (lang) => {
+    const items = translations[lang].faq.items;
+
+    // Por la pregunta, no por el índice: reordenar el FAQ no debe romper esto.
+    const donde = items.find((f) => /comer carne/i.test(f.q));
+    const mejor = items.find((f) => /asador/i.test(f.q));
+
+    expect(donde, "no existe la pregunta de dónde comer").toBeDefined();
+    expect(mejor, "no existe la pregunta del mejor asador").toBeDefined();
+
+    expect(donde!.a).toContain("Marqués de Monroy");
+    expect(mejor!.a).toContain("Marqués de Monroy");
   });
 });

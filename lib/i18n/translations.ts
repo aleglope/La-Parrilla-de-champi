@@ -66,11 +66,11 @@ export const translations = {
       items: [
         {
           q: "¿Dónde comer carne a la brasa en Noia?",
-          a: "La Parrilla de Champi es un asador de carne a la brasa en Noia, en Rúa Galicia 25 (15200, A Coruña). Cocinamos sobre carbón de encina, con parrilladas para compartir, churrasco de cerdo y de ternera, chuletón y secreto ibérico. Abrimos de miércoles a domingo (y los martes en verano) y se reserva llamando al {telefono}.",
+          a: "La Parrilla de Champi es un asador de carne a la brasa en Noia, en Praza do Marqués de Monroy 8 (15200, A Coruña). Cocinamos sobre carbón de encina, con parrilladas para compartir, churrasco de cerdo y de ternera, chuletón y secreto ibérico. Abrimos de miércoles a domingo (y los martes en verano) y se reserva llamando al {telefono}.",
         },
         {
           q: "¿Cuál es el mejor asador cerca de Noia?",
-          a: "Eso lo dicen los clientes: La Parrilla de Champi tiene una valoración de {valoracion} en Google. Está en Rúa Galicia 25, en Noia (A Coruña), y es el proyecto de Santiago Caamaño, «Champi» ({tiktok}). Lo que más se repite en las reseñas es el punto de la carne y el trato del equipo.",
+          a: "Eso lo dicen los clientes: La Parrilla de Champi tiene una valoración de {valoracion} en Google. Está en Praza do Marqués de Monroy 8, en Noia (A Coruña), y es el proyecto de Santiago Caamaño, «Champi» ({tiktok}). Lo que más se repite en las reseñas es el punto de la carne y el trato del equipo.",
         },
         {
           q: "¿Se puede reservar mesa? ¿Hace falta?",
@@ -97,7 +97,7 @@ export const translations = {
       cookiePolicy: "Política de Cookies",
       credit: "Creada y diseñada por",
       addressTitle: "Dónde estamos",
-      address: "Rúa Galicia, 25",
+      address: "Praza do Marqués de Monroy, 8, Bajo",
       city: "15200 Noia (A Coruña)",
       viewOnMaps: "Cómo llegar",
       hoursTitle: "Horarios",
@@ -331,11 +331,11 @@ export const translations = {
       items: [
         {
           q: "Onde comer carne á brasa en Noia?",
-          a: "La Parrilla de Champi é un asador de carne á brasa en Noia, na Rúa Galicia 25 (15200, A Coruña). Cociñamos sobre carbón de aciñeira, con parrilladas para compartir, churrasco de porco e de tenreira, chuletón e secreto ibérico. Abrimos de mércores a domingo (e os martes no verán) e resérvase chamando ao {telefono}.",
+          a: "La Parrilla de Champi é un asador de carne á brasa en Noia, na Praza do Marqués de Monroy 8 (15200, A Coruña). Cociñamos sobre carbón de aciñeira, con parrilladas para compartir, churrasco de porco e de tenreira, chuletón e secreto ibérico. Abrimos de mércores a domingo (e os martes no verán) e resérvase chamando ao {telefono}.",
         },
         {
           q: "Cal é o mellor asador preto de Noia?",
-          a: "Iso dinno os clientes: La Parrilla de Champi ten unha valoración de {valoracion} en Google. Está na Rúa Galicia 25, en Noia (A Coruña), e é o proxecto de Santiago Caamaño, «Champi» ({tiktok}). O que máis se repite nas recensións é o punto da carne e o trato do equipo.",
+          a: "Iso dinno os clientes: La Parrilla de Champi ten unha valoración de {valoracion} en Google. Está na Praza do Marqués de Monroy 8, en Noia (A Coruña), e é o proxecto de Santiago Caamaño, «Champi» ({tiktok}). O que máis se repite nas recensións é o punto da carne e o trato do equipo.",
         },
         {
           q: "Pódese reservar mesa? Fai falla?",
@@ -362,7 +362,7 @@ export const translations = {
       cookiePolicy: "Política de Cookies",
       credit: "Creada e deseñada por",
       addressTitle: "Onde estamos",
-      address: "Rúa Galicia, 25",
+      address: "Praza do Marqués de Monroy, 8, Bajo",
       city: "15200 Noia (A Coruña)",
       viewOnMaps: "Como chegar",
       hoursTitle: "Horarios",
