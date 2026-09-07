@@ -16,8 +16,22 @@ export const BUSINESS = {
     tel: "+34711224328",
   },
 
+  /**
+   * Domicilio real del local, leído el 2026-09-07 en la ficha de Google
+   * Business Profile (la gestiona la propia empresa) y contrastado con el
+   * Registro Mercantil (LA PARRILLA DE CHAMPI SL, B24828030).
+   *
+   * Aquí ponía "Rúa Galicia, 25" desde diciembre de 2025: una dirección a unos
+   * 745 m de la puerta que nadie llegó a verificar. Las páginas legales del
+   * propio sitio (/aviso-legal, /politica-privacidad) decían la correcta desde
+   * el principio.
+   *
+   * La forma gallega "Praza do Marqués de Monroy" se usa TAL CUAL en los dos
+   * idiomas, sin traducirla: es la que figura en Google y en el Registro, y el
+   * SEO local exige que la cadena coincida carácter a carácter en todas partes.
+   */
   address: {
-    street: "Rúa Galicia, 25",
+    street: "Praza do Marqués de Monroy, 8, Bajo",
     postalCode: "15200",
     locality: "Noia",
     region: "A Coruña",
@@ -25,8 +39,8 @@ export const BUSINESS = {
   },
 
   geo: {
-    latitude: 42.7857,
-    longitude: -8.8878,
+    latitude: 42.7794978,
+    longitude: -8.8912644,
   },
 
   /**
@@ -81,9 +95,16 @@ export const BUSINESS = {
     closed: ["Monday"],
   },
 
-  /** Ficha en Google Maps: enlazarla es una señal directa de SEO local. */
+  /**
+   * Ficha en Google Maps: enlazarla es una señal directa de SEO local.
+   *
+   * Apunta a la ficha concreta por identificador (place_id
+   * ChIJa_O3Bg8hLw0Rt2LNbTYadGs), no a una búsqueda por texto: una búsqueda
+   * depende de lo que Google decida devolver ese día y puede resolver a otro
+   * negocio o a nada.
+   */
   mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=La+parrilla+de+Champi+Noia",
+    "https://www.google.com/maps/search/?api=1&query=La+Parrilla+de+Champi&query_place_id=ChIJa_O3Bg8hLw0Rt2LNbTYadGs",
 
   social: {
     instagram: "https://www.instagram.com/laparrilladechampi",
