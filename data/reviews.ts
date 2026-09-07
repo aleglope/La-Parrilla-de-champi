@@ -1,14 +1,15 @@
 /**
  * Datos de la sección de prueba social (reseñas de Google).
  *
- * Agregado real verificado en Google Maps (agosto 2026):
- * La parrilla de Champi, Noia — 4,7 ★ y 171 reseñas.
+ * Agregado real verificado en Google Maps (septiembre de 2026):
+ * La parrilla de Champi, Noia — 4,7 ★ y 210 reseñas.
+ * La fecha importa: es lo que permite saber cuándo caducó el dato.
  * Si cambia, actualizar RATING / REVIEW_COUNT.
  */
 import { BUSINESS } from "@/lib/config/business";
 
 export const RATING = 4.7;
-export const REVIEW_COUNT = 171;
+export const REVIEW_COUNT = 210;
 
 /** Reexportada desde lib/config/business.ts: una sola URL para todo el sitio. */
 export const GOOGLE_MAPS_URL = BUSINESS.mapsUrl;

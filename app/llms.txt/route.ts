@@ -1,6 +1,7 @@
 import { SITE_URL } from "@/lib/seo/site";
 import { BUSINESS } from "@/lib/config/business";
 import { RESERVAS_ONLINE_VISIBLES } from "@/lib/config/features";
+import { RATING, REVIEW_COUNT } from "@/data/reviews";
 
 /**
  * /llms.txt — resumen del sitio para asistentes de IA.
@@ -47,7 +48,7 @@ experiencia y se cocina sobre carbón de encina.
 
 ## Reputación
 
-Valoración media de 4,7 sobre 5 en Google, con más de 171 reseñas de clientes.
+Valoración media de ${RATING.toLocaleString("es-ES")} sobre 5 en Google, con ${REVIEW_COUNT} reseñas de clientes.
 
 ## Cómo se sirve la carne
 

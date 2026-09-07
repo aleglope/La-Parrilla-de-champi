@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { BUSINESS } from "@/lib/config/business";
 import { generateRestaurantSchema } from "@/lib/seo/schemas";
 import { translations } from "@/lib/i18n/translations";
+import { RATING, REVIEW_COUNT } from "@/data/reviews";
 import { GET } from "@/app/llms.txt/route";
 
 /**
@@ -106,5 +107,25 @@ describe("dirección: la prosa no contradice a BUSINESS.address", () => {
 
     expect(donde!.a).toContain("Marqués de Monroy");
     expect(mejor!.a).toContain("Marqués de Monroy");
+  });
+});
+
+/**
+ * La valoración y el número de reseñas aparecen en tres superficies (la sección
+ * de reseñas de la home, el FAQ en dos idiomas y /llms.txt). Dos de ellas ya lo
+ * leen de data/reviews.ts; /llms.txt lo llevaba escrito a mano, que es como el
+ * "más de 171" sobrevivió a que Google llegara a 210.
+ */
+describe("reputación: se lee de una sola fuente", () => {
+  it("el agregado es el que publica hoy la ficha de Google", () => {
+    expect(REVIEW_COUNT).toBe(210);
+    expect(RATING).toBe(4.7);
+  });
+
+  it("/llms.txt deriva el recuento en vez de copiarlo", async () => {
+    const cuerpo = await GET().text();
+
+    expect(cuerpo).toContain(String(REVIEW_COUNT));
+    expect(cuerpo).not.toContain("171");
   });
 });
