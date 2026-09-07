@@ -21,10 +21,11 @@ export const BUSINESS = {
    * Business Profile (la gestiona la propia empresa) y contrastado con el
    * Registro Mercantil (LA PARRILLA DE CHAMPI SL, B24828030).
    *
-   * Aquí ponía "Rúa Galicia, 25" desde diciembre de 2025: una dirección a unos
-   * 745 m de la puerta que nadie llegó a verificar. Las páginas legales del
-   * propio sitio (/aviso-legal, /politica-privacidad) decían la correcta desde
-   * el principio.
+   * Desde diciembre de 2025 y durante nueve meses aquí figuró otra calle de
+   * Noia, a unos 745 m de la puerta, que nadie llegó a verificar. Las páginas
+   * legales del propio sitio (/aviso-legal, /politica-privacidad) decían la
+   * correcta desde el principio. La cadena antigua no se reproduce aquí a
+   * propósito: hay un grep de auditoría que debe seguir devolviendo cero.
    *
    * La forma gallega "Praza do Marqués de Monroy" se usa TAL CUAL en los dos
    * idiomas, sin traducirla: es la que figura en Google y en el Registro, y el
