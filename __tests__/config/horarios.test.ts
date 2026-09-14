@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { BUSINESS } from "@/lib/config/business";
 import { translations } from "@/lib/i18n/translations";
 import { generateRestaurantSchema } from "@/lib/seo/schemas";
+import { GET } from "@/app/llms.txt/route";
 
 /**
  * Los horarios se escriben en prosa en varios sitios (pie, FAQ y /llms.txt en
@@ -20,6 +21,9 @@ describe("horarios: la prosa no contradice a BUSINESS.hours", () => {
   const turnos = [...BUSINESS.hours.regular];
   const horas = [...new Set(turnos.flatMap((t) => [t.opens, t.closes]))];
   const idiomas = ["es", "gl"] as const;
+  const hayCenaDomingo = turnos.some(
+    (t) => t.days.includes("Sunday") && t.opens >= "20:00"
+  );
 
   it("el schema se deriva de la fuente, no de una copia", () => {
     const spec = generateRestaurantSchema("es")
@@ -72,6 +76,32 @@ describe("horarios: la prosa no contradice a BUSINESS.hours", () => {
         encontrada
       );
     }
+  });
+
+  // La cena del domingo desapareció de los datos y el pie la seguía anunciando:
+  // el test de horas no lo detectaba porque 20:00 y 00:00 siguen existiendo.
+  // Se compara en los dos sentidos para que siga valiendo si vuelve esa cena.
+  it.each(idiomas)(
+    "la línea de cenas del pie de %s solo nombra el domingo si hay turno de noche",
+    (lang) => {
+      expect(/domingo/i.test(translations[lang].footer.hoursDinner)).toBe(
+        hayCenaDomingo
+      );
+    }
+  );
+
+  it("/llms.txt solo usa horas de la fuente y su línea de cenas no contradice al domingo", async () => {
+    const cuerpo = await GET().text();
+
+    for (const encontrada of cuerpo.match(/\d{2}:\d{2}/g) ?? []) {
+      expect(horas, `"${encontrada}" no existe en BUSINESS.hours`).toContain(
+        encontrada
+      );
+    }
+
+    const linea = cuerpo.split("\n").find((l) => l.startsWith("- Cenas:"));
+    expect(linea, "no existe la línea de cenas en /llms.txt").toBeDefined();
+    expect(/domingo/i.test(linea!)).toBe(hayCenaDomingo);
   });
 
   it.each(idiomas)(

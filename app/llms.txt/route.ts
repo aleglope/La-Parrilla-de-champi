@@ -35,9 +35,9 @@ export function GET() {
 
 - Comidas: de miércoles a sábado, 11:00–16:00
 - Comidas los domingos: 11:00–18:00
-- Cenas: de miércoles a domingo, 20:00–00:00
-- Lunes cerrado
-- Los martes solo se abre en temporada de verano
+- Cenas: de miércoles a sábado, 20:00–00:00
+- Los domingos no se sirven cenas
+- Lunes y martes cerrado
 
 ## Sobre el proyecto
 
