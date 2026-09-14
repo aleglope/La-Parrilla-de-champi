@@ -123,12 +123,12 @@ export function Footer() {
           <p className="text-xs text-ash-500 font-body">
             {t.footer.credit}{" "}
             <a
-              href="https://www.aglwences.dev"
+              href="https://alewences.es"
               target="_blank"
               rel="noopener noreferrer"
               className="text-flame-blue-bright hover:text-flame-blue-glow active:text-flame-blue transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fire-red/60"
             >
-              aglwences.dev
+              Alewences
             </a>
           </p>
         </div>
