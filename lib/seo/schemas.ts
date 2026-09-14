@@ -66,10 +66,7 @@ export function generateRestaurantSchema(
   // Sin validFrom/validThrough: el horario es permanente, no una excepción con
   // fecha. Los valores anteriores caducaron el 2025-12-31 y desde entonces
   // Google leía el horario como vencido.
-  openingHoursSpecification: [
-    ...BUSINESS.hours.regular,
-    ...BUSINESS.hours.verano,
-  ].map((turno) => ({
+  openingHoursSpecification: BUSINESS.hours.regular.map((turno) => ({
     "@type": "OpeningHoursSpecification" as const,
     dayOfWeek: [...turno.days],
     opens: turno.opens,

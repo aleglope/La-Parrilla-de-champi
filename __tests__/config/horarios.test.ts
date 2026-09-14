@@ -13,10 +13,11 @@ import { generateRestaurantSchema } from "@/lib/seo/schemas";
  * meses un horario que no coincidía con la ficha de Google en NINGÚN campo
  * (abría a las 13:00 en vez de a las 11:00, cerraba a las 23:30 en vez de a
  * medianoche, decía que el sábado no había comidas y que el domingo no había
- * cenas). La ficha de Google es la fuente, porque la gestiona el restaurante.
+ * cenas). La fuente es el horario que da el dueño: la ficha de Google tiene
+ * que ajustarse a él, y no al revés.
  */
 describe("horarios: la prosa no contradice a BUSINESS.hours", () => {
-  const turnos = [...BUSINESS.hours.regular, ...BUSINESS.hours.verano];
+  const turnos = [...BUSINESS.hours.regular];
   const horas = [...new Set(turnos.flatMap((t) => [t.opens, t.closes]))];
   const idiomas = ["es", "gl"] as const;
 
@@ -36,15 +37,19 @@ describe("horarios: la prosa no contradice a BUSINESS.hours", () => {
     });
   });
 
-  it("el lunes no aparece en ningún turno", () => {
-    for (const turno of turnos) {
-      expect(turno.days).not.toContain("Monday");
+  it("el lunes y el martes no aparecen en ningún turno y figuran como cierre", () => {
+    for (const dia of ["Monday", "Tuesday"]) {
+      for (const turno of turnos) {
+        expect(turno.days).not.toContain(dia);
+      }
+      expect(BUSINESS.hours.closed).toContain(dia);
     }
-    expect(BUSINESS.hours.closed).toContain("Monday");
   });
 
-  it("el sábado tiene comidas y el domingo tiene cenas", () => {
-    // Los dos errores concretos que llegaron a producción.
+  it("el sábado tiene comidas y cenas, y el domingo solo mediodía", () => {
+    // El sábado sin comidas fue un error real publicado. La cena del domingo
+    // dejó de existir el 2026-09-14, y es fácil que alguien la reponga
+    // copiando el horario viejo.
     const conSabado = BUSINESS.hours.regular.filter((t) =>
       t.days.includes("Saturday")
     );
@@ -53,16 +58,9 @@ describe("horarios: la prosa no contradice a BUSINESS.hours", () => {
     );
 
     expect(conSabado.some((t) => t.opens < "16:00")).toBe(true);
-    expect(conDomingo.some((t) => t.opens >= "20:00")).toBe(true);
-  });
-
-  it("el martes solo existe dentro del bloque de verano", () => {
-    expect(
-      BUSINESS.hours.regular.some((t) => t.days.includes("Tuesday"))
-    ).toBe(false);
-    expect(BUSINESS.hours.verano.every((t) => t.days.includes("Tuesday"))).toBe(
-      true
-    );
+    expect(conSabado.some((t) => t.opens >= "20:00")).toBe(true);
+    expect(conDomingo.some((t) => t.opens < "16:00")).toBe(true);
+    expect(conDomingo.some((t) => t.opens >= "20:00")).toBe(false);
   });
 
   it.each(idiomas)("el pie de %s usa horas que existen en la fuente", (lang) => {
@@ -89,9 +87,10 @@ describe("horarios: la prosa no contradice a BUSINESS.hours", () => {
           encontrada
         );
       }
-      // Debe mencionar que el martes es estacional: es la excepción que más
-      // confunde a quien mira el horario por encima.
-      expect(item!.a.toLowerCase()).toMatch(/martes/);
+      // Tiene que nombrar los dos días de cierre: son dos seguidos y es lo
+      // primero que busca quien mira el horario por encima.
+      expect(item!.a.toLowerCase()).toMatch(/\blune?s\b/);
+      expect(item!.a.toLowerCase()).toMatch(/\bmartes\b/);
     }
   );
 
