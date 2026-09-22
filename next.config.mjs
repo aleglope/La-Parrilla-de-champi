@@ -28,9 +28,20 @@ const nextConfig = {
     ],
     // Formatos optimizados (WebP es el principal para nuestras imágenes)
     formats: ['image/avif', 'image/webp'],
-    // Desactivar optimización de Vercel para mantenernos en tier gratuito
-    // Las imágenes ya vienen optimizadas desde el cliente (browser-image-compression)
-    unoptimized: false, // Mantener en false para desarrollo local, las imágenes usan unoptimized={true} individualmente
+    // El optimizador de imágenes está ACTIVO, y es quien sirve las fotos de la
+    // carta pública. El motivo es medido: servir las 79 fotos de los platos
+    // directamente desde el CDN de Supabase generaba 5-8 GB/mes de egress
+    // cacheado contra los 5 GB que incluye su plan gratuito. Pasando por
+    // /_next/image, Vercel va al origen una vez por variante y sirve el resto
+    // desde su edge, además de reencodar a AVIF/WebP.
+    //
+    // El `remotePatterns` de arriba es lo que autoriza ese origen: sin él, Next
+    // rechaza la URL con un 400 en vez de hacer de proxy abierto.
+    //
+    // Quien se salta el optimizador lo hace por caso concreto, con el prop en
+    // la propia imagen, y no desde esta clave global: hoy solo los dos
+    // componentes de components/admin/, cada uno por su razón (ver allí).
+    unoptimized: false,
     // Device sizes para responsive images
     deviceSizes: [640, 750, 828, 1080, 1200],
     // Image sizes para componente Image con sizes prop

@@ -96,7 +96,15 @@ export function ImagePreview({
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 400px"
-              unoptimized // Evitar costos de Vercel Image Optimization
+              // La razón de saltarse el optimizador aquí es técnica, no
+              // económica: `imageUrl` recibe tanto URLs de Supabase como URLs
+              // `blob:` de previsualización local (ver el JSDoc del prop, las
+              // genera createPreviewUrl() desde ImageUploadField). El
+              // optimizador de Vercel corre en el servidor y no puede ir a
+              // buscar un `blob:`, que solo existe dentro de la memoria de ese
+              // navegador. Sin este prop, la previsualización se rompe en
+              // cuanto el admin elige una foto.
+              unoptimized
             />
           )}
 
