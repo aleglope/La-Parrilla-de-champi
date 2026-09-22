@@ -274,6 +274,15 @@ export function DishesManager({
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    // Aquí nunca llega un `blob:` como en ImagePreview: llega
+                    // `dish.image_url` o la constante por defecto. La razón de
+                    // saltarse el optimizador es de proporción: son
+                    // 105 miniaturas en una pantalla de un solo usuario que se
+                    // abre un puñado de veces al mes, así que su egress es
+                    // ruido al lado de la carta pública, y optimizarlas gastaría
+                    // presupuesto de transformaciones de Vercel sin un ahorro
+                    // medible. Si algún día esta pantalla se abre a más gente,
+                    // la decisión se revisa con el dato delante, no de memoria.
                     unoptimized
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal-dark/80 to-transparent" />

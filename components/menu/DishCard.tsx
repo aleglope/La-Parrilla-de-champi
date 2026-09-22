@@ -13,6 +13,7 @@ import {
   type CSSProperties,
   type KeyboardEvent,
 } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Dish } from "@/lib/types";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -220,6 +221,10 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
     // La prioridad la decide el padre con la posición del plato en la carta
     // entera. El `|| index < 6` que había aquí volvía a introducir el índice
     // por categoría y anulaba esa decisión.
+    //
+    // Este valor alimenta el prop `loading` de la imagen de abajo
+    // ("eager" o "lazy"), nunca el prop `priority` de next/image: ver el
+    // comentario de la cara posterior para las dos razones.
     const shouldPrioritize = priority;
 
     return (
@@ -314,11 +319,37 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
                 transform: "rotateY(180deg)",
               }}
             >
-              {/* Imagen usando img estándar para máxima compatibilidad */}
-              <img
+              {/*
+                Las fotos de la carta se sirven por el optimizador de imágenes
+                de Vercel (/_next/image), no directamente desde el CDN de
+                Supabase: servir las 79 fotos desde su CDN generaba 5-8 GB/mes
+                de egress cacheado contra los 5 GB del plan gratuito. Con
+                next/image, Vercel va al origen una vez por variante y sirve el
+                resto desde su edge, además de reencodar a AVIF/WebP.
+
+                `src` recibe la URL de la base de datos SIN transformar: el
+                borrado de imágenes extrae la ruta del fichero parseando esa
+                misma URL, así que cualquier normalización aquí dejaría
+                huérfanos en el bucket sin que nada fallase a la vista.
+
+                `sizes` no es cosmético: un `fill` sin `sizes` declara 100vw y
+                el navegador se descarga la variante más ancha del srcset, con
+                lo que el ahorro se evapora. Los valores replican la rejilla de
+                la carta (1 columna, 2 en sm, 3 en lg).
+
+                Se usa `loading` y NO el prop `priority` por dos razones: los
+                dos props son excluyentes (next/image lanza un error si llegan
+                `priority` y `loading="lazy"` a la vez), y `priority` además
+                inyecta un <link rel="preload"> para una foto que vive en la
+                cara trasera de la tarjeta y que nadie ve hasta que la voltea:
+                competiría con el LCP real de la página.
+              */}
+              <Image
                 src={imageToShow}
                 alt={`${name} - La Parrilla de Champi, Noia`}
-                className="absolute inset-0 w-full h-full object-cover rounded-3xl"
+                fill
+                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                className="object-cover rounded-3xl"
                 loading={shouldPrioritize ? "eager" : "lazy"}
                 onError={handleImageError}
               />
