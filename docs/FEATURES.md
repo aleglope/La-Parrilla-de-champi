@@ -152,7 +152,7 @@ Una lista completa de todas las funcionalidades de **La Parrilla de Champi**.
 
 #### Imágenes
 - Next.js Image con lazy loading
-- Formatos modernos: AVIF > WebP > JPG
+- Formatos modernos: WebP (un solo formato: cada formato extra cuesta transformaciones en Vercel)
 - Sizes responsivos automáticos
 - Blur placeholder
 

@@ -26,14 +26,29 @@ const nextConfig = {
         pathname: '/storage/v1/object/public/**',
       },
     ],
-    // Formatos optimizados (WebP es el principal para nuestras imágenes)
-    formats: ['image/avif', 'image/webp'],
+    // Solo WebP. Vercel cobra cada variante (foto × ancho × formato) como una
+    // transformación aparte, y con AVIF + WebP cada foto de la carta se
+    // transformaba el doble de veces. Los originales ya se suben en WebP.
+    formats: ['image/webp'],
+    // Cuánto guarda Vercel cada variante optimizada antes de volver a
+    // transformarla: el MAYOR entre este valor y el max-age que mande el
+    // origen. El valor por defecto (60 s) era el problema: muchas fotos del
+    // bucket tienen un Cache-Control que no es un max-age válido ("31536000"
+    // a secas o "no-cache"), así que Vercel las daba por caducadas al minuto y
+    // cada visita posterior contaba como transformación y escritura de caché
+    // nuevas. En los logs de Supabase se veía como ~850 peticiones diarias de
+    // vercel-image-optimization, 30-40 por foto, solo en esas fotos.
+    //
+    // 31 días (el máximo que retiene Vercel) es seguro porque cada subida
+    // genera un nombre de fichero nuevo (timestamp + sufijo aleatorio): una
+    // foto cambiada es otra URL y nunca se sirve la vieja.
+    minimumCacheTTL: 2678400,
     // El optimizador de imágenes está ACTIVO, y es quien sirve las fotos de la
     // carta pública. El motivo es medido: servir las 79 fotos de los platos
     // directamente desde el CDN de Supabase generaba 5-8 GB/mes de egress
     // cacheado contra los 5 GB que incluye su plan gratuito. Pasando por
-    // /_next/image, Vercel va al origen una vez por variante y sirve el resto
-    // desde su edge, además de reencodar a AVIF/WebP.
+    // /_next/image, Vercel va al origen una vez por variante (y de nuevo solo
+    // cuando vence minimumCacheTTL) y sirve el resto desde su edge.
     //
     // El `remotePatterns` de arriba es lo que autoriza ese origen: sin él, Next
     // rechaza la URL con un 400 en vez de hacer de proxy abierto.

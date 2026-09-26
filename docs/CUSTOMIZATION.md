@@ -329,7 +329,7 @@ Ya configurado en `next.config.mjs`, pero puedes ajustar:
 
 ```javascript
 images: {
-  formats: ['image/avif', 'image/webp'], // AVIF es más ligero
+  formats: ['image/webp'], // cada formato extra es una transformación más en Vercel
   deviceSizes: [640, 750, 828, 1080, 1200], // Tamaños generados
 }
 ```

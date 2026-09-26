@@ -181,7 +181,7 @@ WEB-RESTAURAMTE-CHAMPI/
 ```
 First Load JS:     ~80 KB (gzipped)
 CSS Total:         ~15 KB (gzipped)
-Imágenes:          Lazy load + AVIF/WebP
+Imágenes:          Lazy load + WebP
 Fonts:             Optimizado con next/font
 ```
 

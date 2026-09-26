@@ -325,7 +325,7 @@ export const DishCard = forwardRef<HTMLButtonElement, DishCardProps>(
                 Supabase: servir las 79 fotos desde su CDN generaba 5-8 GB/mes
                 de egress cacheado contra los 5 GB del plan gratuito. Con
                 next/image, Vercel va al origen una vez por variante y sirve el
-                resto desde su edge, además de reencodar a AVIF/WebP.
+                resto desde su edge (ver minimumCacheTTL en next.config.mjs).
 
                 `src` recibe la URL de la base de datos SIN transformar: el
                 borrado de imágenes extrae la ruta del fichero parseando esa
